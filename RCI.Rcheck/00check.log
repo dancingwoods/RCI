@@ -1,0 +1,183 @@
+* using log directory ‘/Users/bwoods/Dropbox/thesis/Rcalc/RCI.Rcheck’
+* using R version 2.14.2 (2012-02-29)
+* using platform: x86_64-apple-darwin9.8.0 (64-bit)
+* using session charset: UTF-8
+* checking for file ‘RCI/DESCRIPTION’ ... OK
+* this is package ‘RCI’ version ‘1.0’
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking whether package ‘RCI’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... OK
+* checking index information ... OK
+* checking package subdirectories ... WARNING
+Subdirectory ‘inst’ contains no files.
+* checking R files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* loading checks for arch ‘i386’
+** checking whether the package can be loaded ... OK
+** checking whether the package can be loaded with stated dependencies ... OK
+** checking whether the package can be unloaded cleanly ... OK
+** checking whether the namespace can be loaded with stated dependencies ... OK
+** checking whether the namespace can be unloaded cleanly ... OK
+* loading checks for arch ‘x86_64’
+** checking whether the package can be loaded ... OK
+** checking whether the package can be loaded with stated dependencies ... OK
+** checking whether the package can be unloaded cleanly ... OK
+** checking whether the namespace can be loaded with stated dependencies ... OK
+** checking whether the namespace can be unloaded cleanly ... OK
+* checking for unstated dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+AddConMat: no visible global function definition for
+  ‘dbBeginTransaction’
+AddConMat: no visible global function definition for
+  ‘dbGetPreparedQuery’
+AddConMat: no visible global function definition for ‘dbCommit’
+ConMaskDb: no visible global function definition for ‘dbConnect’
+ConMaskDb: no visible global function definition for ‘dbDriver’
+DbAddMask: no visible global function definition for ‘dbGetQuery’
+DbSetup: no visible global function definition for ‘dbGetQuery’
+FilterVector: no visible global function definition for ‘butfilt’
+GetDataFeatures: no visible global function definition for ‘dbGetQuery’
+GetDataFeatures: no visible global function definition for ‘wrap’
+GetDataFeatures: no visible global function definition for
+  ‘slidinghistequalC’
+GetMask: no visible global function definition for ‘dbGetQuery’
+GetMasks: no visible global function definition for ‘dbGetQuery’
+GetShapeFeatures: no visible global function definition for
+  ‘dbGetQuery’
+GetShapeFeatures: no visible global function definition for
+  ‘countholesC’
+MaskHull: no visible global function definition for ‘in.out’
+RemoveMask: no visible global function definition for ‘dbGetQuery’
+SetMaskLabel: no visible global function definition for ‘dbGetQuery’
+ViewCI : UpdateDbDirectory: no visible global function definition for
+  ‘svalue<-’
+ViewCI : FindDbDirectory: no visible global function definition for
+  ‘gfile’
+ViewCI : UpdateClassifierDirectory: no visible global function
+  definition for ‘svalue<-’
+ViewCI : FindClassifierDirectory: no visible global function definition
+  for ‘gfile’
+ViewCI : UpdateHelperDirectory: no visible global function definition
+  for ‘svalue<-’
+ViewCI : FindHelperDirectory: no visible global function definition for
+  ‘gfile’
+ViewCI : UpdateDataDirectory: no visible global function definition for
+  ‘svalue<-’
+ViewCI : FindDataDirectory: no visible global function definition for
+  ‘gfile’
+ViewCI : SaveSession: no visible global function definition for ‘gfile’
+ViewCI : LoadSession: no visible global function definition for ‘gfile’
+ViewCI : AddLabeledMasks: no visible global function definition for
+  ‘visible<-’
+ViewCI : AddLabeledMasks: no visible global function definition for
+  ‘myimage’
+ViewCI : AddLabeledMasks: no visible global function definition for
+  ‘smtomat’
+ViewCI : AddLabeledMasks: no visible global function definition for
+  ‘addmaskset’
+ViewCI : ImgHandler : PlotPage: no visible global function definition
+  for ‘visible<-’
+ViewCI : ImgHandler : PlotPage: no visible global function definition
+  for ‘myimage’
+ViewCI : ImgHandler : PlotPage: no visible global function definition
+  for ‘addmask’
+ViewCI : ImgHandler : PlotPage: no visible global function definition
+  for ‘smtomat’
+ViewCI : ImgHandler : PlotPage: no visible global function definition
+  for ‘enabled<-’
+ViewCI : ImgHandler : PagePrev: no visible global function definition
+  for ‘svalue<-’
+ViewCI : ImgHandler : PageNext: no visible global function definition
+  for ‘svalue<-’
+ViewCI : ImgHandler : CloseLabelWindow: no visible global function
+  definition for ‘dispose’
+ViewCI : ImgHandler : SetLabel: no visible global function definition
+  for ‘visible<-’
+ViewCI : ImgHandler : SetLabel: no visible global function definition
+  for ‘myimage’
+ViewCI : ImgHandler : SetLabel: no visible global function definition
+  for ‘addmask’
+ViewCI : ImgHandler : SetLabel: no visible global function definition
+  for ‘smtomat’
+ViewCI : ImgHandler: no visible global function definition for
+  ‘compMaskC’
+ViewCI : ImgHandler: no visible global function definition for
+  ‘mattosm’
+ViewCI : ImgHandler: no visible global function definition for
+  ‘invertmask’
+ViewCI : ImgHandler: no visible global function definition for
+  ‘gwindow’
+ViewCI : ImgHandler: no visible global function definition for ‘ggroup’
+ViewCI : ImgHandler: no visible global function definition for
+  ‘ggraphics’
+ViewCI : ImgHandler: no visible global function definition for
+  ‘addHandlerChanged’
+ViewCI : ImgHandler: no visible global function definition for
+  ‘visible<-’
+ViewCI : ImgHandler: no visible global function definition for
+  ‘myimage’
+ViewCI : ImgHandler: no visible global function definition for
+  ‘gbutton’
+ViewCI : ImgHandler: no visible global function definition for
+  ‘enabled<-’
+ViewCI : ImgHandler: no visible global function definition for ‘glabel’
+ViewCI : UpdateExpDetails: no visible global function definition for
+  ‘svalue<-’
+ViewCI : SelectExperiment: no visible global function definition for
+  ‘svalue’
+ViewCI : SelectExperiment: no visible global function definition for
+  ‘conMaskDb’
+ViewCI : SelectExperiment: no visible global function definition for
+  ‘deq’
+ViewCI : SelectExperiment: no visible global function definition for
+  ‘visible<-’
+ViewCI : SelectExperiment: no visible global function definition for
+  ‘myimage’
+ViewCI: no visible global function definition for ‘gwindow’
+ViewCI: no visible global function definition for ‘ggroup’
+ViewCI: no visible global function definition for ‘gframe’
+ViewCI: no visible global function definition for ‘glayout’
+ViewCI: no visible global function definition for ‘glabel’
+ViewCI: no visible global function definition for ‘gbutton’
+ViewCI: no visible global function definition for ‘gtable’
+ViewCI: no visible global function definition for ‘visible<-’
+ViewCI: no visible global function definition for ‘ggraphics’
+ViewCI: no visible global function definition for ‘addHandlerChanged’
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking line endings in C/C++/Fortran sources/headers ... OK
+* checking line endings in Makefiles ... OK
+* checking for portable use of $(BLAS_LIBS) and $(LAPACK_LIBS) ... OK
+* checking compiled code ... OK
+* checking examples ... NONE
+* checking PDF version of manual ... WARNING
+LaTeX errors when creating PDF version.
+This typically indicates Rd problems.
+LaTeX errors found:
+! LaTeX Error: File `inconsolata.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: sty)
+
+* checking PDF version of manual without hyperrefs or index ... OK
+WARNING: There were 2 warnings, see
+  ‘/Users/bwoods/Dropbox/thesis/Rcalc/RCI.Rcheck/00check.log’
+for details

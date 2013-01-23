@@ -1,0 +1,14 @@
+Package: RCI
+Title: R Calcium Imaging Analysis
+Version: 1.0
+Date: 2010-01-09
+Author: Bronwyn Woods
+Maintainer: Bronwyn WOods <bwoods@cmu.edu>
+Description: Tools for analyzing in-vivo two-photon calcium imaging data.
+License: GPL
+Imports: RSQLite, randomForest, gWidgets, gWidgetsRGtk2, cairoDevice,
+        R.utils, mgcv, RSEIS
+Collate: 'datainport.R' 'motion.R' 'plotting.R' 'segmentation.R'
+        'gui.R'
+Built: R 2.14.2; universal-apple-darwin9.8.0; 2013-01-23 21:19:01 UTC; unix
+Archs: i386, x86_64

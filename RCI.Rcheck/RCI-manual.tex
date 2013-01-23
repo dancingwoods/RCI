@@ -1,0 +1,1155 @@
+\nonstopmode{}
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\usepackage[utf8,latin1]{inputenc}
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge Package `RCI'}}
+\par\bigskip{\large \today}
+\end{center}
+\begin{description}
+\raggedright{}
+\item[Title]\AsIs{R Calcium Imaging Analysis}
+\item[Version]\AsIs{1.0}
+\item[Date]\AsIs{2010-01-09}
+\item[Author]\AsIs{Bronwyn Woods}
+\item[Maintainer]\AsIs{Bronwyn WOods }\email{bwoods@cmu.edu}\AsIs{}
+\item[Description]\AsIs{Tools for analyzing in-vivo two-photon calcium imaging data.}
+\item[License]\AsIs{GPL}
+\item[Imports]\AsIs{RSQLite, randomForest, gWidgets, gWidgetsRGtk2, cairoDevice,
+R.utils, mgcv, RSEIS}
+\item[Collate]\AsIs{'datainport.R' 'motion.R' 'plotting.R' 'segmentation.R'
+'gui.R'}
+\item[Archs]\AsIs{i386, x86\_64}
+\end{description}
+\Rdcontents{\R{} topics documented:}
+\inputencoding{utf8}
+\HeaderA{AddConMat}{INTERNAL Adds the overlap edges to a mask database}{AddConMat}
+%
+\begin{Description}\relax
+INTERNAL Adds the overlap edges to a mask database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  AddConMat(db, cmat, ids)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] a database connection object
+
+\item[\code{cmat}] a matrix of 0/1 values giving the locations
+of edges between masks
+
+\item[\code{ids}] a vector giving the ids of the masks in cmat
+(in order)
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{AddMask}{Plots a mask over an already plotted image}{AddMask}
+%
+\begin{Description}\relax
+Plots a mask over an already plotted image
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  AddMask(mask, rgb = runif(3), alpha = 0.5, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mask}] the specification of the mask
+
+\item[\code{rgb}] a vector of length 3 giving the color of the
+mask in RGB (defaults to random)
+
+\item[\code{alpha}] the alpha transparency value of the mask
+(between 0 and 1)
+
+\item[\code{...}] additional graphing parameters
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Given a mask as either a matrix of logicals or a matrix
+with 1's on the mask, over-plot a semi-transparent
+colored region on an already plotted image.
+\end{Details}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{CompMaskC}{INTERNAL Compute the overlap of a single mask with a list of masks}{CompMaskC}
+%
+\begin{Description}\relax
+INTERNAL Compute the overlap of a single mask with a list
+of masks
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  CompMaskC(mask, masklist)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mask}] A single mask formatted as a vector of mask
+indices with or without the negative id as the first
+element of the vector.
+
+\item[\code{masklist}] A list of sparse masks as returned by
+GetMasks.  Each element of this list is a vector whose
+first element is the negative id of the mask and whose
+other elements are the sorted indices of the mask
+pixels.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Computes the overlap matrix between a mask and a list of
+other masks using C code for efficiency
+\end{Details}
+%
+\begin{Value}
+a vector whose elements are 0 or 1 giving the overlap
+relationships between the masks.  The values are sorted
+in the vector in the same order as they are given in
+masklist.
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{CompMasksC}{INTERNAL Compute the overlap matrix between a set of masks}{CompMasksC}
+%
+\begin{Description}\relax
+INTERNAL Compute the overlap matrix between a set of
+masks
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  CompMasksC(masklist)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{masklist}] A list of sparse masks as returned by
+GetMasks.  Each element of this list is a vector whose
+first element is the negative id of the mask and whose
+other elements are the sorted indices of the mask
+pixels.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Computes the overlap matrix between a set of masks using
+C code for efficiency.
+\end{Details}
+%
+\begin{Value}
+a matrix whose elements are 0 or 1 giving the overlap
+relationships between the masks.  The masks are sorted in
+the matrix in the same order as they are given in
+masklist.
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{ConMaskDb}{Connects to an experiment's mask database}{ConMaskDb}
+%
+\begin{Description}\relax
+Connects to an experiment's mask database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ConMaskDb(path)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{path}] the path to the SQLite database to connect
+to
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a connection object as returned by dbConnect in the DBI
+package
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{CountHolesC}{INTERNAL Counts the number of pixels not in a mask that are surrounded by at least 3 mask pixels}{CountHolesC}
+%
+\begin{Description}\relax
+INTERNAL Counts the number of pixels not in a mask that
+are surrounded by at least 3 mask pixels
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  CountHolesC(mask)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mask}] the mask in which to count holes.  NA or 0 in
+the background.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Uses C code from the file countholesC.c
+\end{Details}
+%
+\begin{Value}
+an integer giving the number of holes in the mask
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{CreateCalExpFromCSV}{Convert a folder of text images to a calexp data object}{CreateCalExpFromCSV}
+%
+\begin{Description}\relax
+Convert a folder of text images to a calexp data object
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  CreateCalExpFromCSV(name, imgdir, nchans = 2)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{name}] a short name to identify this experiment
+
+\item[\code{imgdir}] a string giving the directory path for the
+directory containing the csv images
+
+\item[\code{nchans}] the number of channels that exist in the
+data
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function Converts a directory of csv text files into
+a calexp data object in R. Assumes that the images are
+individual csv text files and that they are
+alphabetically in order by channel and then by time
+index.  The directory must contain only these csv image
+files. Each image must have the same dimensions, and
+there must be the same number of images for each channel.
+\end{Details}
+%
+\begin{Value}
+an object of class calexp \begin{ldescription}
+\item[\code{name}] the name passed in
+as an argument to this function\item[\code{data}] an array
+containing the image data, with dimensions
+nchans-nrows-ncols
+\end{ldescription}
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{CreateCurExp}{INTERNAL Create an object to store information about the currently selected experiment.}{CreateCurExp}
+%
+\begin{Description}\relax
+INTERNAL Create an object to store information about the
+currently selected experiment.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  CreateCurExp()
+\end{verbatim}
+\end{Usage}
+%
+\begin{Details}\relax
+Creates a list that stores information about the
+currently selected experiment.
+\end{Details}
+%
+\begin{Value}
+A list with fields to store information about the
+experiment (initially empty) \begin{ldescription}
+\item[\code{name}] the experiment
+name\item[\code{data}] if loaded, the data object for this
+object\item[\code{db}] the database connection for this
+experiment\item[\code{nmasks}] the number of candidate masks
+in the database for this experiment\item[\code{features}] the
+tags of the features that exist in this database
+\item[\code{sources}] the tage for the mask sources present in
+this database\item[\code{selmat}] a matrix where the first
+column is the ID of the mask and the second column gives
+the annotation for the mask\item[\code{sms}] the list of
+sparse masks for the experiment retreived from the
+database with GetMasks()\item[\code{mimg1}] the matrix giving
+the mean image for channel 1\item[\code{mimg2}] the matrix
+giving the mean image for channel 2\item[\code{nx}] the number
+of columns in the images for this experiment
+\item[\code{ny}] the number of rows in the images
+\end{ldescription}
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{CreateDbController}{INTERNAL Creates an empty database controller}{CreateDbController}
+%
+\begin{Description}\relax
+INTERNAL Creates an empty database controller
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  CreateDbController()
+\end{verbatim}
+\end{Usage}
+%
+\begin{Details}\relax
+A database controller holds information about the
+directories where the databases, data, classifiers, and
+helper files are stored. \\{}
+\end{Details}
+%
+\begin{Value}
+A list \begin{ldescription}
+\item[\code{db.directory}] the directory holding SQLite
+databases\item[\code{data.directory}] the directory holding
+data associated with each database.  each of these should
+have a \bsl{}\$data element\item[\code{helper.directory}] the
+directory in which to place helper files generated by the
+GUI\item[\code{classifier.direcoty}] the directory that
+contains the classifiers used in segmentation
+\item[\code{expdf}] a data.frame in which to put information
+about each experiment, currently empty
+\end{ldescription}
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{DbAddMask}{Add a mask to a database}{DbAddMask}
+%
+\begin{Description}\relax
+Add a mask to a database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  DbAddMask(db, mask, source)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] a database connection object
+
+\item[\code{mask}] a matrix giving the mask to add to the
+database (T/F, 0/1, or NA/1)
+
+\item[\code{source}] a string giving the tag for the source of
+the mask
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Adds the given mask to the database.  If the mask is
+already in the database, increments the count for the
+source of the mask (or adds a new count for a new source)
+\end{Details}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{DbSetup}{INTERNAL Creates an empty mask database with the appropriate tables}{DbSetup}
+%
+\begin{Description}\relax
+INTERNAL Creates an empty mask database with the
+appropriate tables
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  DbSetup(db)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the database object for which to create the
+mask tables
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{FFTXCor}{INTERNAL Computes sub-pixel shifts values using FFT}{FFTXCor}
+%
+\begin{Description}\relax
+INTERNAL Computes sub-pixel shifts values using FFT
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  FFTXCor(img1, img2, upsamp = 1, taper = 0)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img1}] matrix giving the first image (the
+reference)
+
+\item[\code{img2}] matrix giving the second image (to be
+shifted)
+
+\item[\code{upsamp}] the factor by which the fft matrix should
+be expanded
+
+\item[\code{taper}] number of pixels to taper the data on the
+edges of the image
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Computes the sub-pixel shifts by computing the upsampled
+cross-correlation between the two images and finding the
+maximum. Computes the upsampled cross-correlation by
+embedding the product of FT(img1)* and FFT(img2) in a
+larger matrix of 0's determined by the upsampling factor.
+\end{Details}
+%
+\begin{Value}
+a vector of length 2 giving the magnitude of the estimted
+x and y shift returns NA in the case of improper input
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{FilterVector}{INTERNAL Filters a vector by frequency using a butterworth filter}{FilterVector}
+%
+\begin{Description}\relax
+INTERNAL Filters a vector by frequency using a
+butterworth filter
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  FilterVector(vec, low, high, order = 8, dt = 1/1000,
+    type = "BP")
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{vec}] the vector to filter
+
+\item[\code{low}] the lower value of the filter
+
+\item[\code{high}] the higher value of the filter
+
+\item[\code{order}] the order of the butterworth filter
+
+\item[\code{dt}] the time (in seconds) of one datapoint.
+1/frequency in hz
+
+\item[\code{type}] the type of filter, defaults to "BP" bandpass
+filter. Can also choose other filters offered by the
+butfilt function
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+the filtered vector
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{GetDataFeatures}{INTERNAL Computes the features related to the data under a mask, adding them to the database}{GetDataFeatures}
+%
+\begin{Description}\relax
+INTERNAL Computes the features related to the data under
+a mask, adding them to the database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetDataFeatures(db, data, cormat)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] a database connection
+
+\item[\code{data}] the data array for this experiment
+
+\item[\code{cormat}] the pixel-pixel corrlations for channel 2
+for this data
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Computes features of all masks in the database or a list
+of masks specified by id.  The features computed are
+currently:\\{} var1 - the variance of the pixel means for
+channel 1 \\{} var2 - the variance of the pixel means for
+channel 2\\{} var1eq - the variance of the pixel means for
+the equalized version of channel 1\\{} var2eq - the
+variance of the pixel means for the equalized version of
+channel 2\\{} mean1eq - the mean of the pixel means for
+the equalized version of channel 1\\{} mean2eq - the mean
+of the pixel means for the equalized version of channel
+2\\{} cor2 - the mean pixel-pixel correlation between the
+map pixels in channel 2\\{} cor2min - the min pixel-pixel
+correlation between the map pixels in channel 2\\{}
+cor2max - the max pixel-pixel correlation between the map
+pixels in channel 2\\{}
+\end{Details}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{GetInnerMasks}{INTERNAL Selects the masks from the given list that are contained in a region}{GetInnerMasks}
+%
+\begin{Description}\relax
+INTERNAL Selects the masks from the given list that are
+contained in a region
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetInnerMasks(framemat, masklist)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{framemat}] a matrix of the same size as the masks in
+masklist with non-NA pixels specifying the region in
+which to find masks
+
+\item[\code{masklist}] a list, as returned by GetMasks, of
+sparse masks (vectors where the first element is the
+negative id of the mask and the other elements are the
+mask indices)
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Given a list of masks as returned by GetMasks and a
+matrix with a mask specifying a region, returns the masks
+in the masklist that are completely contained in the
+given region.
+\end{Details}
+\inputencoding{utf8}
+\HeaderA{GetMask}{Return the requested mask from the specified database}{GetMask}
+%
+\begin{Description}\relax
+Return the requested mask from the specified database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetMask(db, id, format = "sparse")
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] a database connection
+
+\item[\code{id}] the id of the mask to return
+
+\item[\code{format}] "sparse" for a sparse mask in vector form,
+"matrix" for a matrix mask
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+either a vector giving the indices of the requested mask
+or a matrix version of the mask
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{GetMasks}{Returns a list of the masks in a database}{GetMasks}
+%
+\begin{Description}\relax
+Returns a list of the masks in a database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetMasks(db)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] a database connection
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a list of vectors, each vector specifying a mask.  The
+first element of each mask vector is the negative index
+of the mask.  The remaining elements of each vector are
+the indices of the mask pixels.
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{GetShapeFeatures}{INTERNAL Computes the features related to just the shape of masks, adding them to the database}{GetShapeFeatures}
+%
+\begin{Description}\relax
+INTERNAL Computes the features related to just the shape
+of masks, adding them to the database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetShapeFeatures(db, mids = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] a database connection
+
+\item[\code{mids}] an optional vector of the mask ids for which
+to extract features
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Computes features of all masks in the database or a list
+of masks specified by id.  The features computed are
+currently:\\{} npixels - the number of pixels in a mask
+\\{} nholes - the number of non-mask pixels that are
+surrounded by at least 3 mask pixels\\{} bboxratio - the
+ratio of the area of the mask's bounding box and the
+number of pixels\\{} in the mask hullratio - the ratio of
+the area of the mask's convex hull and the number of
+pixels in the mask\\{}
+\end{Details}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{HillClimbC}{INTERNAL Perform hill climbing on a matrix starting from a given point and returning the local maxima that is reached.}{HillClimbC}
+%
+\begin{Description}\relax
+INTERNAL Perform hill climbing on a matrix starting from
+a given point and returning the local maxima that is
+reached.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  HillClimbC(y, x, img)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{y}] Starting row
+
+\item[\code{x}] Starting column
+
+\item[\code{img}] The matrix on which to performt the
+hillclimbing
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Uses C code in hillclimbC.c
+\end{Details}
+%
+\begin{Value}
+a vector of 2 numbers giving the coordinates of the peak
+found by hillclimbing
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{HistEqualC}{INTERNAL Computed the histogram equalization of a matrix.}{HistEqualC}
+%
+\begin{Description}\relax
+INTERNAL Computed the histogram equalization of a matrix.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  HistEqualC(mat, fullmax = 4096)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mat}] the matrix to equalize
+
+\item[\code{fullmax}] the range to equalize to
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Uses C code in histequalC.c
+\end{Details}
+%
+\begin{Value}
+the equalized matrix
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{Image}{Plots an image of the given matrix with the origin in the upper left}{Image}
+%
+\begin{Description}\relax
+Plots an image of the given matrix with the origin in the
+upper left
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  Image(img, col = grey(seq(0, 1, 0.001)), ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img}] the image matrix to plot
+
+\item[\code{col}] a list of colors to use for plotting, defaults
+to grey
+
+\item[\code{...}] additional graphing parameters
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{ImageToCoordMat}{INTERNAL Converts an image matrix to a matrix with coordinates and values in the columns}{ImageToCoordMat}
+%
+\begin{Description}\relax
+INTERNAL Converts an image matrix to a matrix with
+coordinates and values in the columns
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ImageToCoordMat(img)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img}] the matrix to convert
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A matrix of size npixels-by-3. The first coordinate is
+the row, the the column and the third the intensity.
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{InvertMask}{INTERNAL Inverts a mask matrix so that the mask region is turned to backgroun and vice versa}{InvertMask}
+%
+\begin{Description}\relax
+INTERNAL Inverts a mask matrix so that the mask region is
+turned to backgroun and vice versa
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  InvertMask(mask)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mask}] the mask matrix to invert, with NA in the
+background
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a matrix with the inverted mask
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{MaskHull}{INTERNAL Computes the convex hull of a mask}{MaskHull}
+%
+\begin{Description}\relax
+INTERNAL Computes the convex hull of a mask
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  MaskHull(mask)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mask}] the mask for which to find the convex hull.
+Background pixels should be NA
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+FIXME: there's the issue that
+maphull(maphull(x))!=maphull(x), but using this anyway
+\end{Details}
+%
+\begin{Value}
+a matrix with 1's on the convex hull of the mask and NA
+in the background
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{MatrixToSparse}{INTERNAL Converts a matrix mask into a sparse mask.  Assumes that the non-mask pixels of the matrix are NA.}{MatrixToSparse}
+%
+\begin{Description}\relax
+INTERNAL Converts a matrix mask into a sparse mask.
+Assumes that the non-mask pixels of the matrix are NA.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  MatrixToSparse(mat)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mat}] The mask as a matrix with NA in non-mask
+pixels
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a vector of indices of the mask pixels
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{RegisterCalExp}{Removes in-plane motion effects using rigid body alignment of the image frames}{RegisterCalExp}
+%
+\begin{Description}\relax
+Removes in-plane motion effects using rigid body
+alignment of the image frames
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  RegisterCalExp(calexp, refimg, channel = 1, upsamp = 2)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{calexp}] a calexp object with a \bsl{}\$data field
+
+\item[\code{refimg}] a reference image to use for alignment.
+Should be the same size as the images in calexp\bsl{}\$data
+
+\item[\code{channel}] the channel to use for alignment
+
+\item[\code{upsamp}] the upsampling factor (this gives the
+sup-pixel precision of 1/upsamp)
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Registers the images in a calexp object by rigid body
+image alignment of the images in a particular channel to
+the reference image given.  The shifts for each image are
+estimated by maximum cross-correlation. Sub-pixel shifts
+are achieved using upsampling by the factor given
+(providing accuracy of 1/upsamp pixels).  Only one
+channel is used to register the data.  This should be the
+channel with the cleanest spatial information for the
+best results
+\end{Details}
+%
+\begin{Value}
+a calexp object with a \bsl{}\$registration field.  The \bsl{}\$data
+in the returned object has been registered.  The
+\bsl{}\$registration field records the details of the estimated
+shifts.  \begin{ldescription}
+\item[\code{upsamp}] the usampling factor used
+\item[\code{refimg}] the reference image used\item[\code{mpars}] the
+estimated shifts. This is a matrix of size nframes-by-2
+\end{ldescription}
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{RemoveMask}{Remove a mask from a mask database}{RemoveMask}
+%
+\begin{Description}\relax
+Remove a mask from a mask database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  RemoveMask(db, maskid)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] a database connection
+
+\item[\code{maskid}] the ID of the mask to remove
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Removes a mask, as well as any associated features and
+edges
+\end{Details}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{ReorderFFT}{INTERNAL Reorders the matrix returned by fft}{ReorderFFT}
+%
+\begin{Description}\relax
+INTERNAL Reorders the matrix returned by fft
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ReorderFFT(mat, inverse = F)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mat}] a matrix of values to reorder
+
+\item[\code{inverse}] if true, takes reordered matrix and
+returns to order expected by fft. if false, takes matrix
+from fft and reorders it
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Reorders the matrix returned by the R function fft.  The
+R function returns the coefficients from
+low-to-high-to-low frequencies in both dimensions.  The
+reordering puts the low frequencies in the center of the
+matrix so that the coefficients go from
+high-to-low-to-high in each dimension
+\end{Details}
+%
+\begin{Value}
+the reordered matrix
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{RotateImg}{INTERNAL Rotates an image by a given number of integer rows and columns}{RotateImg}
+%
+\begin{Description}\relax
+INTERNAL Rotates an image by a given number of integer
+rows and columns
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  RotateImg(mat, x, y)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mat}] the matrix to rotate
+
+\item[\code{x}] the number of columns to rotate
+
+\item[\code{y}] the number of rows to rotate
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+the rotated matrix
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{SetMaskLabel}{Sets the label field for a particular mask in a mask database}{SetMaskLabel}
+%
+\begin{Description}\relax
+Sets the label field for a particular mask in a mask
+database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  SetMaskLabel(db, id, label)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] a database connection
+
+\item[\code{id}] the id of the mask to label
+
+\item[\code{label}] the label to assign to the mask (0=unknown,
+1=cell, 2=not cell)
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{SimpleModesC}{INTERNAL Finds the local maxima in an image}{SimpleModesC}
+%
+\begin{Description}\relax
+INTERNAL Finds the local maxima in an image
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  SimpleModesC(img, min = 0)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img}] the image in which to find the local maxima
+
+\item[\code{min}] if this is set to 1, find local minima
+instead
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Uses C code in localmaxC.c
+\end{Details}
+%
+\begin{Value}
+matrix with 1 at the maxima and NA elsewhere
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{SlidingHistEqualC}{INTERNAL Computes the sliding window histogram equalization of a matrix}{SlidingHistEqualC}
+%
+\begin{Description}\relax
+INTERNAL Computes the sliding window histogram
+equalization of a matrix
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  SlidingHistEqualC(mat, radius, fullmax = 4096)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mat}] the matrix to equalize
+
+\item[\code{radius}] the radius of the sliding window (total
+window size is a square window with sides 2*radius+1)
+
+\item[\code{fullmax}] the maximum value in the equalized image
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Uses C code in slidinghistequalC.c
+\end{Details}
+%
+\begin{Value}
+The equalized matrix
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{SparseToMatrix}{INTERNAL Converts a sparse mask to a matrix mask}{SparseToMatrix}
+%
+\begin{Description}\relax
+INTERNAL Converts a sparse mask to a matrix mask
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  SparseToMatrix(sm, ny = 128, nx = 128, background = NA)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{sm}] the sparse representation of the mask (a vector
+whose positive values are the indices of the mask
+pixels)
+
+\item[\code{ny}] the number of rows of the matrix mask
+
+\item[\code{nx}] the number of columbs of the matrix mask
+
+\item[\code{background}] the value to put in the non-mask pixels
+of the matrix
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A matrix of dimension (ny, nx) with 1's in the mask
+pixels and background elsewhere
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{TranslateFFT}{INTERNAL Shifts an image by the given (fractional pixel) amounts}{TranslateFFT}
+%
+\begin{Description}\relax
+INTERNAL Shifts an image by the given (fractional pixel)
+amounts
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  TranslateFFT(img, xshift, yshift)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img}] the image (matrix) to shift
+
+\item[\code{xshift}] the amount to shift the in x dimension
+(columns)
+
+\item[\code{yshift}] the amount to shift in the y dimension
+(rows)
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Uses the shift theorem to shift the given image by
+transforming to the Fourier domain.  The shift can be
+sub-pixel, resulting in Fourier interpolation.
+\end{Details}
+%
+\begin{Value}
+the shifted image (matrix)
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{ViewCI}{Opens the GUI viewer to manipulate the segmentation process.}{ViewCI}
+%
+\begin{Description}\relax
+Opens the GUI viewer to manipulate the segmentation
+process.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ViewCI(dbController = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{dbController}] if specified, the viewer opens with
+the given dbController (looking in the directories stored
+in that object)
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\printindex{}
+\end{document}

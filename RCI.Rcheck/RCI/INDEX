@@ -1,0 +1,64 @@
+AddConMat               INTERNAL Adds the overlap edges to a mask
+                        database
+AddMask                 Plots a mask over an already plotted image
+CompMaskC               INTERNAL Compute the overlap of a single mask
+                        with a list of masks
+CompMasksC              INTERNAL Compute the overlap matrix between a
+                        set of masks
+ConMaskDb               Connects to an experiment's mask database
+CountHolesC             INTERNAL Counts the number of pixels not in a
+                        mask that are surrounded by at least 3 mask
+                        pixels
+CreateCalExpFromCSV     Convert a folder of text images to a calexp
+                        data object
+CreateCurExp            INTERNAL Create an object to store information
+                        about the currently selected experiment.
+CreateDbController      INTERNAL Creates an empty database controller
+DbAddMask               Add a mask to a database
+DbSetup                 INTERNAL Creates an empty mask database with
+                        the appropriate tables
+FFTXCor                 INTERNAL Computes sub-pixel shifts values using
+                        FFT
+FilterVector            INTERNAL Filters a vector by frequency using a
+                        butterworth filter
+GetDataFeatures         INTERNAL Computes the features related to the
+                        data under a mask, adding them to the database
+GetInnerMasks           INTERNAL Selects the masks from the given list
+                        that are contained in a region
+GetMask                 Return the requested mask from the specified
+                        database
+GetMasks                Returns a list of the masks in a database
+GetShapeFeatures        INTERNAL Computes the features related to just
+                        the shape of masks, adding them to the database
+HillClimbC              INTERNAL Perform hill climbing on a matrix
+                        starting from a given point and returning the
+                        local maxima that is reached.
+HistEqualC              INTERNAL Computed the histogram equalization of
+                        a matrix.
+Image                   Plots an image of the given matrix with the
+                        origin in the upper left
+ImageToCoordMat         INTERNAL Converts an image matrix to a matrix
+                        with coordinates and values in the columns
+InvertMask              INTERNAL Inverts a mask matrix so that the mask
+                        region is turned to backgroun and vice versa
+MaskHull                INTERNAL Computes the convex hull of a mask
+MatrixToSparse          INTERNAL Converts a matrix mask into a sparse
+                        mask.  Assumes that the non-mask pixels of the
+                        matrix are NA.
+RegisterCalExp          Removes in-plane motion effects using rigid
+                        body alignment of the image frames
+RemoveMask              Remove a mask from a mask database
+ReorderFFT              INTERNAL Reorders the matrix returned by fft
+RotateImg               INTERNAL Rotates an image by a given number of
+                        integer rows and columns
+SetMaskLabel            Sets the label field for a particular mask in a
+                        mask database
+SimpleModesC            INTERNAL Finds the local maxima in an image
+SlidingHistEqualC       INTERNAL Computes the sliding window histogram
+                        equalization of a matrix
+SparseToMatrix          INTERNAL Converts a sparse mask to a matrix
+                        mask
+TranslateFFT            INTERNAL Shifts an image by the given
+                        (fractional pixel) amounts
+ViewCI                  Opens the GUI viewer to manipulate the
+                        segmentation process.
