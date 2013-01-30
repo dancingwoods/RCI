@@ -40,7 +40,7 @@ RegisterCalExp <-function(calexp, refimg, channel=1, upsamp=2){
 	
 	# Calculate movement parameters
 	# Negative 1 is since will be moving img1 instead of img2
-	mpars <- -1*t(apply(calexp$data[1,,,], 1, FFTXCor, img2=refimg, upsamp=upsamp))
+	mpars <- -1*t(apply(calexp$data[1,,,], 1, FFTPhaseCor, img2=refimg, upsamp=upsamp))
 	
 	# Shift data
 	nchannels <- dim(calexp$data)[1]
@@ -64,33 +64,54 @@ RegisterCalExp <-function(calexp, refimg, channel=1, upsamp=2){
 
 #-
 #' INTERNAL 
-#' Computes sub-pixel shifts values using FFT
+#' Computes sub-pixel shifts values using phase correlation (FFT implementation)
 #' 
 #' @details Computes the sub-pixel shifts by computing the upsampled
-#' cross-correlation between the two images and finding the maximum.
-#' Computes the upsampled cross-correlation by embedding the product of 
-#' FT(img1)* and FFT(img2) in a larger matrix of 0's determined by the 
-#' upsampling factor.
+#' phase correlation between the two images and finding the maximum.  If
+#' the parameter gausfit is TRUE, then a gaussian is fit around the peak
+#' of the phase correlation function to get additional sub-pixel shift information.
+#' This is on top of any upsampling
 #' 
 #' @param img1 matrix giving the first image (the reference)
 #' @param img2 matrix giving the second image (to be shifted)
 #' @param upsamp the factor by which the fft matrix should be expanded
-#' @param taper number of pixels to taper the data on the edges of the image
+#' @param imagetaper the type of window to use to taper each image
+#' @param cortaperwidth number of pixels to taper the data on the edges of the normalized cross-spectrum
+#' @param subpixel 'none' for no additional subpixel fitting, 'gauss' for Gaussian fit
 #' 
 #' @return a vector of length 2 giving the magnitude of the estimted x and y shift
 #' returns NA in the case of improper input
 #-
-FFTXCor <- function(img1, img2, upsamp=1, taper=0){
+FFTPhaseCor <- function(img1, img2, upsamp=1, imagetaper="hanning", cortaperwidth=0, subpixel="none"){
 	# check that img1 and img2 are the same dimensions
 	if(any(dim(img1) != dim(img2))){
 		cat("Error: Images must have the same dimensions.\n")
 		return(NA)
 	}
+	
+	TaperImage <- function(img, taper){
+		if(taper=="hanning"){
+			row = 0.5 * (1 - cos((2*pi*1:ncol(img))/(ncol(img)-1)))
+			col = 0.5 * (1 - cos((2*pi*1:nrow(img))/(nrow(img)-1)))
+		}else{
+			row = rep(1, ncol(img))
+			col = rep(1, nrow(img))
+		}
+		ret = matrix(row, nrow(img), ncol(img), byrow=T)
+		ret = ret*col
+		return(ret*img)
+	}
+	img1 = TaperImage(img1, imagetaper)
+	img2 = TaperImage(img2, imagetaper)
+	
 	# Calculate prod of FFT and conj(FFT)
 	cc <- fft(img1)*Conj(fft(img2))
+	# Normalize to isolate the phase shift
+	cc <- cc/Mod(cc)
 	
 	# Taper the crosscorrelation matrix cc
-	if(taper>0){
+	if(cortaperwidth>0){
+		taper <- cortaperwidth
 		tapmat <- matrix(1, nrow(img1), ncol(img1))
 		l <- 1:(taper*2)
 		lt <- 0.5*(1 - cos(2*pi*l/(taper*2-1)))
@@ -107,30 +128,79 @@ FFTXCor <- function(img1, img2, upsamp=1, taper=0){
 	dup <- dim(ccup)
 	ccup[(floor(upsamp/2)*d[1]+1):(floor(upsamp/2)*d[1]+d[1]), (floor(upsamp/2)*d[2]+1):(floor(upsamp/2)*d[2]+d[2])] <- ReorderFFT(cc)
 	
-	ccup <- ReorderFFT(ccup)
+	ccup <- ReorderFFT(ccup, inverse=T)
 	
 	# Take inverse transform, keep modulus
-	ccup <- Mod(fft(ccup, inverse=T))
+	ccup <- ReorderFFT(Mod(fft(ccup, inverse=T)))
 		
 	# Find maximum
 	trans <- arrayInd(which.max(ccup), dim(ccup))
-	
-	# Translate location of maximum into translation coordinates
-	if(trans[1]>(dup[1]/2)){
-		ytrans <- (dup[1]-trans[1]+1)/upsamp
-	}else{
-		ytrans <- -1*(trans[1]-1)/upsamp
-	}
-	
-	if(trans[2]>(dup[1]/2)){
-		xtrans <- (dup[2]-trans[2]+1)/upsamp
-	}else{
-		xtrans <- -1*(trans[2]-1)/upsamp
+		
+	if(subpixel=="gauss" || subpixel=="poc"){
+		
+		#create sub-matrix around peak
+		#fit this sub-matrix with some function
+		#refine estimate of peak with fitted peak
+
+		subrad <- 3*upsamp
+		submat <- ccup[(trans[1]-subrad):(trans[1]+subrad), (trans[2]-subrad):(trans[2]+subrad)]
+		submat <- submat/sum(submat)
+		xinds = (-subrad):(subrad)
+		yinds = (-subrad):(subrad)
+				
+		gmat <- function(pars){
+			#pars = c(y,x,var)
+			if(pars[3]<0){return(matrix(0, 2*subrad+1, 2*subrad+1))}
+			ret = matrix(1, 2*subrad+1, 2*subrad+1)
+			ret = ret*dnorm(yinds,pars[1], pars[3])
+			ret = t(t(ret)*dnorm(yinds,pars[2], pars[3]))
+			return(ret)
+		}
+		
+		# Using the function from Takita2003
+		pocmat <- function(pars){
+			#pars = c(y,x)
+			
+			#hack right now - if either par 0, return matrix of zeros
+			if(pars[1]==0 || pars[2]==0){
+				return(matrix(0, 2*subrad+1, 2*subrad+1))
+			}
+			loc <- function(y,x,pars){
+				ret  <- (pars[3]/(dup[2]*dup[1])) * (sin(pi*(y+pars[1])) * sin(pi*(x+pars[2]))) / (sin(pi/dup[1]*(y+pars[1])) * sin(pi/dup[2]*(x+pars[2])))
+			}
+			ret = matrix(NA, 2*subrad+1, 2*subrad+1)
+			for(x in xinds){
+				for(y in yinds){
+					ret[y+subrad+1,x+subrad+1]=loc(y,x,pars)
+				}
+			}
+			return(ret)
+		}
+		
+		optimf <- function(pars){
+			if(subpixel=="gauss"){
+				return(sum((gmat(pars)-submat)^2))
+			}else{
+				return(sum((pocmat(pars)-submat)^2))
+			}
+		}
+		
+		if(subpixel=="gauss"){
+			offset <- optim(c(0,0,1), optimf)$par[1:2]
+		}else{
+			#print(optim(c(0.1,0.1,1), optimf))
+			offset <- -1*optim(c(0.1,0.1,1), optimf)$par[1:2]
+		}
+	#	print(trans)
+	#	print(offset)
+		trans <- trans+offset
+		
 	}
 	
 	# Return translation coordinates
-	return(c(xtrans, ytrans))
+	return(-1*rev((trans-c(nrow(ccup)/2,ncol(ccup)/2))/upsamp))
 }
+
 
 #-
 #' INTERNAL
