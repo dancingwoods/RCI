@@ -7,7 +7,7 @@
 #                                                              #
 ################################################################
 
-
+#TODO Fix this to use any of the motion estimation methods, not just phase correlation
 #-
 #' Removes in-plane motion effects using rigid body alignment of the image frames 
 #' 
@@ -62,110 +62,6 @@ RegisterCalExp <-function(calexp, refimg, channel=1, upsamp=2){
 	return(ret)
 }
 
-ShiftVector <- function(vec, amt){
-	#shifts a vector by a specified amount using fft
-	l <- length(vec)
-
-	# indices of fourier coefficients.  Remeber 0 is on the left, then positive numbers then negative
-	#  for example: 0, 1, 2, 3, 4, -5, -4, -3, -2, -1
-	myind <- c(0:(ceiling(l/2)-1),-(floor(l/2)):-1)
-
-	# take the fft, multiply by shift
-	foo <- fft(vec) * complex(real=cos(2*pi*myind*amt/l), im=sin(2*pi*myind*amt/l))
-
-	# return the inverse fft
-	return(Re(fft(foo, inverse=TRUE)/l))
-}
-
-ShiftFFT <- function(img, pars){
-	return(TranslateFFT(RotateFFT(img, pars[3]), pars[1], pars[2]))
-}
-
-#-
-#' INTERNAL
-#' Shifts an image by the given (fractional pixel) amounts
-#' 
-#' @details Uses the shift theorem to shift the given image by transforming to the
-#' Fourier domain.  The shift can be sub-pixel, resulting in Fourier interpolation.
-#' 
-#' @param img the image (matrix) to shift
-#' @param xshift the amount to shift the in x dimension (columns)
-#' @param yshift the amount to shift in the y dimension (rows)
-#' 
-#' @return the shifted image (matrix)
-#-
-TranslateFFT <- function(img, xshift, yshift){
-	# Shifts an image by the specified amounts using FFT
-	img_shiftx <- t(apply(img, 1, ShiftVector, amt=xshift))
-	img_shiftxy <- apply(img_shiftx, 2, ShiftVector, amt=yshift)
-	return(img_shiftxy)
-}
-
-#-
-#' INTERNAL
-#' Rotates an image by the given angle using a sequence of Fourier domain shears as
-#' described in Eddy 1996.
-#' 
-#' @param img the image to rotate
-#' @param theta the angle to rotate the image
-#-
-RotateFFT <- function(img, theta){	
-	# Note that the shearing approach works for rotations less than pi/2.  But rotations
-	# that are multiples of pi/2 can be done exactly by just transposing the matrix.  So
-	# do that first, then use FFT methods for the remaining rotation.
-	
-	#Remove full rotations
-	if(theta>0){
-		theta = theta %% (2*pi)
-	}else{
-		theta = -1*(-theta %% (2*pi))
-	}
-	
-	# Remove half rotations
-	if(theta >= pi){
-		theta = theta-pi
-		img = img[nrow(img):1,ncol(img):1]
-	}
-	if(theta <= (-pi)){
-		theta = theta+pi
-		img = img[nrow(img):1,ncol(img):1]
-	}
-	
-	# Remove quarter rotations
-	if(theta >= pi/2){
-		theta = theta - pi/2
-		img = t(img)[1:nrow(img), ncol(img):1]
-	}
-	if(theta <= -pi/2){
-		theta = theta + pi/2
-		img = t(img)[nrow(img):1, 1:ncol(img)]
-	}
-	
-	# Shear to rotate the rest of the way
-	
-	ShearRow <- function(row, img, shvec){
-		return(ShiftVector(img[row,], shvec[row]))
-	}
-	theta = -1*theta
-	# Shear 1 - rows by -tan(theta/2)
-	nr <- nrow(img)
-	rsec = 1:nr - (nr+1)/2
-	shvec <- rsec * (-1*tan(theta/2))
-	img <- t(sapply(1:nr, ShearRow, img=img, shvec=shvec))
-	
-	# Shear 2 - cols by sin(theta)
-	nc <- ncol(img)
-	csec <- 1:nc - (nc+1)/2
-	shvec <- csec * sin(theta) 
-	img <- sapply(1:nc, ShearRow, img=t(img), shvec=shvec)
-	
-	# Shear 3 - rows by -tan(theta/2)	
-	shvec <- rsec * -1*tan(theta/2)
-	img <- t(sapply(1:nr, ShearRow, img=img, shvec=shvec))
-
-	return(img)
-}
-
 
 #-
 #' INTERNAL
@@ -178,20 +74,29 @@ RotateFFT <- function(img, theta){
 #' @param error the error function to use. Can be "mse" for mean squared error or "mae" for mean absolute error
 #' @param optimtype the optimization method to be given to optim()
 #' @param startval a length 3 vector giving the inital values for the optimization
+#' 
+#' @return a vector of length 3 giving the translation and rotation estimates
 #-
 OptimShift <- function(img1, img2, taper=TRUE, error="mse", optimtype="Nelder-Mead", startval=c(0,0,0)){
 	if(taper){
-		img1 = EmbedAndTaperImage(img1-mean(img1), min(dim(img1))/4, 20)
-		img2 = EmbedAndTaperImage(img2-mean(img2), min(dim(img2))/4, 20)
+		img1 <- EmbedAndTaperImage(img1-mean(img1), min(dim(img1))/4, 20)
+		img2 <- EmbedAndTaperImage(img2-mean(img2), min(dim(img2))/4, 20)
+	}else{
+		img1 <- EmbedImage(img1-mean(img1), 20)
+		img2 <- EmbedImage(img2-mean(img2), 20)
 	}
 	
 	optimf <- function(pars){
+		img2.corrected <- RotateFFT(TranslateFFT(img2, pars[1], pars[2]), pars[3])
 		if(error=="mse"){
-			return(sum((RotateFFT(TranslateFFT(img2, pars[1], pars[2]), pars[3]) - img1)^2))
-		}else if(error=="ccor"){
-			return
+			return(sum((img2.corrected - img1)^2))
+		}else if(error=="cor"){
+			return(-1*cor(as.vector(img2.corrected), as.vector(img1)))
+		}else if(error=="mae"){
+			return(sum(abs(img2.corrected - img1)))
 		}else{
-			return(sum(abs(RotateFFT(TranslateFFT(img2, pars[1], pars[2]), pars[3]) - img1)))
+			print("Error: invalid error function specified.")
+			return(NA)
 		}
 	}
 
@@ -199,18 +104,39 @@ OptimShift <- function(img1, img2, taper=TRUE, error="mse", optimtype="Nelder-Me
 	return(offset)
 }
 
+#-
+#' Uses optimization of an objective function to compute the best alignment translation
+#' between two images
+#' 
+#' @param img1 the reference image
+#' @param img2 the image to align
+#' @param taper should the images be tapered before the rotation is computed (hanning window)
+#' @param error objective function to be used - "mse" mean squared error, "mae" mean absolute error, "cor" correlation
+#' @param optimtype the optimization method to use, as given to optim()
+#' 
+#' @return a real valued vector of length 2, giving estimates of x and y translation
+#-
 OptimTranslate <- function(img1, img2, taper=TRUE, error="mse", optimtype="SANN"){
 
 	if(taper){
 		img1 = EmbedAndTaperImage(img1-mean(img1), min(dim(img1))/4, 20)
 		img2 = EmbedAndTaperImage(img2-mean(img2), min(dim(img2))/4, 20)
+	}else{
+		img1 <- EmbedImage(img1-mean(img1), 20)
+		img2 <- EmbedImage(img2-mean(img2), 20)
 	}
 	
 	optimf <- function(pars){
+		img2.corrected <- TranslateFFT(img2, pars[1], pars[2])
 		if(error=="mse"){
-			return(sum((TranslateFFT(img2, pars[1], pars[2]) - img1)^2))
+			return(sum((img2.corrected - img1)^2))
+		}else if(error=="cor"){
+			return(-1*cor(as.vector(img2.corrected), as.vector(img1)))
+		}else if(error=="mae"){
+			return(sum(abs(img2.corrected - img1)))
 		}else{
-			return(sum(abs(TranslateFFT(img2, pars[1], pars[2]) - img1)))
+			print("Error: invalid error function specified.")
+			return(NA)
 		}
 	}
 
@@ -218,45 +144,44 @@ OptimTranslate <- function(img1, img2, taper=TRUE, error="mse", optimtype="SANN"
 	return(offset)
 }
 
-
+#-
+#' Uses optimization of an objective function to compute the best alignment rotation
+#' between two images
+#' 
+#' @param img1 the reference image
+#' @param img2 the image to align
+#' @param taper should the images be tapered before the rotation is computed (hanning window)
+#' @param error objective function to be used - "mse" mean squared error, "mae" mean absolute error, "cor" correlation
+#' @param searchrange the range of rotations to search over in the optimization
+#' 
+#' @return a real valued estimate of the optimal alignment rotation
+#-
 OptimRotate <- function(img1, img2, taper=TRUE, error="mse", searchrange=c(-0.1, 0.1)){
 	if(taper){
 		img1 = EmbedAndTaperImage(img1-mean(img1), min(dim(img1))/4, 20)
 		img2 = EmbedAndTaperImage(img2-mean(img2), min(dim(img2))/4, 20)
+	}else{
+		img1 <- EmbedImage(img1-mean(img1), 20)
+		img2 <- EmbedImage(img2-mean(img2), 20)
 	}
 
 	optimf <- function(theta){
+		img2.corrected <- RotateFFT(img2, theta)
 		if(error=="mse"){
-			return(sum((RotateFFT(img2, theta) - img1)^2))
+			return(sum((img2.corrected - img1)^2))
+		}else if(error=="cor"){
+			return(-1*cor(as.vector(img2.corrected), as.vector(img1)))
+		}else if(error=="mae"){
+			return(sum(abs(img2.corrected - img1)))
 		}else{
-			return(sum(abs(RotateFFT(img2, theta) - img1)))
+			print("Error: invalid error function specified.")
+			return(NA)
 		}
 	}
 	
 	offset <- optimize(optimf, searchrange)$minimum
 	return(offset)
 }
-
-# embeds image with 'borderamt' pixels of 0 value around the end, and tapers using a z
-# Hanning windowing function on the 'taperamt' edge pixels of the data
-EmbedAndTaperImage <- function(img, taperamt, borderamt){
-	trow <- 0.5 * (1 - cos((2*pi*1:(taperamt*2))/((taperamt*2)-1)))
-	tcol <- 0.5 * (1 - cos((2*pi*1:(taperamt*2))/((taperamt*2)-1)))
-	
-	trow <- c(rep(0, borderamt), trow[1:taperamt], rep(1, ncol(img)-(taperamt*2)), trow[(taperamt+1):(2*taperamt)], rep(0, borderamt))
-	tcol <- c(rep(0, borderamt), tcol[1:taperamt], rep(1, nrow(img)-(taperamt*2)), tcol[(taperamt+1):(2*taperamt)], rep(0, borderamt))
-	
-	# Make larger matrix
-	bigmat <- matrix(trow, nrow(img)+2*borderamt, ncol(img)+2*borderamt, byrow=T)
-	bigmat <- bigmat*tcol
-	
-	bigmat[(borderamt+1):(borderamt+nrow(img)),(borderamt+1):(borderamt+ncol(img))] <- 
-		bigmat[(borderamt+1):(borderamt+nrow(img)),(borderamt+1):(borderamt+ncol(img))]*img
-
-	return(bigmat)
-
-}
-
 
 #TODO: sometimes max ends up on edge and submat gets messed up - only when registration fails miserably though
 #TODO: gaussian filter (or FFT or something) to lowpass filter first - are high frequencies causing problems??
@@ -290,20 +215,22 @@ FFTPhaseCor <- function(img1, img2, upsamp=1, taper=TRUE, cortaper=TRUE, subpixe
 	}
 	
 	if(taper){
-		img1 = EmbedAndTaperImage(img1-mean(img1), min(dim(img1))/4, 20)
-		img2 = EmbedAndTaperImage(img2-mean(img2), min(dim(img2))/4, 20)
+		img1 = EmbedAndTaperImage(img1, min(dim(img1))/4, 20)
+		img2 = EmbedAndTaperImage(img2, min(dim(img2))/4, 20)
+	}else{
+		img1 <- EmbedImage(img1, 20)
+		img2 <- EmbedImage(img2, 20)
 	}
-		
+	
 	# Calculate the ffts of the images
 	fft1 <- fft(img1)
 	fft2 <- fft(img2)
 
 	# Calculate prod of FFT and conj(FFT)
-	cc <- fft1*Conj(fft2)
-	
+	ccmat <- fft1*Conj(fft2)
 	
 	# Normalize to isolate the phase shift
-	cc <- cc/Mod(cc)
+	ccmat <- ccmat/Mod(ccmat)
 
 
 	# Taper the crosscorrelation matrix cc
@@ -323,7 +250,7 @@ FFTPhaseCor <- function(img1, img2, upsamp=1, taper=TRUE, cortaper=TRUE, subpixe
 	ccup <- ReorderFFT(Re(fft(ccup, inverse=T)))
 	# Find maximum
 	trans <- arrayInd(which.max(ccup), dim(ccup))
-	
+
 	if(subpixel=="gauss" || subpixel=="poc"){
 	
 		#create sub-matrix around peak
@@ -386,63 +313,4 @@ FFTPhaseCor <- function(img1, img2, upsamp=1, taper=TRUE, cortaper=TRUE, subpixe
 
 }
 
-
-#-
-#' INTERNAL
-#' Reorders the matrix returned by fft 
-#' 
-#' @details Reorders the matrix returned by the R function fft.  The R function returns
-#' the coefficients from low-to-high-to-low frequencies in both dimensions.  The reordering
-#' puts the low frequencies in the center of the matrix so that the coefficients go
-#' from high-to-low-to-high in each dimension
-#' 
-#' @param mat a matrix of values to reorder
-#' @param inverse if true, takes reordered matrix and returns to order expected by fft.
-#' if false, takes matrix from fft and reorders it
-#' 
-#' @return the reordered matrix
-#-
-ReorderFFT <- function(mat, inverse=F){
-	# Reorders matrix from fft to the logical order
-	# if inverse=T, takes intuitive matrix and reorders for fft
-	
-	if(inverse){
-		x <- floor(ncol(mat)/2)+1
-		y <- floor(nrow(mat)/2)+1
-		return(RotateImg(mat, x, y))		
-	}else{
-		x <- ceiling(ncol(mat)/2)-1
-		y <- ceiling(nrow(mat)/2)-1
-		return(RotateImg(mat, x, y))
-	}
-}
-
-#-
-#' INTERNAL
-#' Rotates an image by a given number of integer rows and columns
-#' 
-#' @param mat the matrix to rotate
-#' @param x the number of columns to rotate
-#' @param y the number of rows to rotate
-#' 
-#' @return the rotated matrix
-#-
-RotateImg <- function(mat, x, y){
-	nr <- nrow(mat)
-	nc <- ncol(mat)
-	ret <- matrix(0, nr, nc)
-	if(y>0){
-		ret[(y+1):nr,] <- mat[1:(nr-y), ]
-		ret[1:y,] <- mat[(nr-y+1):nr,]
-	}else{
-		ret <- mat
-	}
-	if(x>0){
-		mat[,(x+1):nc] <- ret[,1:(nc-x)]
-		mat[,1:x] <- ret[,(nc-x+1):nc]
-	}else{
-		mat <- ret
-	}
-	return(mat)
-}
 
