@@ -72,36 +72,57 @@ RegisterCalExp <-function(calexp, refimg, channel=1, upsamp=2){
 #' @param img2 the image to align
 #' @param taper boolean, should the images be tapered before aligning
 #' @param error the error function to use. Can be "mse" for mean squared error or "mae" for mean absolute error
-#' @param optimtype the optimization method to be given to optim()
 #' @param startval a length 3 vector giving the inital values for the optimization
+#' @param pocstart should the POC method be used to initialize the start values
 #' 
 #' @return a vector of length 3 giving the translation and rotation estimates
 #-
-OptimShift <- function(img1, img2, taper=TRUE, error="mse", optimtype="Nelder-Mead", startval=c(0,0,0)){
-	if(taper){
-		img1 <- EmbedAndTaperImage(img1-mean(img1), min(dim(img1))/4, 20)
-		img2 <- EmbedAndTaperImage(img2-mean(img2), min(dim(img2))/4, 20)
-	}else{
-		img1 <- EmbedImage(img1-mean(img1), 20)
-		img2 <- EmbedImage(img2-mean(img2), 20)
+OptimShift <- function(img1, img2, taper=TRUE, error="mse", startval=c(0.1,0.1,0), 
+					pocstart=TRUE){
+	if(pocstart){
+		startval[1:2] <- FFTPhaseCor(img1, img2, upsamp=3, subpixel="poc", taper=taper, cortaper=taper)
 	}
 	
-	optimf <- function(pars){
-		img2.corrected <- RotateFFT(TranslateFFT(img2, pars[1], pars[2]), pars[3])
-		if(error=="mse"){
-			return(sum((img2.corrected - img1)^2))
-		}else if(error=="cor"){
-			return(-1*cor(as.vector(img2.corrected), as.vector(img1)))
-		}else if(error=="mae"){
-			return(sum(abs(img2.corrected - img1)))
-		}else{
-			print("Error: invalid error function specified.")
-			return(NA)
-		}
+	bigsize <- c(2^(ceiling(log(nrow(img1)+1,2))), 2^(ceiling(log(ncol(img1)+1, 2))))
+	if(taper){
+		img1 <- EmbedAndTaperImage(img1-mean(img1), min(dim(img1))/4, size=bigsize)
+		img2 <- EmbedAndTaperImage(img2-mean(img2), min(dim(img2))/4, size=bigsize)
+	}else{
+		img1 <- EmbedImage(img1-mean(img1), size=bigsize)
+		img2 <- EmbedImage(img2-mean(img2), size=bigsize)
 	}
+	
+	optimf <- function(x, index, fmsfundata){
+		
+		img2.corrected <- ShiftFFT(fmsfundata$img2, x)
+		if(fmsfundata$error=="mse"){
+			ret <- (mean((img2.corrected - fmsfundata$img1)^2))
+		}else if(fmsfundata$error=="cor"){
+			ret <- (-1*cor(as.vector(img2.corrected), as.vector(fmsfundata$img1)))
+		}else{
+			ret <- (mean(abs(img2.corrected - fmsfundata$img1)))
+		}
+		
+		return(list(f = ret, index = index, this = list(costfargument = fmsfundata)))
+	}
+	fmsfundata <- list(img1=img1, img2=img2, error=error)
+	attr(fmsfundata, "type") <- "T_FARGS"
+	nm <- neldermead.new()
+	nm <- neldermead.configure(nm, "-numberofvariables", 3)
+	nm <- neldermead.configure(nm, "-function", optimf)
+	nm <- neldermead.configure(nm, "-x0", transpose(startval))
+	nm <- neldermead.configure(nm, "-costfargument", fmsfundata)
+	nm <- neldermead.configure(nm, "-method", 'variable')
+	nm <- neldermead.configure(nm, "-maxiter", 50)
+	nm <- neldermead.configure(nm, "-tolxmethod", TRUE)
+	nm <- neldermead.configure(nm, "-tolxabsolute", 0.001)
+	nm <- neldermead.search(nm)
+	return(as.vector(neldermead.get(nm, "-xopt")))
 
-	offset <- optim(startval, optimf, method=optimtype)$par[1:3]
-	return(offset)
+
+	#return(optim(startval, optimf, method=optimtype, control=list("maxit"=2)))
+#	offset <- $par[1:3]
+#	return(offset)
 }
 
 #-
@@ -116,7 +137,7 @@ OptimShift <- function(img1, img2, taper=TRUE, error="mse", optimtype="Nelder-Me
 #' 
 #' @return a real valued vector of length 2, giving estimates of x and y translation
 #-
-OptimTranslate <- function(img1, img2, taper=TRUE, error="mse", optimtype="SANN"){
+OptimTranslate <- function(img1, img2, taper=TRUE, error="mse", optimtype="Nelder-Mead"){
 
 	if(taper){
 		img1 = EmbedAndTaperImage(img1-mean(img1), min(dim(img1))/4, 20)
@@ -206,7 +227,7 @@ OptimRotate <- function(img1, img2, taper=TRUE, error="mse", searchrange=c(-0.1,
 #' @return a vector of length 2 giving the magnitude of the estimted x and y shift
 #' returns NA in the case of improper input
 #-
-FFTPhaseCor <- function(img1, img2, upsamp=1, taper=TRUE, cortaper=TRUE, subpixel="none", subrad=3){
+FFTPhaseCor <- function(img1, img2, upsamp=2, taper=TRUE, cortaper=TRUE, subpixel="gauss", subrad=3){
 	
 	# check that img1 and img2 are the same dimensions
 	if(any(dim(img1) != dim(img2))){
