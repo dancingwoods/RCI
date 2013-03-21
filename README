@@ -1,6 +1,6 @@
 RCI is an R package that I am working on as part of my thesis.  
 
-It is R code to perform various analysis tasks on calcium imaging data.  
+It contains R code to perform various analysis tasks on calcium imaging data.  
 
-It is not currently finished to a point that it is usable by others, but should be in a few months.
+It is not currently finished to a point that it is distributed through CRAN, but should be in a few months.
 At that point, the R package will be released along with documentation (and tutorials?)
