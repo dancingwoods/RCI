@@ -1,9 +1,24 @@
-
-# Requires a kernel of the same size as the image
-# Zero padding allows for non-circular convolution
-ConvolveImage <- function(image, kernel){
-	
-}
+# Bronwyn Woods                                               
+# 2013                                                         
+#                                                              
+# Summary: Functions to perform image processing tasks                           
+# 
+# License information
+# This file is part of the R package RCI.
+# 
+# RCI is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# RCI is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with RCI.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
 
 #-
 #' Embeds an image matrix in a larger matrix with a border of 0's
@@ -14,19 +29,23 @@ ConvolveImage <- function(image, kernel){
 #' 
 #' @return a matrix of size (nrow+2*border) by (ncol+ 2*border)
 #' 
+#' @details uses the size argument if given, else uses the border argument, else returns the original image
+#' 
 #' @export
 #-
 EmbedImage <- function(image, border=NULL, size=NULL){
-	if(!is.null(border)){
-		ret <- matrix(0, nrow(image)+2*border, ncol(image)+2*border)
-		ret[(border+1):(border+nrow(image)), (border+1):(border+nrow(image))] <- image
-	}
 	if(!is.null(size)){
 		ret <- matrix(0, size[1], size[2])
 		rb <- floor((size[1]-nrow(image))/2)
 		cb <- floor((size[2]-ncol(image))/2)
 		ret[(rb+1):(rb+nrow(image)), (cb+1):(cb+ncol(image))] <- image
+	}else if(!is.null(border)){
+		ret <- matrix(0, nrow(image)+2*border, ncol(image)+2*border)
+		ret[(border+1):(border+nrow(image)), (border+1):(border+nrow(image))] <- image
+	}else{
+		ret <- image
 	}
+	
 	return(ret)
 }
 
@@ -35,23 +54,27 @@ EmbedImage <- function(image, border=NULL, size=NULL){
 #' 
 #' @param image the image matrix to clip
 #' @param border the size of the border to clip.  Must be less than half the image size
+#' @param size the resulting size of the image.
 #' 
 #' @return a matrix with the center (nrow-2*border) by (ncol-2*border) pixels of the image
+#' 
+#' @details uses the size argument if given, else uses the border argument, else returns the original image
 #' 
 #' @export
 #-
 ClipImage <- function(image, border=NULL, size=NULL){
-	if(!is.null(border)){
-		nr <- nrow(image)-2*border
-		nc <- ncol(image)-2*border
-		rb <- border
-		cb <- border
-	}
 	if(!is.null(size)){
 		nr <- size[1]
 		nc <- size[2]
 		rb <- floor((nrow(image)-nr)/2)
 		cb <- floor((ncol(image)-nc)/2)
+	}else if(!is.null(border)){
+		nr <- nrow(image)-2*border
+		nc <- ncol(image)-2*border
+		rb <- border
+		cb <- border
+	}else{
+		return(image)
 	}
 	return(image[(rb+1):(rb+nr), (cb+1):(cb+nc)])
 }
@@ -61,29 +84,42 @@ ClipImage <- function(image, border=NULL, size=NULL){
 #' 
 #' @param img the image to embed and taper
 #' @param taperamt the width of the taper on the edges of the image.  Must be less than or equal to half the image width
-#' @param borderamt the width of the border of 0's to add
+#' @param border the width of the border of 0's to add
+#' 
+#' @return an image that has been embedded and tapered
+#' 
+#' @details uses size if given, else uses border, else doesn't embed
 #' 
 #' @export
 #-
-EmbedAndTaperImage <- function(img, taperamt, borderamt=NULL, size=NULL){
+EmbedAndTaperImage <- function(img, taperamt, size=NULL, border=NULL){
 	trow <- 0.5 * (1 - cos((2*pi*1:(taperamt*2))/((taperamt*2)-1)))
 	tcol <- 0.5 * (1 - cos((2*pi*1:(taperamt*2))/((taperamt*2)-1)))
 	rb <- 0
 	cb <- 0
-	if(!is.null(borderamt)){
-		rb <- borderamt
-		cb <- borderamt
+	if(!is.null(border)){
+		rb <- border
+		cb <- border
 	}
 	if(!is.null(size)){
 		rb <- floor((size[1]-nrow(img))/2)
 		cb <- floor((size[2]-ncol(img))/2)
 	}
-	
-	trow <- c(rep(0, rb), trow[1:taperamt], rep(1, ncol(img)-(taperamt*2)), 
-				trow[(taperamt+1):(2*taperamt)], rep(0, rb))
-	tcol <- c(rep(0, cb), tcol[1:taperamt], rep(1, nrow(img)-(taperamt*2)), 
-				tcol[(taperamt+1):(2*taperamt)], rep(0, cb))
-	
+	if(rb>0){
+		rbr <- rep(0,rb)
+	}else{
+		rbr <- c()
+	}
+	if(cb>0){
+		cbr <- rep(0,cb)
+	}else{
+		cbr <- c()
+	}
+	trow <- c(rbr, trow[1:taperamt], rep(1, ncol(img)-(taperamt*2)), 
+				trow[(taperamt+1):(2*taperamt)], rbr)
+	tcol <- c(cbr, tcol[1:taperamt], rep(1, nrow(img)-(taperamt*2)), 
+				tcol[(taperamt+1):(2*taperamt)], cbr)
+
 	# Make larger matrix
 	ret <- matrix(trow, length(tcol), length(trow), byrow=T)
 	ret <- ret*tcol
@@ -101,7 +137,7 @@ EmbedAndTaperImage <- function(img, taperamt, borderamt=NULL, size=NULL){
 #' 
 #' @param img the image to rotate
 #' @param theta the angle to rotate the image
-#' @param domain is the image given in the image or Fourier domain?  It will be returned
+#' @param fdomain is the image given already in the Fourier domain?  It will be returned
 #' in the same domain as given (passing in the Fourier domain is helpful to reduce 
 #' superfluous transforms if performing additional operations in the Fourier domain).
 #' 
@@ -204,7 +240,7 @@ RotateFFT <- function(img, theta, fdomain=FALSE){
 #' @param img the image (matrix) to shift
 #' @param xshift the amount to shift the in x dimension (columns)
 #' @param yshift the amount to shift in the y dimension (rows)
-#' @param domain is the image given in the image or Fourier domain?  It will be returned
+#' @param fdomain is the image given in the Fourier domain?  It will be returned
 #' in the same domain as given (passing in the Fourier domain is helpful to reduce 
 #' superfluous transforms if performing additional operations in the Fourier domain). 
 #' 
@@ -233,6 +269,10 @@ TranslateFFT <- function(img, xshift, yshift, fdomain=FALSE){
 #' 
 #' @param img the image to shift
 #' @param pars a length-3 vector giving (x-translation, y-translation, rotation angle)
+#' @param fdomain is the image given in the Fourier domain?  It will be returned
+#' in the same domain as given (passing in the Fourier domain is helpful to reduce 
+#' superfluous transforms if performing additional operations in the Fourier domain).
+#' @param rotatefirst should rotation be performed before translation
 #' 
 #' @return the shifted image
 #' 
@@ -264,8 +304,8 @@ ShiftFFT <- function(img, pars, fdomain=FALSE, rotatefirst=FALSE){
 
 #-
 #' INTERNAL
-#' Shifts a vector by the specified amount using FFT,
-#' but assuming the transform has already been performed.
+#' Shifts a vector by the specified amount using FFT phase shift,
+#' but assuming the Fourier transform has already been performed.
 #' 
 #' @param vec the vector to shift
 #' @param amt the amount to shift

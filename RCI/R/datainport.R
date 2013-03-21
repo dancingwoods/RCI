@@ -1,19 +1,34 @@
-################################################################
-# Bronwyn Woods                                                #
-# 2013                                                         #
-#                                                              #
-# Functions to inport data, and also for basic manipulation    #
-# of data that isn't specific to some task.                    #
-#                                                              #
-################################################################
+# Bronwyn Woods                                               
+# 2013                                                         
+#                                                              
+# Summary: Functions to read in data                                    
+# 
+# License information
+# This file is part of the R package RCI.
+# 
+# RCI is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# RCI is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with RCI.  If not, see <http://www.gnu.org/licenses/>.
+# 
+###############################################################################
+
 
 #-
 #' Convert a folder of text images to a calexp data object 
 #'
-#' @details This function Converts a directory of csv text files into a calexp data object in R. 
-#' Assumes that the images are individual csv text files and that they are alphabetically 
+#' @details This function Converts a directory of text files into a calexp data object in R. 
+#' Assumes that the images are individual text files and that they are alphabetically 
 #' in order by channel and then by time index.  The directory must contain only 
-#' these csv image files. Each image must have the same dimensions, and there must
+#' these image files. Each image must have the same dimensions, and there must
 #' be the same number of images for each channel.
 #'
 #' @param name a short name to identify this experiment
@@ -24,7 +39,7 @@
 #'  \item{data}{an array containing the image data, with dimensions nchans-nrows-ncols}
 #' @export
 #-
-CreateCalExpFromCSV <- function(name, imgdir, nchans=2){
+CreateCalExpFromText <- function(name, imgdir, nchans=2){
 	
 	file.list <- list.files(path=imgdir)
 	nframes <- length(file.list)/nchans
@@ -64,24 +79,4 @@ ImageToCoordMat <- function(img){
 	return(cbind(col1, col2, col3))
 }
 
-#-
-#' INTERNAL
-#' Filters a vector by frequency using a butterworth filter
-#' 
-#' @param vec the vector to filter
-#' @param low the lower value of the filter
-#' @param high the higher value of the filter
-#' @param order the order of the butterworth filter
-#' @param dt the time (in seconds) of one datapoint.  1/frequency in hz
-#' @param type the type of filter, defaults to "BP" bandpass filter.
-#' Can also choose other filters offered by the butfilt function
-#' 
-#' @return the filtered vector
-#-
-FilterVector <- function(vec, low, high, order=8, dt = 1/1000, type="BP"){
-	# Filters a vector using forward-backward butterworth filter
-	vec <- butfilt(vec, fl=low, fh=high, npoles=order, type=type, deltat=dt)
-	vec <- rev(butfilt(rev(vec), fl=low, fh=high, npoles=order, type=type, deltat=dt))
-	return(vec)
-}
 

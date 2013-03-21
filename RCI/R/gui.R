@@ -1,9 +1,41 @@
-#############################################################
-# Bronwyn Woods                                             #
-# 2013                                                      #
-#                                                           #
-# Functions to handle the gui interface to this analysis.   #
-#############################################################
+# Bronwyn Woods                                               
+# 2013                                                         
+#                                                              
+# Summary: GUI for segmentation.                                                
+# 
+# License information
+# This file is part of the R package RCI.
+# 
+# RCI is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# RCI is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with RCI.  If not, see <http://www.gnu.org/licenses/>.
+# 
+###############################################################################
+
+
+#Should replace this
+# TODO - doesn't get variable from parent environment... I think...
+deq<-function(db, string){
+	foo = unlist(strsplit(string, "$", fixed=T))
+	l = length(foo)
+	if(l>=2){
+		for(i in seq(2, l, 2)){
+			foo[i]=get(foo[i])
+		}
+	}
+	return(dbGetQuery(db, paste(foo, collapse="")))
+}
+
+
 
 ##################################################################
 # Managing data structures to hold information about experiments #
@@ -478,7 +510,7 @@ ViewCI <- function(dbController=NULL){
 		# Experiment name
 		curExp$name <<- svalue(exptable) 
 		# The connection to this experiment's database
-		db <- conMaskDb(paste(dbController$db.directory, "/", curExp$name, ".sqlite", sep="")) 
+		db <- dbConnect(dbDriver("SQLite"), dbname=paste(dbController$db.directory, "/", curExp$name, ".sqlite", sep="")) 
 		curExp$db <<- db
 		# Total number of candidate masks in the database
 		curExp$nmasks <<- nrow(deq(db, "select id from masks"))

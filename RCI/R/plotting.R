@@ -1,11 +1,25 @@
-################################################################
-# Bronwyn Woods                                                #
-# 2013                                                         #
-#                                                              #
-# Functions for plotting things.                               #
-#                                                              #
-################################################################
-
+# Bronwyn Woods                                               
+# 2013                                                         
+#                                                              
+# Summary: Specialized plotting for RCI                                                
+# 
+# License information
+# This file is part of the R package RCI.
+# 
+# RCI is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# RCI is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with RCI.  If not, see <http://www.gnu.org/licenses/>.
+# 
+###############################################################################
 
 #-
 #' Plots an image of the given matrix with the origin in the upper left
@@ -50,3 +64,63 @@ AddMask <- function(mask, rgb=runif(3), alpha=0.5, ...){
 	b = rgb[3]
 	image(t(mask[n:1,]), col=rgb(r,g,b,alpha=alpha), add=T, ...)
 }
+
+AddMaskSet <- function(mask, alpha=0.5, ...){
+	mask[which(mask==0)]=NA
+	uids <- unique(as.vector(mask))
+	uids = uids[which(!is.na(uids))]
+	nids <- length(uids)
+	cvec = rgb(runif(nids), runif(nids), runif(nids), alpha=alpha)	
+	n = nrow(mask)
+	for(i in 1:nids){
+		submask = mask
+		submask[which(submask!=uids[i])]=NA
+		image(t(submask[n:1,]), col=cvec[i], add=T, ...)
+	}
+}
+
+
+plot.MTSpectrum <- function(spect, maglog=TRUE, minfreq=0, maxfreq=NULL,...){
+	mini <- min(which(spect$freq>=minfreq))
+	if(is.null(maxfreq)){
+		maxi <- length(spect$freq)
+	}else{
+		maxi <- max(which(spect$freq<=maxfreq))
+	}
+	
+	d = spect$spec[mini:maxi]
+	if(maglog){
+		d = log(d)
+	}
+	
+	plot(spect$freq[mini:maxi], d, type="l", ...)
+}
+
+plot.PeriodSpectrum <- function(spect, maglog=TRUE, minfreq=0, maxfreq=NULL, ...){
+	if(maglog){
+		ylab <- "Log Magnitude"
+		data <- log(Mod(spect$data))
+	}else{
+		ylab <- "Magnitude"
+		data <- Mod(spect$data)
+	}
+	
+	mini <- min(which(spect$freqlabs>=minfreq))
+	if(is.null(maxfreq)){
+		maxi <- length(spect$freqlabs)
+	}else{
+		maxi <- max(which(spect$freqlabs<=maxfreq))
+	}
+		
+	plot(spect$freqlabs[mini:maxi], data[mini:maxi], type="l", xlab="Frequency (Hz)", ylab=ylab)
+}
+
+
+
+
+
+
+
+
+
+
