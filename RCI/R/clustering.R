@@ -1,3 +1,24 @@
+# Bronwyn Woods                                               
+# 2013                                                         
+#                                                              
+# Summary: Functions to perform clustering of cells                           
+# 
+# License information
+# This file is part of the R package RCI.
+# 
+# RCI is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# RCI is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with RCI.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
 
 
 #-
@@ -18,7 +39,15 @@ ClusterCells <- function(calexp, mask, k, criteria="cor", freq=c(0.78,0.81), dt=
 		cmat <- cor(ser)
 		clust <- pam(1-cmat, k, diss=T)
 	}else if(criteria=="phase"){
-		serf <- apply(ser, FilterVector, 1, low=freq[1], high=freq[2], dt=dt)
+		serf <- apply(ser, 2, GetPhase, low=freq[1], high=freq[2], dt=dt)
+		PhaseDif=function(i, vec){
+			ret <- vec - vec[i]
+			w <- which(ret > pi)
+			ret[w] <- 2*pi - ret[w]
+			return(abs(ret))
+		}
+		dmat <- sapply(1:length(serf), PhaseDif, vec=serf)
+		clust <- pam(dmat, k, diss=T)
 	}
 
 	clmask <- matrix(NA, nrow(mask), ncol(mask))
@@ -39,7 +68,20 @@ ClusterCells <- function(calexp, mask, k, criteria="cor", freq=c(0.78,0.81), dt=
 #' @param clusters the cluster object as returned from ClusterCells
 #-
 ClusterCorrelation <- function(calexp, clusters){
-	clmeans <- matrix()
+	clmeans <- matrix(dim(calexp$data)[2], nrow(clusters$clusinfo))
+	for(i in 1:nrow(clust$clusinfo)){
+		wid <- as.integer(names(which(clust$clustering == i)))
+		clmask <- matrix(NA, nrow(mask), ncol(mask))
+		for(id in wid){
+			clmask[which(mask==id)]=i
+		}
+		clmeans[,i] = GetSeries(calexp, clmask)
+	}
+	
+	CorPixel <- function(pxl, meanser){
+		
+	}
+	
 }
 
 

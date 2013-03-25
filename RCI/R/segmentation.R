@@ -22,6 +22,232 @@
 ###############################################################################
 
 
+
+##########################################
+## SQLite databases for mask management ##
+##########################################
+
+#-
+#' Connects to an experiment's mask database
+#' 
+#' @param path the path to the SQLite database to connect to
+#' 
+#' @return a connection object as returned by dbConnect in the DBI package
+#' 
+#' @export
+#-
+ConMaskDb <- function(path){
+	db <- dbConnect(dbDriver("SQLite"), dbname=path)
+	ret = list("db"=db )
+	class(ret) <- "MaskDb"
+	return(ret)
+}
+
+#-
+#' INTERNAL
+#' Creates an empty mask database with the appropriate tables
+#' 
+#' @param db the database object for which to create the mask tables
+#' 
+#' @return NULL
+#-
+MaskDbSetup <- function(db){
+	# 
+	# TABLE: masks - constrained to be unique on mask
+	#  id - primary key int
+	#  mask - sparse representation of the mask (index of 1 pixels)
+	#  label - integer, hand label.  0/NA=none, 1=cell, 2=not cell
+	#  segementation - output of segmenter, 0/NA=not run, 1=cell, 2=not cell
+	# 
+	# TABLE: experiment
+	#  tag - text, shorthand name of experiment (ie 't782')
+	#  desc - text, description of experiment in long form giving parameters
+	#  nx - int, x dimension of images
+	#  ny - int, y dimension of images
+	#  nt - int number of images
+	#  nc - int number of channels
+	#  dt - 1/sampling rate of experiment
+	#  filename - text filename of actual data for this experiment
+	# 
+	# TABLE: features
+	#  id - primary key int
+	#  tag - text short name for feature
+	#  desc - long form description of feature
+	# 
+	# TABLE: feats_masks (linking table between masks and features)
+	#   id - primary key int
+	#   maskid - primary key of mask
+	#   featureid - primary key of feature
+	#   fvalue - real value of the feature for this mask
+	# 
+	# TABLE: edges (has entry for masks which overlap and therefore can't both be 1)
+	#   id - primary key int
+	#   maskid1 - id of first mask
+	#   maskid2 - id of second mask
+	
+
+	dbGetQuery(db$db, "CREATE TABLE masks (id INTEGER PRIMARY KEY, mask TEXT NOT NULL, label INTEGER, segmentation INTEGER, UNIQUE(mask))")
+	dbGetQuery(db$db, "CREATE TABLE experiment (tag TEXT NOT NULL, desc TEXT, nx INTEGER NOT NULL, ny INTEGER NOT NULL, nt INTEGER,nc INTEGER, dt REAL, filename TEXT, UNIQUE(tag))")
+	dbGetQuery(db$db, "CREATE TABLE features (id INTEGER PRIMARY KEY, tag TEXT NOT NULL, description TEXT, UNIQUE(tag))")
+	dbGetQuery(db$db, "CREATE TABLE feats_masks (id INTEGER PRIMARY KEY, maskid INTEGER NOT NULL, featureid INTEGER NOT NULL, fvalue REAL NOT NULL, UNIQUE(maskid, featureid))")
+	dbGetQuery(db$db, "CREATE TABLE edges (id INTEGER PRIMARY KEY, maskid1 INTEGER NOT NULL, maskid2 INTEGER NOT NULL)")
+}
+
+summary.MaskDb <- function(db){
+	nmasks <- as.integer(dbGetQuery(db$db, "SELECT count(*) from masks"))
+	features <- dbGetQuery(db$db, "SELECT tag, description FROM features")
+	cat("Experiment ", dbGetQuery(db$db, "SELECT tag FROM experiment")[[1]], " \n\n")
+	cat("There are ", nmasks, "masks in the database.\n\n")
+	cat("The features are:\n")
+	if(nrow(features)==0){
+		cat("(no features yet)\n")
+	}else{
+		for(i in 1:nrow(features)){
+			cat(features[i,], "\n")
+		}
+	}
+}
+
+#######################################################################
+############### Functions to set up and add to a database #############
+#######################################################################
+
+#-
+#' INTERNAL
+#' Adds the overlap edges to a mask database
+#' 
+#' @param db the mask database object
+#' @param cmat a matrix of 0/1 values giving the locations of edges between masks
+#' @param ids a vector giving the ids of the masks in cmat (in order)
+#' 
+#' @return NULL
+#-
+AddConMat <- function(db, cmat, ids){
+	# Make data.frame of connections to add
+	cons <- arrayInd(which(cmat), dim(cmat))
+	cons <- cons[which(cons[,1]>cons[,2]),]
+	cons[,1] <- ids[cons[,1]]
+	cons[,2] <- ids[cons[,2]]
+	cons <- as.data.frame(cons)
+	names(cons) <- c("maskid1", "maskid2")
+	# Add edges from the data.frame using a prepared query
+	dbBeginTransaction(db)
+	dbGetPreparedQuery(db, "INSERT INTO edges (maskid1, maskid2) VALUES (?,?)", bind.data=cons)
+	dbCommit(db)
+}
+
+
+#-
+#' Generate masks according to the given method and add them to the database
+#' 
+#' @param db the mask database object
+#' @param calexp the calcium experiment data object
+#' @param method what method should be used to generate masks to add
+#-
+AddMasks <- function(db, calexp, method){
+	
+	if(method=="LoG"){
+		# Laplacian of Gaussian mask finding procedure
+		channel <- 2
+		smrange <- c()
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+#####################################################################################
+################ Functions to manipulate masks (extract, get features etc)  #########
+#####################################################################################
+
+#-
+#' Sets the label field for a particular mask in a mask database
+#' 
+#' @param db a database connection
+#' @param id the id of the mask to label
+#' @param label the label to assign to the mask (0=unknown, 1=cell, 2=not cell)
+#' 
+#' @return NULL
+#' 
+#' @export
+#-
+SetMaskLabel <- function(db, id, label){
+	dbGetQuery(db, paste("UPDATE masks SET label=", label, " WHERE id= ", id, sep=""))
+}
+
+#-
+#' Return the requested mask from the specified database
+#' 
+#' @param db a database connection
+#' @param id the id of the mask to return
+#' @param format "sparse" for a sparse mask in vector form, "matrix" for a matrix mask
+#' 
+#' @return either a vector giving the indices of the requested mask or a matrix version of
+#' the mask
+#' 
+#' @export
+#-
+GetMask <- function(db, id, format="sparse"){
+	rawd <- dbGetQuery(db, paste("select mask, expid from masks where id=", id, sep=""))
+	smask <- as.integer(unlist(strsplit(rawd[1,1], split=" ")))
+	expid <- rawd[1,2]
+	if(format=="sparse"){
+		return(smask)
+	}
+	dims <- dbGetQuery(db, paste("select nx, ny from experiment where id= ", expid, sep=""))
+	ret <- matrix(NA, dims[1,1], dims[1,2])
+	ret[smask] <- 1
+	return(ret)
+}
+
+#-
+#' Returns a list of the masks in a database
+#' 
+#' @param db a database connection
+#' 
+#' @return a list of vectors, each vector specifying a mask.  The first element of each mask
+#' vector is the negative index of the mask.  The remaining elements of each vector are the
+#' indices of the mask pixels.
+#' @export
+#-
+GetMasks <- function(db){
+	ret <- dbGetQuery(db, "select id, mask from masks order by id")
+	convertmask <- function(row){
+		return(c(-strtoi(row[1]), as.integer(unlist(strsplit(row[2], split=" ")))))
+	}
+	return(apply(ret, 1, convertmask))
+}
+
+#-
+#' Remove a mask from a mask database
+#' 
+#' @details Removes a mask, as well as any associated features and edges
+#' 
+#' @param db a database connection
+#' @param maskid the ID of the mask to remove
+#' 
+#' @return NULL
+#' @export
+#-
+RemoveMask <- function(db, maskid){
+	dbGetQuery(db, paste("DELETE from masks where id=",maskid, sep=""))
+	dbGetQuery(db, paste("DELETE from feats_masks where maskid=",maskid, sep=""))
+	dbGetQuery(db, paste("DELETE from edges where maskid1=",maskid," or maskid2=", maskid, sep=""))
+}
+
+
+
+##########################################
+## Code to generate masks               ##
+##########################################
+
 #-
 #' INTERNAL
 #' Computes the sliding window histogram equalization of a matrix
@@ -138,179 +364,6 @@ HillClimbC <- function(y,x,img){
 
 	return(ret)
     
-}
-
-
-##########################################
-## SQLite databases for mask management ##
-##########################################
-
-#-
-#' Connects to an experiment's mask database
-#' 
-#' @param path the path to the SQLite database to connect to
-#' 
-#' @return a connection object as returned by dbConnect in the DBI package
-#' 
-#' @export
-#-
-ConMaskDb <- function(path){
-	db <- dbConnect(dbDriver("SQLite"), dbname=path)
-	return(db)
-}
-
-
-#######################################################################
-############### Functions to set up and add to a database #############
-#######################################################################
-
-#-
-#' INTERNAL
-#' Creates an empty mask database with the appropriate tables
-#' 
-#' @param db the database object for which to create the mask tables
-#' 
-#' @return NULL
-#-
-DbSetup <- function(db){
-	# TABLE: masks - constrained to be unique on (mask, expid)
-	#  id - primary key int
-	#  mask - text representation of the mask (sequence of 0 and 1)
-	#  expid - integer what experiment (dataset) does this mask apply to
-	#  label - integer, hand label.  0/NA=none, 1=cell, 2=not cell
-	#  segementation - output of segmenter, 0/NA=not cell, 1=cell
-	# 
-	# TABLE: experiment
-	#  id - primary key int
-	#  tag - text, shorthand name of experiment (ie 't782')
-	#  desc - text, description of experiment in long form giving parameters
-	#  nx - int, x dimension of images
-	#  ny - int y dimension of images
-	#  nt - int number of images
-	#  nc - int number of channels
-	#  filename - text filename of actual data for this experiment
-	#
-	# TABLE: features
-	#  id - primary key int
-	#  tag - text short name for feature
-	#  desc - long form description of feature
-	# 
-	# TABLE: feats_masks (linking table between masks and features)
-	#   id - primary key int
-	#   maskid - primary key of mask
-	#   featureid - primary key of feature
-	#   fvalue - real value of the feature for this mask
-	# 
-
-	dbGetQuery(db, "CREATE TABLE masks (id INTEGER PRIMARY KEY, mask TEXT NOT NULL, label INTEGER, segmentation INTEGER, UNIQUE(mask))")
-	dbGetQuery(db, "CREATE TABLE experiment (id INTEGER PRIMARY KEY, tag TEXT NOT NULL, description TEXT, nx INTEGER NOT NULL, ny INTEGER NOT NULL, nt INTEGER, nc INTEGER, filename TEXT, UNIQUE(tag))")
-	dbGetQuery(db, "CREATE TABLE features (id INTEGER PRIMARY KEY, tag TEXT NOT NULL, description TEXT, UNIQUE(tag))")
-	dbGetQuery(db, "CREATE TABLE feats_masks (id INTEGER PRIMARY KEY, maskid INTEGER NOT NULL,  featureid INTEGER NOT NULL, fvalue REAL NOT NULL, UNIQUE(maskid, featureid))")
-	dbGetQuery(db, "CREATE TABLE edges (id INTEGER PRIMARY KEY, maskid1 INTEGER NOT NULL,  maskid2 INTEGER NOT NULL)")
-}
-
-#-
-#' INTERNAL
-#' Adds the overlap edges to a mask database
-#' 
-#' @param db a database connection object
-#' @param cmat a matrix of 0/1 values giving the locations of edges between masks
-#' @param ids a vector giving the ids of the masks in cmat (in order)
-#' 
-#' @return NULL
-#-
-AddConMat <- function(db, cmat, ids){
-	# Make data.frame of connections to add
-	cons <- arrayInd(which(cmat), dim(cmat))
-	cons <- cons[which(cons[,1]>cons[,2]),]
-	cons[,1] <- ids[cons[,1]]
-	cons[,2] <- ids[cons[,2]]
-	cons <- as.data.frame(cons)
-	names(cons) <- c("maskid1", "maskid2")
-	# Add edges from the data.frame using a prepared query
-	dbBeginTransaction(db)
-	dbGetPreparedQuery(db, "INSERT INTO edges (maskid1, maskid2) VALUES (?,?)", bind.data=cons)
-	dbCommit(db)
-}
-
-
-#####################################################################################
-################ Functions to manipulate masks (extract, get features etc)  #########
-#####################################################################################
-
-#-
-#' Sets the label field for a particular mask in a mask database
-#' 
-#' @param db a database connection
-#' @param id the id of the mask to label
-#' @param label the label to assign to the mask (0=unknown, 1=cell, 2=not cell)
-#' 
-#' @return NULL
-#' 
-#' @export
-#-
-SetMaskLabel <- function(db, id, label){
-	dbGetQuery(db, paste("UPDATE masks SET label=", label, " WHERE id= ", id, sep=""))
-}
-
-#-
-#' Return the requested mask from the specified database
-#' 
-#' @param db a database connection
-#' @param id the id of the mask to return
-#' @param format "sparse" for a sparse mask in vector form, "matrix" for a matrix mask
-#' 
-#' @return either a vector giving the indices of the requested mask or a matrix version of
-#' the mask
-#' 
-#' @export
-#-
-GetMask <- function(db, id, format="sparse"){
-	rawd <- dbGetQuery(db, paste("select mask, expid from masks where id=", id, sep=""))
-	smask <- as.integer(unlist(strsplit(rawd[1,1], split=" ")))
-	expid <- rawd[1,2]
-	if(format=="sparse"){
-		return(smask)
-	}
-	dims <- dbGetQuery(db, paste("select nx, ny from experiment where id= ", expid, sep=""))
-	ret <- matrix(NA, dims[1,1], dims[1,2])
-	ret[smask] <- 1
-	return(ret)
-}
-
-#-
-#' Returns a list of the masks in a database
-#' 
-#' @param db a database connection
-#' 
-#' @return a list of vectors, each vector specifying a mask.  The first element of each mask
-#' vector is the negative index of the mask.  The remaining elements of each vector are the
-#' indices of the mask pixels.
-#' @export
-#-
-GetMasks <- function(db){
-	ret <- dbGetQuery(db, "select id, mask from masks order by id")
-	convertmask <- function(row){
-		return(c(-strtoi(row[1]), as.integer(unlist(strsplit(row[2], split=" ")))))
-	}
-	return(apply(ret, 1, convertmask))
-}
-
-#-
-#' Remove a mask from a mask database
-#' 
-#' @details Removes a mask, as well as any associated features and edges
-#' 
-#' @param db a database connection
-#' @param maskid the ID of the mask to remove
-#' 
-#' @return NULL
-#' @export
-#-
-RemoveMask <- function(db, maskid){
-	dbGetQuery(db, paste("DELETE from masks where id=",maskid, sep=""))
-	dbGetQuery(db, paste("DELETE from feats_masks where maskid=",maskid, sep=""))
-	dbGetQuery(db, paste("DELETE from edges where maskid1=",maskid," or maskid2=", maskid, sep=""))
 }
 
 #-
@@ -557,6 +610,7 @@ CountHolesC <- function(mask){
 	ret = out$ct
 	return(ret)
 }
+
 
 
 ############################################################################

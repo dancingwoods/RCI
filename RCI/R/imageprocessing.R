@@ -21,6 +21,68 @@
 ################################################################################
 
 #-
+#' Convolves an image with the given kernel matrix
+#' 
+#' @details Uses Fourier methods to convolve the given image with the given kernel
+#' 
+#' @param image a matrix with the image
+#' @param kernel a matrix with the kernel (should be smaller than the image)
+#' @param circular boolean, should the convolution be circular (default) or should the
+#' image be padded with zeros to prevent circular convolution
+#' 
+#' @return a matrix of the same size as image with the convolved image
+#-
+ConvolveImage <- function(image, kernel, circular=T){
+	PadKernel <- function(kernel, size){
+		mat <- matrix(0, size[1], size[2])
+		hcenter <- floor(dim(kernel)[2]/2+1)
+		hremain <- ncol(kernel)-hcenter
+		vcenter <- floor(dim(kernel)[1]/2+1)
+		vremain <- nrow(kernel)-vcenter
+
+		mat[1:vcenter, 1:hcenter] <- kernel[(vremain+1):nrow(kernel), (hremain+1):ncol(kernel)]
+		mat[(size[1]-vremain+1):size[1], (size[2]-hremain+1):size[2]] <- kernel[1:(vremain), 1:(hremain)]
+		mat[(size[1]-vremain+1):size[1], 1:hcenter] <- kernel[1:(vremain), (hremain+1):ncol(kernel)]
+		mat[1:vcenter, (size[2]-hremain+1):size[2]] <- kernel[(vremain+1):nrow(kernel), 1:(hremain)]
+		return(mat)
+	}
+	
+	dk <- dim(kernel)
+	di <- dim(image)
+	ipad <- ceiling(max(dk))/2
+	if(!circular){
+		image <- EmbedImage(image, border=ipad)
+	}
+	kernel <- PadKernel(kernel, size=dim(image))
+	imaget <- fft(image)
+	kernelt <- fft(kernel)
+	return(ClipImage(Re(fft(imaget*kernelt, inverse=T))/prod(dim(imaget)), size=di))
+}
+
+#-
+#' Returns a Laplacian of Gaussian kernel
+#' 
+#' @param kdim the dimension of the (square) kernel to generate
+#' @param sigma the standard deviation of the gaussian smoother
+#' 
+#' @return a matrix giving the LoG kernel
+#' 
+#' @export
+#- 
+LoGKernel <- function(kdim, sigma){
+	kmat <- matrix(NA, kdim, kdim)
+	for(i in 1:kdim){
+		for(j in 1:kdim){
+			x <- i-ceiling(kdim/2)
+			y <- j-ceiling(kdim/2)
+			kmat[i,j] <- -1*(1/(pi*sigma^4)) * ( 1 - (x^2+y^2)/(2*sigma^2) ) * exp(-1*(x^2+y^2)/(2*sigma^2))
+		}
+	}
+	kmat <- kmat-(sum(kmat)/kdim^2)
+	return(kmat)
+}
+
+#-
 #' Embeds an image matrix in a larger matrix with a border of 0's
 #' 
 #' @param image the image to embed

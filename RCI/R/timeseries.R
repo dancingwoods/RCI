@@ -1,3 +1,26 @@
+# Bronwyn Woods                                               
+# 2013                                                         
+#                                                              
+# Summary: Functions to process time series (filtering, spectral estimation)                      
+# 
+# License information
+# This file is part of the R package RCI.
+# 
+# RCI is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# RCI is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with RCI.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+
 #-
 #' INTERNAL
 #' Filters a vector by frequency using a butterworth filter
@@ -21,8 +44,10 @@ FilterVector <- function(vec, low, high, order=8, dt = 1/1000, type="BP"){
 
 GetPhase <- function(vec, low, high, dt=1/1000){
 	vec <- FilterVector(vec, low, high, dt=dt)
-	vecf <- fft(vec)
+	vecf <- fft(vec)[1:ceiling(length(vec)/2)]
 	freqlabs <-  seq(0, 0.5/dt, length.out=ceiling(length(vec)/2))
+	w <- which(freqlabs>low & freqlabs<high)
+	return(Arg(vecf[w[ceiling(length(w)/2)]]))
 }
 
 #-
