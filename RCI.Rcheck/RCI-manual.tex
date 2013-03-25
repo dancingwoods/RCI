@@ -23,7 +23,7 @@
 \item[Imports]\AsIs{RSQLite, randomForest, gWidgets, gWidgetsRGtk2, cairoDevice,
 R.utils, mgcv, RSEIS}
 \item[Collate]\AsIs{'datainport.R' 'motion.R' 'plotting.R' 'segmentation.R'
-'gui.R'}
+'gui.R' 'imageprocessing.R' 'timeseries.R' 'clustering.R'}
 \item[Archs]\AsIs{i386, x86\_64}
 \end{description}
 \Rdcontents{\R{} topics documented:}
@@ -42,7 +42,7 @@ INTERNAL Adds the overlap edges to a mask database
 %
 \begin{Arguments}
 \begin{ldescription}
-\item[\code{db}] a database connection object
+\item[\code{db}] the mask database object
 
 \item[\code{cmat}] a matrix of 0/1 values giving the locations
 of edges between masks
@@ -91,6 +91,180 @@ colored region on an already plotted image.
 \begin{Value}
 NULL
 \end{Value}
+\inputencoding{utf8}
+\HeaderA{AddMasks}{Generate masks according to the given method and add them to the database}{AddMasks}
+%
+\begin{Description}\relax
+Generate masks according to the given method and add them
+to the database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  AddMasks(db, calexp, method)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the mask database object
+
+\item[\code{calexp}] the calcium experiment data object
+
+\item[\code{method}] what method should be used to generate
+masks to add
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
+\HeaderA{AddMaskSet}{Plots sets of masks over an already plotted image}{AddMaskSet}
+%
+\begin{Description}\relax
+Plots sets of masks over an already plotted image
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  AddMaskSet(mask, alpha = 0.5, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mask}] the specification of the mask, unique values
+for each mask set, and 0 or NA in background
+
+\item[\code{alpha}] the alpha transparency value of the mask
+(between 0 and 1)
+
+\item[\code{...}] additional graphing parameters
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Given a matrix with unique integers for each mask set,
+overplot each mask set in a different color (randomly
+chosen)
+\end{Details}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{AssignToPeaks}{Assigns the non-zero pixels of 'region' to one of the maxima of the iamge by hillclimbing on image}{AssignToPeaks}
+%
+\begin{Description}\relax
+Assigns the non-zero pixels of 'region' to one of the
+maxima of the iamge by hillclimbing on image
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  AssignToPeaks(region, image, restrict = T)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{region}] a matrix with 1 in the regions to be
+assigned and 0 elsewhere
+
+\item[\code{image}] the image matrix
+
+\item[\code{restrict}] boolean.  should the hill-climbing be
+restricted to a path entirely within region
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a matrix with unique integers in the pixels of region
+corresponding to each local maxima
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{ClipImage}{Clips a border from around an image matrix}{ClipImage}
+%
+\begin{Description}\relax
+Clips a border from around an image matrix
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ClipImage(image, border = NULL, size = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{image}] the image matrix to clip
+
+\item[\code{border}] the size of the border to clip.  Must be
+less than half the image size
+
+\item[\code{size}] the resulting size of the image.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+uses the size argument if given, else uses the border
+argument, else returns the original image
+\end{Details}
+%
+\begin{Value}
+a matrix with the center (nrow-2*border) by
+(ncol-2*border) pixels of the image
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{ClusterCells}{Clustering}{ClusterCells}
+%
+\begin{Description}\relax
+Clustering
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ClusterCells(calexp, mask, k, criteria = "cor",
+    freq = c(0.78, 0.81), dt = 0.1247232)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{calexp}] the calexp object with the data
+
+\item[\code{mask}] a mask identifying the cells to be clustered.
+Each unique non-zero/NA value in the mask indicates a
+cell to be clustered.
+
+\item[\code{k}] the number of clusters to find
+
+\item[\code{criteria}] the criteria to use for clustering --
+'cor' (correlation) 'phase' (phase of frequency specified
+in freq)
+
+\item[\code{freq}] the frequency band to use to extract the
+phase for phase-clustering
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
+\HeaderA{ClusterCorrelation}{See correlation with clusters}{ClusterCorrelation}
+%
+\begin{Description}\relax
+See correlation with clusters
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ClusterCorrelation(calexp, clusters)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{calexp}] the calexp object
+
+\item[\code{clusters}] the cluster object as returned from
+ClusterCells
+\end{ldescription}
+\end{Arguments}
 \inputencoding{utf8}
 \HeaderA{CompMaskC}{INTERNAL Compute the overlap of a single mask with a list of masks}{CompMaskC}
 %
@@ -190,6 +364,41 @@ a connection object as returned by dbConnect in the DBI
 package
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{ConvolveImage}{Convolves an image with the given kernel matrix}{ConvolveImage}
+%
+\begin{Description}\relax
+Convolves an image with the given kernel matrix
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ConvolveImage(image, kernel, circular = T)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{image}] a matrix with the image
+
+\item[\code{kernel}] a matrix with the kernel (should be smaller
+than the image)
+
+\item[\code{circular}] boolean, should the convolution be
+circular (default) or should the image be padded with
+zeros to prevent circular convolution
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Uses Fourier methods to convolve the given image with the
+given kernel
+\end{Details}
+%
+\begin{Value}
+a matrix of the same size as image with the convolved
+image
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{CountHolesC}{INTERNAL Counts the number of pixels not in a mask that are surrounded by at least 3 mask pixels}{CountHolesC}
 %
 \begin{Description}\relax
@@ -250,6 +459,49 @@ alphabetically in order by channel and then by time
 index.  The directory must contain only these csv image
 files. Each image must have the same dimensions, and
 there must be the same number of images for each channel.
+\end{Details}
+%
+\begin{Value}
+an object of class calexp \begin{ldescription}
+\item[\code{name}] the name passed in
+as an argument to this function\item[\code{data}] an array
+containing the image data, with dimensions
+nchans-nrows-ncols
+\end{ldescription}
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{CreateCalExpFromText}{Convert a folder of text images to a calexp data object}{CreateCalExpFromText}
+%
+\begin{Description}\relax
+Convert a folder of text images to a calexp data object
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  CreateCalExpFromText(name, imgdir, nchans = 2)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{name}] a short name to identify this experiment
+
+\item[\code{imgdir}] a string giving the directory path for the
+directory containing the csv images
+
+\item[\code{nchans}] the number of channels that exist in the
+data
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+This function Converts a directory of text files into a
+calexp data object in R. Assumes that the images are
+individual text files and that they are alphabetically in
+order by channel and then by time index.  The directory
+must contain only these image files. Each image must have
+the same dimensions, and there must be the same number of
+images for each channel.
 \end{Details}
 %
 \begin{Value}
@@ -391,6 +643,129 @@ mask tables
 NULL
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{EmbedAndTaperImage}{Embeds an image in a larger matrix of 0's and tapers the image edges using a Hanning window}{EmbedAndTaperImage}
+%
+\begin{Description}\relax
+Embeds an image in a larger matrix of 0's and tapers the
+image edges using a Hanning window
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  EmbedAndTaperImage(img, taperamt, size = NULL,
+    border = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img}] the image to embed and taper
+
+\item[\code{taperamt}] the width of the taper on the edges of
+the image.  Must be less than or equal to half the image
+width
+
+\item[\code{border}] the width of the border of 0's to add
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+uses size if given, else uses border, else doesn't embed
+\end{Details}
+%
+\begin{Value}
+an image that has been embedded and tapered
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{EmbedImage}{Embeds an image matrix in a larger matrix with a border of 0's}{EmbedImage}
+%
+\begin{Description}\relax
+Embeds an image matrix in a larger matrix with a border
+of 0's
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  EmbedImage(image, border = NULL, size = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{image}] the image to embed
+
+\item[\code{border}] the width of the border to add around the
+edges
+
+\item[\code{size}] the resulting size of the image - this must
+be bigger than the dimensions of image
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+uses the size argument if given, else uses the border
+argument, else returns the original image
+\end{Details}
+%
+\begin{Value}
+a matrix of size (nrow+2*border) by (ncol+ 2*border)
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{FFTPhaseCor}{INTERNAL Computes sub-pixel shifts values using phase correlation (FFT implementation)}{FFTPhaseCor}
+%
+\begin{Description}\relax
+INTERNAL Computes sub-pixel shifts values using phase
+correlation (FFT implementation)
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  FFTPhaseCor(img1, img2, upsamp = 2, taper = TRUE,
+    cortaper = TRUE, subpixel = "gauss", subrad = 3)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img1}] matrix giving the first image (the
+reference)
+
+\item[\code{img2}] matrix giving the second image (to be
+shifted)
+
+\item[\code{upsamp}] the factor by which the fft matrix should
+be expanded
+
+\item[\code{taper}] boolean, should the images be tapered before
+alignment
+
+\item[\code{cortaper}] boolean, should the normalized
+cross-spectrum be tapered before being (inverse)
+transformed
+
+\item[\code{subpixel}] 'none' for no additional subpixel
+fitting, 'gauss' for Gaussian fit, 'poc' for poc function
+fitting
+
+\item[\code{subrad}] the radius of the submatrix used to compute
+the subpixel fits
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Computes the sub-pixel shifts by computing the upsampled
+phase correlation between the two images and finding the
+maximum.  If the parameter gausfit is TRUE, then a
+gaussian is fit around the peak of the phase correlation
+function to get additional sub-pixel shift information.
+This is on top of any upsampling
+\end{Details}
+%
+\begin{Value}
+a vector of length 2 giving the magnitude of the estimted
+x and y shift returns NA in the case of improper input
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{FFTXCor}{INTERNAL Computes sub-pixel shifts values using FFT}{FFTXCor}
 %
 \begin{Description}\relax
@@ -515,6 +890,31 @@ pixels in channel 2\\{}
 NULL
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{GetExtrema}{Finds the extrema in an image.}{GetExtrema}
+%
+\begin{Description}\relax
+Finds the extrema in an image.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetExtrema(image, maxima = T)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{image}] the image matrix
+
+\item[\code{maxima}] boolean, should this function find maxima
+(default).  If false, finds minima
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a matrix with 1 at maxima (or minima) and 0 elsewhere
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{GetInnerMasks}{INTERNAL Selects the masks from the given list that are contained in a region}{GetInnerMasks}
 %
 \begin{Description}\relax
@@ -600,6 +1000,30 @@ first element of each mask vector is the negative index
 of the mask.  The remaining elements of each vector are
 the indices of the mask pixels.
 \end{Value}
+\inputencoding{utf8}
+\HeaderA{GetSeries}{Return average time series for each cell in a mask}{GetSeries}
+%
+\begin{Description}\relax
+Return average time series for each cell in a mask
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetSeries(calexp, mask, channel = 2)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{calexp}] the calexp with the data
+
+\item[\code{mask}] the mask identifying cells.  Each unique
+non-zero/NA value in the mask indicates a cell to be
+clustered.
+
+\item[\code{channel}] the channel to get the cell traces from
+\end{ldescription}
+\end{Arguments}
 \inputencoding{utf8}
 \HeaderA{GetShapeFeatures}{INTERNAL Computes the features related to just the shape of masks, adding them to the database}{GetShapeFeatures}
 %
@@ -753,6 +1177,35 @@ A matrix of size npixels-by-3. The first coordinate is
 the row, the the column and the third the intensity.
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{IntensityCorrection}{Performs intensity correction on the given calcium experiment}{IntensityCorrection}
+%
+\begin{Description}\relax
+Performs intensity correction on the given calcium
+experiment
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  IntensityCorrection(calexp, cortype = "ar", order = 25,
+    naclip = T)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{calexp}] the data to be corrected is in the \$data
+element of this calexp object
+
+\item[\code{cortype}] the type of correction to perform.  `ar`
+for autoregressive filter
+
+\item[\code{order}] the order of the model to fit (for ar type)
+
+\item[\code{naclip}] should NAs produced at the beginning of the
+experiment be clipped off (by AR model, for instance)
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
 \HeaderA{InvertMask}{INTERNAL Inverts a mask matrix so that the mask region is turned to backgroun and vice versa}{InvertMask}
 %
 \begin{Description}\relax
@@ -775,6 +1228,56 @@ background
 %
 \begin{Value}
 a matrix with the inverted mask
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{LoGKernel}{Returns a Laplacian of Gaussian kernel}{LoGKernel}
+%
+\begin{Description}\relax
+Returns a Laplacian of Gaussian kernel
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  LoGKernel(kdim, sigma)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{kdim}] the dimension of the (square) kernel to
+generate
+
+\item[\code{sigma}] the standard deviation of the gaussian
+smoother
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a matrix giving the LoG kernel
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{MaskDbSetup}{INTERNAL Creates an empty mask database with the appropriate tables}{MaskDbSetup}
+%
+\begin{Description}\relax
+INTERNAL Creates an empty mask database with the
+appropriate tables
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  MaskDbSetup(db)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the database object for which to create the
+mask tables
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{MaskHull}{INTERNAL Computes the convex hull of a mask}{MaskHull}
@@ -830,6 +1333,139 @@ pixels
 a vector of indices of the mask pixels
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{MultiTaperSpectrum}{Uses multi-taper methods to etimate a spectrum for the given vector}{MultiTaperSpectrum}
+%
+\begin{Description}\relax
+Uses multi-taper methods to etimate a spectrum for the
+given vector
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  MultiTaperSpectrum(vec, dt = 0.1247232, dif = T)
+\end{verbatim}
+\end{Usage}
+\inputencoding{utf8}
+\HeaderA{OptimRotate}{INTERNAL Uses optimization of an objective function to compute the best alignment rotation between two images}{OptimRotate}
+%
+\begin{Description}\relax
+INTERNAL Uses optimization of an objective function to
+compute the best alignment rotation between two images
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  OptimRotate(img1, img2, taper = TRUE, error = "mse",
+    searchrange = c(-0.1, 0.1))
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img1}] the reference image
+
+\item[\code{img2}] the image to align
+
+\item[\code{taper}] should the images be tapered before the
+rotation is computed (hanning window)
+
+\item[\code{error}] objective function to be used - "mse" mean
+squared error, "mae" mean absolute error, "cor"
+correlation
+
+\item[\code{searchrange}] the range of rotations to search over
+in the optimization
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a real valued estimate of the optimal alignment rotation
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{OptimShift}{INTERNAL Computes the rigid body motion alignment parameters by optimizing some error function comparing the two images. (uses optimization routines in the neldermead package)}{OptimShift}
+%
+\begin{Description}\relax
+INTERNAL Computes the rigid body motion alignment
+parameters by optimizing some error function comparing
+the two images. (uses optimization routines in the
+neldermead package)
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  OptimShift(img1, img2, taper = TRUE, error = "mse",
+    startval = c(0.1, 0.1, 0), pocstart = TRUE,
+    bigsize = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img1}] the reference image
+
+\item[\code{img2}] the image to align
+
+\item[\code{taper}] boolean, should the images be tapered before
+aligning
+
+\item[\code{bigsize}] the size of the array in which to embed
+the tapered images (defaults to next power of 2)
+
+\item[\code{error}] the error function to use. Can be "mse" for
+mean squared error, mae" for mean absolute error, or
+"cor" for correlation.
+
+\item[\code{startval}] a length 3 vector giving the inital
+values for the optimization (xshift, yshift, theta)
+
+\item[\code{pocstart}] should the POC method be used to
+initialize the start values
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a vector of length 3 giving the translation and rotation
+estimates
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{OptimTranslate}{Uses optimization of an objective function to compute the best alignment translation between two images (uses optimization routines in the neldermead package)}{OptimTranslate}
+%
+\begin{Description}\relax
+Uses optimization of an objective function to compute the
+best alignment translation between two images (uses
+optimization routines in the neldermead package)
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  OptimTranslate(img1, img2, taper = TRUE, error = "mse",
+    startval = c(0.1, 0.1), bigsize = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img1}] the reference image
+
+\item[\code{img2}] the image to align
+
+\item[\code{taper}] should the images be tapered before the
+rotation is computed (hanning window)
+
+\item[\code{error}] objective function to be used - "mse" mean
+squared error, "mae" mean absolute error, "cor"
+correlation
+
+\item[\code{startval}] the inital estimate of the shift
+parameters
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a real valued vector of length 2, giving estimates of x
+and y translation
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{RegisterCalExp}{Removes in-plane motion effects using rigid body alignment of the image frames}{RegisterCalExp}
 %
 \begin{Description}\relax
@@ -839,7 +1475,8 @@ alignment of the image frames
 %
 \begin{Usage}
 \begin{verbatim}
-  RegisterCalExp(calexp, refimg, channel = 1, upsamp = 2)
+  RegisterCalExp(calexp, refimg, channel = 1,
+    bigsize = c(256, 256))
 \end{verbatim}
 \end{Usage}
 %
@@ -851,6 +1488,7 @@ alignment of the image frames
 Should be the same size as the images in calexp\bsl{}\$data
 
 \item[\code{channel}] the channel to use for alignment
+(typically the structual channel)
 
 \item[\code{upsamp}] the upsampling factor (this gives the
 sup-pixel precision of 1/upsamp)
@@ -860,13 +1498,11 @@ sup-pixel precision of 1/upsamp)
 \begin{Details}\relax
 Registers the images in a calexp object by rigid body
 image alignment of the images in a particular channel to
-the reference image given.  The shifts for each image are
-estimated by maximum cross-correlation. Sub-pixel shifts
-are achieved using upsampling by the factor given
-(providing accuracy of 1/upsamp pixels).  Only one
-channel is used to register the data.  This should be the
-channel with the cleanest spatial information for the
-best results
+the reference image given.  Initial translation
+parameters are estimated using Phase-Only correlation.
+The parameters are then optimized using Nelder-Mead
+optimization of the mean squared error between the
+images.
 \end{Details}
 %
 \begin{Value}
@@ -874,9 +1510,9 @@ a calexp object with a \bsl{}\$registration field.  The \bsl{}\$data
 in the returned object has been registered.  The
 \bsl{}\$registration field records the details of the estimated
 shifts.  \begin{ldescription}
-\item[\code{upsamp}] the usampling factor used
-\item[\code{refimg}] the reference image used\item[\code{mpars}] the
-estimated shifts. This is a matrix of size nframes-by-2
+\item[\code{refimg}] the reference image used
+\item[\code{mpars}] the estimated shifts. This is a matrix of
+size nframes-by-2
 \end{ldescription}
 \end{Value}
 \inputencoding{utf8}
@@ -944,6 +1580,33 @@ high-to-low-to-high in each dimension
 the reordered matrix
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{RotateFFT}{Rotates an image by the given angle using a sequence of Fourier domain shears as described in Eddy 1996.}{RotateFFT}
+%
+\begin{Description}\relax
+Rotates an image by the given angle using a sequence of
+Fourier domain shears as described in Eddy 1996.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  RotateFFT(img, theta, fdomain = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img}] the image to rotate
+
+\item[\code{theta}] the angle to rotate the image
+
+\item[\code{fdomain}] is the image given already in the Fourier
+domain?  It will be returned in the same domain as given
+(passing in the Fourier domain is helpful to reduce
+superfluous transforms if performing additional
+operations in the Fourier domain).
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
 \HeaderA{RotateImg}{INTERNAL Rotates an image by a given number of integer rows and columns}{RotateImg}
 %
 \begin{Description}\relax
@@ -997,6 +1660,96 @@ database
 %
 \begin{Value}
 NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{ShiftFFT}{Shifts an image by the given amount, both translation and rotation}{ShiftFFT}
+%
+\begin{Description}\relax
+Shifts an image by the given amount, both translation and
+rotation
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ShiftFFT(img, pars, fdomain = FALSE, rotatefirst = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{img}] the image to shift
+
+\item[\code{pars}] a length-3 vector giving (x-translation,
+y-translation, rotation angle)
+
+\item[\code{fdomain}] is the image given in the Fourier domain?
+It will be returned in the same domain as given (passing
+in the Fourier domain is helpful to reduce superfluous
+transforms if performing additional operations in the
+Fourier domain).
+
+\item[\code{rotatefirst}] should rotation be performed before
+translation
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Uses RotateFFT and TranslateFFT to compute result
+\end{Details}
+%
+\begin{Value}
+the shifted image
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{ShiftFFTVector}{INTERNAL Shifts a vector by the specified amount using FFT phase shift, but assuming the Fourier transform has already been performed.}{ShiftFFTVector}
+%
+\begin{Description}\relax
+INTERNAL Shifts a vector by the specified amount using
+FFT phase shift, but assuming the Fourier transform has
+already been performed.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ShiftFFTVector(vec, amt)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{vec}] the vector to shift
+
+\item[\code{amt}] the amount to shift
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+the circularly shifted vector
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{ShiftVector}{INTERNAL Shifts a vector by the specified amount using FFT}{ShiftVector}
+%
+\begin{Description}\relax
+INTERNAL Shifts a vector by the specified amount using
+FFT
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ShiftVector(vec, amt)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{vec}] the vector to shift
+
+\item[\code{amt}] the amount to shift
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+the circularly shifted vector
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{SimpleModesC}{INTERNAL Finds the local maxima in an image}{SimpleModesC}
@@ -1092,16 +1845,15 @@ A matrix of dimension (ny, nx) with 1's in the mask
 pixels and background elsewhere
 \end{Value}
 \inputencoding{utf8}
-\HeaderA{TranslateFFT}{INTERNAL Shifts an image by the given (fractional pixel) amounts}{TranslateFFT}
+\HeaderA{TranslateFFT}{Shifts an image by the given (fractional pixel) amounts}{TranslateFFT}
 %
 \begin{Description}\relax
-INTERNAL Shifts an image by the given (fractional pixel)
-amounts
+Shifts an image by the given (fractional pixel) amounts
 \end{Description}
 %
 \begin{Usage}
 \begin{verbatim}
-  TranslateFFT(img, xshift, yshift)
+  TranslateFFT(img, xshift, yshift, fdomain = FALSE)
 \end{verbatim}
 \end{Usage}
 %
@@ -1114,6 +1866,12 @@ amounts
 
 \item[\code{yshift}] the amount to shift in the y dimension
 (rows)
+
+\item[\code{fdomain}] is the image given in the Fourier domain?
+It will be returned in the same domain as given (passing
+in the Fourier domain is helpful to reduce superfluous
+transforms if performing additional operations in the
+Fourier domain).
 \end{ldescription}
 \end{Arguments}
 %

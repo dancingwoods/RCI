@@ -1,9 +1,8 @@
 \name{TranslateFFT}
 \alias{TranslateFFT}
-\title{INTERNAL
-Shifts an image by the given (fractional pixel) amounts}
+\title{Shifts an image by the given (fractional pixel) amounts}
 \usage{
-  TranslateFFT(img, xshift, yshift)
+  TranslateFFT(img, xshift, yshift, fdomain = FALSE)
 }
 \arguments{
   \item{img}{the image (matrix) to shift}
@@ -13,13 +12,18 @@ Shifts an image by the given (fractional pixel) amounts}
 
   \item{yshift}{the amount to shift in the y dimension
   (rows)}
+
+  \item{fdomain}{is the image given in the Fourier domain?
+  It will be returned in the same domain as given (passing
+  in the Fourier domain is helpful to reduce superfluous
+  transforms if performing additional operations in the
+  Fourier domain).}
 }
 \value{
   the shifted image (matrix)
 }
 \description{
-  INTERNAL Shifts an image by the given (fractional pixel)
-  amounts
+  Shifts an image by the given (fractional pixel) amounts
 }
 \details{
   Uses the shift theorem to shift the given image by

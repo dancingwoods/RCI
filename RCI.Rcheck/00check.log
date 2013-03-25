@@ -1,4 +1,4 @@
-* using log directory ‘/Users/bwoods/Dropbox/thesis/Rcalc/RCI.Rcheck’
+* using log directory ‘/Users/bwoods/git/rci/RCI.Rcheck’
 * using R version 2.14.2 (2012-02-29)
 * using platform: x86_64-apple-darwin9.8.0 (64-bit)
 * using session charset: UTF-8
@@ -43,10 +43,13 @@ AddConMat: no visible global function definition for
 AddConMat: no visible global function definition for
   ‘dbGetPreparedQuery’
 AddConMat: no visible global function definition for ‘dbCommit’
+AssignToPeaks: no visible binding for global variable ‘bumps’
+ClusterCells: no visible global function definition for ‘pam’
+ClusterCorrelation: no visible binding for global variable ‘clust’
+ClusterCorrelation: no visible binding for global variable ‘mask’
 ConMaskDb: no visible global function definition for ‘dbConnect’
 ConMaskDb: no visible global function definition for ‘dbDriver’
 DbAddMask: no visible global function definition for ‘dbGetQuery’
-DbSetup: no visible global function definition for ‘dbGetQuery’
 FilterVector: no visible global function definition for ‘butfilt’
 GetDataFeatures: no visible global function definition for ‘dbGetQuery’
 GetDataFeatures: no visible global function definition for ‘wrap’
@@ -58,7 +61,27 @@ GetShapeFeatures: no visible global function definition for
   ‘dbGetQuery’
 GetShapeFeatures: no visible global function definition for
   ‘countholesC’
+MaskDbSetup: no visible global function definition for ‘dbGetQuery’
 MaskHull: no visible global function definition for ‘in.out’
+MultiTaperSpectrum: no visible global function definition for
+  ‘spec.mtm’
+OptimShift: no visible global function definition for ‘neldermead.new’
+OptimShift: no visible global function definition for
+  ‘neldermead.configure’
+OptimShift: no visible global function definition for ‘transpose’
+OptimShift: no visible global function definition for
+  ‘neldermead.search’
+OptimShift: no visible global function definition for ‘neldermead.get’
+OptimTranslate : optimf: no visible binding for global variable ‘x’
+OptimTranslate: no visible global function definition for
+  ‘neldermead.new’
+OptimTranslate: no visible global function definition for
+  ‘neldermead.configure’
+OptimTranslate: no visible global function definition for ‘transpose’
+OptimTranslate: no visible global function definition for
+  ‘neldermead.search’
+OptimTranslate: no visible global function definition for
+  ‘neldermead.get’
 RemoveMask: no visible global function definition for ‘dbGetQuery’
 SetMaskLabel: no visible global function definition for ‘dbGetQuery’
 ViewCI : UpdateDbDirectory: no visible global function definition for
@@ -138,9 +161,9 @@ ViewCI : UpdateExpDetails: no visible global function definition for
 ViewCI : SelectExperiment: no visible global function definition for
   ‘svalue’
 ViewCI : SelectExperiment: no visible global function definition for
-  ‘conMaskDb’
+  ‘dbConnect’
 ViewCI : SelectExperiment: no visible global function definition for
-  ‘deq’
+  ‘dbDriver’
 ViewCI : SelectExperiment: no visible global function definition for
   ‘visible<-’
 ViewCI : SelectExperiment: no visible global function definition for
@@ -155,12 +178,48 @@ ViewCI: no visible global function definition for ‘gtable’
 ViewCI: no visible global function definition for ‘visible<-’
 ViewCI: no visible global function definition for ‘ggraphics’
 ViewCI: no visible global function definition for ‘addHandlerChanged’
+deq: no visible global function definition for ‘dbGetQuery’
+summary.MaskDb: no visible global function definition for ‘dbGetQuery’
 * checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd cross-references ... OK
 * checking for missing documentation entries ... OK
-* checking for code/documentation mismatches ... OK
-* checking Rd \usage sections ... OK
+* checking for code/documentation mismatches ... WARNING
+Functions/methods with usage in documentation object 'CreateCalExpFromCSV' but not in code:
+  CreateCalExpFromCSV
+
+Functions/methods with usage in documentation object 'DbSetup' but not in code:
+  DbSetup
+
+Functions/methods with usage in documentation object 'FFTXCor' but not in code:
+  FFTXCor
+
+Functions/methods with usage in documentation object 'RotateImg' but not in code:
+  RotateImg
+
+* checking Rd \usage sections ... WARNING
+Undocumented arguments in documentation object 'ClusterCells'
+  ‘dt’
+
+Undocumented arguments in documentation object 'EmbedAndTaperImage'
+  ‘size’
+
+Undocumented arguments in documentation object 'MultiTaperSpectrum'
+  ‘vec’ ‘dt’ ‘dif’
+
+Undocumented arguments in documentation object 'OptimTranslate'
+  ‘bigsize’
+
+Undocumented arguments in documentation object 'RegisterCalExp'
+  ‘bigsize’
+Documented arguments not in \usage in documentation object 'RegisterCalExp':
+  ‘upsamp’
+
+Functions with \usage entries need to have the appropriate \alias
+entries, and all their arguments documented.
+The \usage entries must correspond to syntactically valid R code.
+See the chapter ‘Writing R documentation files’ in the ‘Writing R
+Extensions’ manual.
 * checking Rd contents ... OK
 * checking for unstated dependencies in examples ... OK
 * checking line endings in C/C++/Fortran sources/headers ... OK
@@ -178,6 +237,6 @@ Type X to quit or <RETURN> to proceed,
 or enter new name. (Default extension: sty)
 
 * checking PDF version of manual without hyperrefs or index ... OK
-WARNING: There were 2 warnings, see
-  ‘/Users/bwoods/Dropbox/thesis/Rcalc/RCI.Rcheck/00check.log’
+WARNING: There were 4 warnings, see
+  ‘/Users/bwoods/git/rci/RCI.Rcheck/00check.log’
 for details

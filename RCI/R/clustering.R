@@ -31,6 +31,8 @@
 #' @param criteria the criteria to use for clustering -- 'cor' (correlation)
 #' 'phase' (phase of frequency specified in freq)
 #' @param freq the frequency band to use to extract the phase for phase-clustering
+#' 
+#' @export
 #-
 ClusterCells <- function(calexp, mask, k, criteria="cor", freq=c(0.78,0.81), dt=0.1247232){
 	ser <- GetSeries(calexp, mask)
@@ -66,6 +68,8 @@ ClusterCells <- function(calexp, mask, k, criteria="cor", freq=c(0.78,0.81), dt=
 #' 
 #' @param calexp the calexp object
 #' @param clusters the cluster object as returned from ClusterCells
+#' 
+#' @export
 #-
 ClusterCorrelation <- function(calexp, clusters){
 	clmeans <- matrix(dim(calexp$data)[2], nrow(clusters$clusinfo))

@@ -12,7 +12,7 @@ gcc -arch i386 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include -I
 gcc -arch i386 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include -I/Library/Frameworks/R.framework/Resources/include/i386  -I/usr/local/include    -fPIC  -g -O2 -c mylib.c -o mylib.o
 gcc -arch i386 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include -I/Library/Frameworks/R.framework/Resources/include/i386  -I/usr/local/include    -fPIC  -g -O2 -c slidinghistequalC.c -o slidinghistequalC.o
 gcc -arch i386 -std=gnu99 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/usr/local/lib -o RCI.so compmaskC.o compmasksC.o countholesC.o hillclimbC.o histequalC.o labelbumpsC.o localmaxC.o maskcorC.o mylib.o slidinghistequalC.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
-installing to /Users/bwoods/Dropbox/thesis/Rcalc/RCI.Rcheck/RCI/libs/i386
+installing to /Users/bwoods/git/rci/RCI.Rcheck/RCI/libs/i386
 *** arch - x86_64
 gcc -arch x86_64 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include -I/Library/Frameworks/R.framework/Resources/include/x86_64  -I/usr/local/include    -fPIC  -g -O2 -c compmaskC.c -o compmaskC.o
 gcc -arch x86_64 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include -I/Library/Frameworks/R.framework/Resources/include/x86_64  -I/usr/local/include    -fPIC  -g -O2 -c compmasksC.c -o compmasksC.o
@@ -25,7 +25,7 @@ gcc -arch x86_64 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include 
 gcc -arch x86_64 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include -I/Library/Frameworks/R.framework/Resources/include/x86_64  -I/usr/local/include    -fPIC  -g -O2 -c mylib.c -o mylib.o
 gcc -arch x86_64 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include -I/Library/Frameworks/R.framework/Resources/include/x86_64  -I/usr/local/include    -fPIC  -g -O2 -c slidinghistequalC.c -o slidinghistequalC.o
 gcc -arch x86_64 -std=gnu99 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/usr/local/lib -o RCI.so compmaskC.o compmasksC.o countholesC.o hillclimbC.o histequalC.o labelbumpsC.o localmaxC.o maskcorC.o mylib.o slidinghistequalC.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
-installing to /Users/bwoods/Dropbox/thesis/Rcalc/RCI.Rcheck/RCI/libs/x86_64
+installing to /Users/bwoods/git/rci/RCI.Rcheck/RCI/libs/x86_64
 ** R
 ** preparing package for lazy loading
 ** help

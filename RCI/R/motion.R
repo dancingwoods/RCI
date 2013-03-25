@@ -91,6 +91,8 @@ RegisterCalExp <-function(calexp, refimg, channel=1, bigsize=c(256,256)){
 #' @param pocstart should the POC method be used to initialize the start values
 #' 
 #' @return a vector of length 3 giving the translation and rotation estimates
+#' 
+#' @export
 #-
 OptimShift <- function(img1, img2, taper=TRUE, error="mse", startval=c(0.1,0.1,0), 	pocstart=TRUE, bigsize=NULL){
 		
@@ -150,6 +152,8 @@ OptimShift <- function(img1, img2, taper=TRUE, error="mse", startval=c(0.1,0.1,0
 #' @param startval the inital estimate of the shift parameters
 #' 
 #' @return a real valued vector of length 2, giving estimates of x and y translation
+#' 
+#' @export
 #-
 OptimTranslate <- function(img1, img2, taper=TRUE, error="mse", startval=c(0.1,0.1), bigsize=NULL){
 
@@ -206,6 +210,8 @@ OptimTranslate <- function(img1, img2, taper=TRUE, error="mse", startval=c(0.1,0
 #' @param searchrange the range of rotations to search over in the optimization
 #' 
 #' @return a real valued estimate of the optimal alignment rotation
+#' 
+#' @export
 #-
 OptimRotate <- function(img1, img2, taper=TRUE, error="mse", searchrange=c(-0.1, 0.1)){
 	if(taper){
@@ -255,6 +261,8 @@ OptimRotate <- function(img1, img2, taper=TRUE, error="mse", searchrange=c(-0.1,
 #' 
 #' @return a vector of length 2 giving the magnitude of the estimted x and y shift
 #' returns NA in the case of improper input
+#' 
+#' @export
 #-
 FFTPhaseCor <- function(img1, img2, upsamp=2, taper=TRUE, cortaper=TRUE, subpixel="gauss", subrad=3){
 	
@@ -373,6 +381,7 @@ FFTPhaseCor <- function(img1, img2, upsamp=2, taper=TRUE, cortaper=TRUE, subpixe
 #' @param order the order of the model to fit (for ar type)
 #' @param naclip should NAs produced at the beginning of the experiment be clipped off (by AR model, for instance)
 #' 
+#' @export
 #-
 IntensityCorrection <- function(calexp, cortype="ar", order=25, naclip=T){
 	ARFilter <- function(vec, order){

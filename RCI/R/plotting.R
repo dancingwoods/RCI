@@ -93,7 +93,19 @@ AddMaskSet <- function(mask, alpha=0.5, ...){
 	}
 }
 
-
+#-
+#' Plots a multitaper spectral estimate created by MultiTaperSpectrum
+#' 
+#' @param spect the multitaper spectrum object
+#' @param maglog should the magnitide be plotted on the log scale
+#' @param minfreq the minimum frequency to plot
+#' @param maxfreq the maximum frequency to plot (NULL for Nyquist frequency)
+#' @param ... other graphical parameters
+#' 
+#' @return NULL
+#' 
+#' @export
+#-
 plot.MTSpectrum <- function(spect, maglog=TRUE, minfreq=0, maxfreq=NULL,...){
 	mini <- min(which(spect$freq>=minfreq))
 	if(is.null(maxfreq)){
@@ -109,32 +121,3 @@ plot.MTSpectrum <- function(spect, maglog=TRUE, minfreq=0, maxfreq=NULL,...){
 	
 	plot(spect$freq[mini:maxi], d, type="l", ...)
 }
-
-plot.PeriodSpectrum <- function(spect, maglog=TRUE, minfreq=0, maxfreq=NULL, ...){
-	if(maglog){
-		ylab <- "Log Magnitude"
-		data <- log(Mod(spect$data))
-	}else{
-		ylab <- "Magnitude"
-		data <- Mod(spect$data)
-	}
-	
-	mini <- min(which(spect$freqlabs>=minfreq))
-	if(is.null(maxfreq)){
-		maxi <- length(spect$freqlabs)
-	}else{
-		maxi <- max(which(spect$freqlabs<=maxfreq))
-	}
-		
-	plot(spect$freqlabs[mini:maxi], data[mini:maxi], type="l", xlab="Frequency (Hz)", ylab=ylab)
-}
-
-
-
-
-
-
-
-
-
-

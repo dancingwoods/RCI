@@ -21,3 +21,6 @@ Collate:
     'plotting.R'
     'segmentation.R'
     'gui.R'
+    'imageprocessing.R'
+    'timeseries.R'
+    'clustering.R'

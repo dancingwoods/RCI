@@ -34,6 +34,7 @@
 #' Can also choose other filters offered by the butfilt function
 #' 
 #' @return the filtered vector
+#' @export
 #-
 FilterVector <- function(vec, low, high, order=8, dt = 1/1000, type="BP"){
 	# Filters a vector using forward-backward butterworth filter
@@ -42,6 +43,16 @@ FilterVector <- function(vec, low, high, order=8, dt = 1/1000, type="BP"){
 	return(vec)
 }
 
+#-
+#' Gets the phase of a given frequency band of a vector using the FFT
+#' 
+#' @param vec vector of data
+#' @param low lower bound of frequency band
+#' @param high upper bound of frequency band
+#' @param dt deltaT, or 1/sampling rate
+#' 
+#' @export
+#-
 GetPhase <- function(vec, low, high, dt=1/1000){
 	vec <- FilterVector(vec, low, high, dt=dt)
 	vecf <- fft(vec)[1:ceiling(length(vec)/2)]
@@ -52,6 +63,10 @@ GetPhase <- function(vec, low, high, dt=1/1000){
 
 #-
 #' Uses multi-taper methods to etimate a spectrum for the given vector
+#' 
+#' @param vec the vector of data
+#' @param dt deltaT, or 1/sampling rate
+#' @param dif boolean, should the vector be differenced before estimating the spectrum
 #-
 MultiTaperSpectrum <- function(vec, dt=0.1247232, dif=T){
 	if(dif){
@@ -61,13 +76,5 @@ MultiTaperSpectrum <- function(vec, dt=0.1247232, dif=T){
 	sp <- spec.mtm(ts(vec[which(!is.na(vec))], deltat=dt), plot=F)
 	class(sp) <- c("MTSpectrum")
 	return(sp)
-}
-
-
-PeriodSpectrum <- function(vec, dt=0.1247232){
-	freq <- list("data"=fft(vec)[1:ceiling(length(vec)/2)])
-	freq$freqlabs <-  seq(0, 0.5/dt, length.out=ceiling(length(vec)/2))
-	class(freq) <- c("PeriodSpectrum")
-	return(freq)
 }
 

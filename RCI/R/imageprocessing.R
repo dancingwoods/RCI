@@ -21,6 +21,67 @@
 ################################################################################
 
 #-
+#' Finds the extrema in an image.
+#' 
+#' @param image the image matrix
+#' @param maxima boolean, should this function find maxima (default).  If false, finds minima
+#' 
+#' @return a matrix with 1 at maxima (or minima) and 0 elsewhere
+#' 
+#' @useDynLib RCI localmaxC
+#' @export
+#-
+GetExtrema <- function(image, maxima=T){	
+    d = dim(image)	
+    # Use the C function
+	out <- .C("localmaxC",
+		mat = as.double(image),
+		as.integer(d),
+		as.integer(!maxima)
+	)			
+	ret = matrix(out$mat, d[1], d[2])
+	return(ret)
+}
+
+
+#-
+#' Assigns the non-zero pixels of 'region' to one of the maxima of the iamge by hillclimbing
+#' on image
+#' 
+#' @param region a matrix with 1 in the regions to be assigned and 0 elsewhere
+#' @param image the image matrix
+#' @param restrict boolean.  should the hill-climbing be restricted to a path entirely within region
+#' 
+#' @return a matrix with unique integers in the pixels of region corresponding to each local maxima
+#' 
+#' @useDynLib RCI labelbumpsC
+#' @export
+#-
+AssignToPeaks <- function(region, image, restrict=T){
+	peaks = GetExtrema(image)
+    d = dim(image)
+
+	if(restrict){
+		# Set non-bump pixels of image to 0 to require hill climbing to
+		# only occur within bump regions
+		image[which(region==0)]=0
+	}
+	
+    # Use the C function
+	out <- .C("labelbumpsC",
+		ret = as.integer(region),
+		as.integer(peaks),
+		as.double(image),
+		as.integer(d)
+	)
+		
+	ret = matrix(out$ret, d[1], d[2])
+	return(ret)
+    
+}
+
+
+#-
 #' Convolves an image with the given kernel matrix
 #' 
 #' @details Uses Fourier methods to convolve the given image with the given kernel
@@ -31,6 +92,7 @@
 #' image be padded with zeros to prevent circular convolution
 #' 
 #' @return a matrix of the same size as image with the convolved image
+#' @export
 #-
 ConvolveImage <- function(image, kernel, circular=T){
 	PadKernel <- function(kernel, size){
@@ -373,6 +435,8 @@ ShiftFFT <- function(img, pars, fdomain=FALSE, rotatefirst=FALSE){
 #' @param amt the amount to shift
 #' 
 #' @return the circularly shifted vector
+#' 
+#' @export
 #-
 ShiftFFTVector <- function(vec, amt){
 	#shifts a vector by a specified amount using fft
@@ -398,6 +462,8 @@ ShiftFFTVector <- function(vec, amt){
 #' @param amt the amount to shift
 #' 
 #' @return the circularly shifted vector
+#' 
+#' @export
 #-
 ShiftVector <- function(vec, amt){
 	#shifts a vector by a specified amount using fft
@@ -433,6 +499,8 @@ ShiftVector <- function(vec, amt){
 #' if false, takes matrix from fft and reorders it
 #' 
 #' @return the reordered matrix
+#' 
+#' @export
 #-
 ReorderFFT <- function(mat, inverse=F){
 	# Reorders matrix from fft to the logical order

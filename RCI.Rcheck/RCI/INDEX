@@ -1,15 +1,28 @@
 AddConMat               INTERNAL Adds the overlap edges to a mask
                         database
 AddMask                 Plots a mask over an already plotted image
+AddMaskSet              Plots sets of masks over an already plotted
+                        image
+AddMasks                Generate masks according to the given method
+                        and add them to the database
+AssignToPeaks           Assigns the non-zero pixels of 'region' to one
+                        of the maxima of the iamge by hillclimbing on
+                        image
+ClipImage               Clips a border from around an image matrix
+ClusterCells            Clustering
+ClusterCorrelation      See correlation with clusters
 CompMaskC               INTERNAL Compute the overlap of a single mask
                         with a list of masks
 CompMasksC              INTERNAL Compute the overlap matrix between a
                         set of masks
 ConMaskDb               Connects to an experiment's mask database
+ConvolveImage           Convolves an image with the given kernel matrix
 CountHolesC             INTERNAL Counts the number of pixels not in a
                         mask that are surrounded by at least 3 mask
                         pixels
 CreateCalExpFromCSV     Convert a folder of text images to a calexp
+                        data object
+CreateCalExpFromText    Convert a folder of text images to a calexp
                         data object
 CreateCurExp            INTERNAL Create an object to store information
                         about the currently selected experiment.
@@ -17,17 +30,26 @@ CreateDbController      INTERNAL Creates an empty database controller
 DbAddMask               Add a mask to a database
 DbSetup                 INTERNAL Creates an empty mask database with
                         the appropriate tables
+EmbedAndTaperImage      Embeds an image in a larger matrix of 0's and
+                        tapers the image edges using a Hanning window
+EmbedImage              Embeds an image matrix in a larger matrix with
+                        a border of 0's
+FFTPhaseCor             INTERNAL Computes sub-pixel shifts values using
+                        phase correlation (FFT implementation)
 FFTXCor                 INTERNAL Computes sub-pixel shifts values using
                         FFT
 FilterVector            INTERNAL Filters a vector by frequency using a
                         butterworth filter
 GetDataFeatures         INTERNAL Computes the features related to the
                         data under a mask, adding them to the database
+GetExtrema              Finds the extrema in an image.
 GetInnerMasks           INTERNAL Selects the masks from the given list
                         that are contained in a region
 GetMask                 Return the requested mask from the specified
                         database
 GetMasks                Returns a list of the masks in a database
+GetSeries               Return average time series for each cell in a
+                        mask
 GetShapeFeatures        INTERNAL Computes the features related to just
                         the shape of masks, adding them to the database
 HillClimbC              INTERNAL Perform hill climbing on a matrix
@@ -39,26 +61,55 @@ Image                   Plots an image of the given matrix with the
                         origin in the upper left
 ImageToCoordMat         INTERNAL Converts an image matrix to a matrix
                         with coordinates and values in the columns
+IntensityCorrection     Performs intensity correction on the given
+                        calcium experiment
 InvertMask              INTERNAL Inverts a mask matrix so that the mask
                         region is turned to backgroun and vice versa
+LoGKernel               Returns a Laplacian of Gaussian kernel
+MaskDbSetup             INTERNAL Creates an empty mask database with
+                        the appropriate tables
 MaskHull                INTERNAL Computes the convex hull of a mask
 MatrixToSparse          INTERNAL Converts a matrix mask into a sparse
                         mask.  Assumes that the non-mask pixels of the
                         matrix are NA.
+MultiTaperSpectrum      Uses multi-taper methods to etimate a spectrum
+                        for the given vector
+OptimRotate             INTERNAL Uses optimization of an objective
+                        function to compute the best alignment rotation
+                        between two images
+OptimShift              INTERNAL Computes the rigid body motion
+                        alignment parameters by optimizing some error
+                        function comparing the two images. (uses
+                        optimization routines in the neldermead
+                        package)
+OptimTranslate          Uses optimization of an objective function to
+                        compute the best alignment translation between
+                        two images (uses optimization routines in the
+                        neldermead package)
 RegisterCalExp          Removes in-plane motion effects using rigid
                         body alignment of the image frames
 RemoveMask              Remove a mask from a mask database
 ReorderFFT              INTERNAL Reorders the matrix returned by fft
+RotateFFT               Rotates an image by the given angle using a
+                        sequence of Fourier domain shears as described
+                        in Eddy 1996.
 RotateImg               INTERNAL Rotates an image by a given number of
                         integer rows and columns
 SetMaskLabel            Sets the label field for a particular mask in a
                         mask database
+ShiftFFT                Shifts an image by the given amount, both
+                        translation and rotation
+ShiftFFTVector          INTERNAL Shifts a vector by the specified
+                        amount using FFT phase shift, but assuming the
+                        Fourier transform has already been performed.
+ShiftVector             INTERNAL Shifts a vector by the specified
+                        amount using FFT
 SimpleModesC            INTERNAL Finds the local maxima in an image
 SlidingHistEqualC       INTERNAL Computes the sliding window histogram
                         equalization of a matrix
 SparseToMatrix          INTERNAL Converts a sparse mask to a matrix
                         mask
-TranslateFFT            INTERNAL Shifts an image by the given
-                        (fractional pixel) amounts
+TranslateFFT            Shifts an image by the given (fractional pixel)
+                        amounts
 ViewCI                  Opens the GUI viewer to manipulate the
                         segmentation process.

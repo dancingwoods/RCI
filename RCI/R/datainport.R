@@ -37,6 +37,7 @@
 #' @return an object of class calexp
 #'  \item{name}{the name passed in as an argument to this function}
 #'  \item{data}{an array containing the image data, with dimensions nchans-nrows-ncols}
+#' 
 #' @export
 #-
 CreateCalExpFromText <- function(name, imgdir, nchans=2){

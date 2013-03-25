@@ -1,12 +1,12 @@
-This is pdfTeXk, Version 3.1415926-1.40.9 (Web2C 7.5.7) (format=pdflatex 2008.12.28)  23 JAN 2013 16:19
+This is pdfTeXk, Version 3.1415926-1.40.9 (Web2C 7.5.7) (format=pdflatex 2008.12.28)  25 MAR 2013 18:59
 entering extended mode
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/private/var/folders/pd/pd+OxX2yGxitoI6Od2-03k+++TI/-Tmp-/Rtmpdx8yUp/Rd2pdf16
-8f979ecb474/Rd2.tex
+**/private/var/folders/pd/pd+OxX2yGxitoI6Od2-03k+++TI/-Tmp-/RtmplSbH5j/Rd2pdf97
+25359e3a3/Rd2.tex
 
-(/private/var/folders/pd/pd+OxX2yGxitoI6Od2-03k+++TI/-Tmp-/Rtmpdx8yUp/Rd2pdf168
-f979ecb474/Rd2.tex
+(/private/var/folders/pd/pd+OxX2yGxitoI6Od2-03k+++TI/-Tmp-/RtmplSbH5j/Rd2pdf972
+5359e3a3/Rd2.tex
 LaTeX2e <2005/12/01>
 Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
 yphenation, german-x-2008-06-18, ngerman-x-2008-06-18, ancientgreek, ibycus, ar
@@ -111,11 +111,11 @@ l.267 ^^M
  
 Here is how much of TeX's memory you used:
  902 strings out of 493876
- 9981 string characters out of 1150567
+ 9975 string characters out of 1150567
  57194 words of memory out of 3000000
  4231 multiletter control sequences out of 10000+50000
  4403 words of font info for 15 fonts, out of 3000000 for 5000
  714 hyphenation exceptions out of 8191
- 30i,0n,21p,261b,37s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 30i,0n,21p,259b,37s stack positions out of 5000i,500n,10000p,200000b,50000s
 /Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/Rd.sty:267:  ==
 > Fatal error occurred, no output PDF file produced!

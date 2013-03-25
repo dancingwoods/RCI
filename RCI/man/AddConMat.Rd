@@ -6,7 +6,7 @@ Adds the overlap edges to a mask database}
   AddConMat(db, cmat, ids)
 }
 \arguments{
-  \item{db}{a database connection object}
+  \item{db}{the mask database object}
 
   \item{cmat}{a matrix of 0/1 values giving the locations
   of edges between masks}
