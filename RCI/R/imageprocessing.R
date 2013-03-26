@@ -32,20 +32,20 @@
 #' @export
 #-
 GetExtrema <- function(image, maxima=T){	
-    d = dim(image)	
+    d <- dim(image)	
     # Use the C function
 	out <- .C("localmaxC",
 		mat = as.double(image),
 		as.integer(d),
 		as.integer(!maxima)
 	)			
-	ret = matrix(out$mat, d[1], d[2])
+	ret <- matrix(out$mat, d[1], d[2])
 	return(ret)
 }
 
 
 #-
-#' Assigns the non-zero pixels of 'region' to one of the maxima of the iamge by hillclimbing
+#' Assigns the non-zero pixels of 'region' to one of the maxima of the image by hillclimbing
 #' on image
 #' 
 #' @param region a matrix with 1 in the regions to be assigned and 0 elsewhere
@@ -58,8 +58,11 @@ GetExtrema <- function(image, maxima=T){
 #' @export
 #-
 AssignToPeaks <- function(region, image, restrict=T){
-	peaks = GetExtrema(image)
-    d = dim(image)
+	peaks <- GetExtrema(image)
+	w <- which(peaks==1)
+	inds = 1:length(w)
+	peaks[w] <- inds
+    d <- dim(image)
 
 	if(restrict){
 		# Set non-bump pixels of image to 0 to require hill climbing to
@@ -75,7 +78,7 @@ AssignToPeaks <- function(region, image, restrict=T){
 		as.integer(d)
 	)
 		
-	ret = matrix(out$ret, d[1], d[2])
+	ret <- matrix(out$ret, d[1], d[2])
 	return(ret)
     
 }

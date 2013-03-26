@@ -67,6 +67,8 @@ GetPhase <- function(vec, low, high, dt=1/1000){
 #' @param vec the vector of data
 #' @param dt deltaT, or 1/sampling rate
 #' @param dif boolean, should the vector be differenced before estimating the spectrum
+#' 
+#' @export
 #-
 MultiTaperSpectrum <- function(vec, dt=0.1247232, dif=T){
 	if(dif){
@@ -77,4 +79,26 @@ MultiTaperSpectrum <- function(vec, dt=0.1247232, dif=T){
 	class(sp) <- c("MTSpectrum")
 	return(sp)
 }
+
+#-
+#' Generate a sequence with log scale jumps
+#' @param minv the value at the low end of the scale.  This is
+#' set to 0.01 if it is <=0
+#' @param maxv the value at the high end of the scale
+#' @param length.out the number of values to return
+#' 
+#' @return a vector with the requested sequence
+#' 
+#' @export
+#-
+LogSeq <- function(minv, maxv, length.out){
+	if(minv>=0){minv=0.01}
+	return(exp(seq(log(minv), log(maxv), length.out=length.out)))
+}
+
+
+
+
+
+
 

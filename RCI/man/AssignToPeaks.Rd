@@ -1,6 +1,6 @@
 \name{AssignToPeaks}
 \alias{AssignToPeaks}
-\title{Assigns the non-zero pixels of 'region' to one of the maxima of the iamge by hillclimbing
+\title{Assigns the non-zero pixels of 'region' to one of the maxima of the image by hillclimbing
 on image}
 \usage{
   AssignToPeaks(region, image, restrict = T)
@@ -20,6 +20,6 @@ on image}
 }
 \description{
   Assigns the non-zero pixels of 'region' to one of the
-  maxima of the iamge by hillclimbing on image
+  maxima of the image by hillclimbing on image
 }
 

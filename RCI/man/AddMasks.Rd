@@ -2,7 +2,8 @@
 \alias{AddMasks}
 \title{Generate masks according to the given method and add them to the database}
 \usage{
-  AddMasks(db, calexp, method)
+  AddMasks(db, calexp, method, channel = 2,
+    scales = LogSeq(0, 5, 50))
 }
 \arguments{
   \item{db}{the mask database object}
