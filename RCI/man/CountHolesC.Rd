@@ -3,11 +3,15 @@
 \title{INTERNAL
 Counts the number of pixels not in a mask that are surrounded by at least 3 mask pixels}
 \usage{
-  CountHolesC(mask)
+  CountHolesC(sparsemask, nr, nc)
 }
 \arguments{
-  \item{mask}{the mask in which to count holes.  NA or 0 in
-  the background.}
+  \item{sparsemask}{the mask in which to count holes
+  (sparse vector)}
+
+  \item{nr}{number of rows}
+
+  \item{nc}{number of columns}
 }
 \value{
   an integer giving the number of holes in the mask

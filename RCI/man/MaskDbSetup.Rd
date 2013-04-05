@@ -3,7 +3,8 @@
 \title{INTERNAL
 Creates an empty mask database with the appropriate tables}
 \usage{
-  MaskDbSetup(db)
+  MaskDbSetup(db, calexp, tag, dt = NA, description = NA,
+    datafile = NA)
 }
 \arguments{
   \item{db}{the database object for which to create the

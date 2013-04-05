@@ -37,6 +37,7 @@ Image <-function(img, col=grey(seq(0,1,0.001)), ...){
 	image(t(img[n:1,]), col=col, axes=F, ...)
 }
 
+
 #-
 #' Plots a mask over an already plotted image
 #' 
@@ -79,12 +80,18 @@ AddMask <- function(mask, rgb=runif(3), alpha=0.5, ...){
 #' 
 #' @export
 #-
-AddMaskSet <- function(mask, alpha=0.5, ...){
+AddMaskSet <- function(mask, alpha=0.5, rgb=NULL,...){
 	mask[which(mask==0)]=NA
 	uids <- unique(as.vector(mask))
-	uids = uids[which(!is.na(uids))]
+	uids <- uids[which(!is.na(uids))]
 	nids <- length(uids)
-	cvec = rgb(runif(nids), runif(nids), runif(nids), alpha=alpha)	
+	
+	if(is.null(rgb)){	
+		cvec <- rgb(runif(nids), runif(nids), runif(nids), alpha=alpha)	
+	}else{
+		cvec <- rgb(rep(rgb[1], nids), rep(rgb[2], nids), rep(rgb[3], nids), alpha=alpha) 
+	}
+	
 	n = nrow(mask)
 	for(i in 1:nids){
 		submask = mask

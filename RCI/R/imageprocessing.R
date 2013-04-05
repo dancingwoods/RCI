@@ -21,6 +21,111 @@
 ################################################################################
 
 #-
+#' INTERNAL
+#' Computes the convex hull of a mask
+#' 
+#' @details FIXME: there's the issue that maphull(maphull(x))!=maphull(x), but using this anyway
+#' 
+#' @param sparsemask the sparse mask (vector) for which to find the convex hull.  
+#' @param nr the number of rows in the image
+#' @param nc the number of columns in the image
+#' 
+#' @return a sparse representation of the convex hull of the given mask
+#' 
+#' @export
+#-
+MaskHull <- function(sparsemask, nr, nc){
+	mask <- matrix(NA, nr, nc)
+	mask[sparsemask]=1
+	
+	pts <- arrayInd(which(!is.na(mask)), dim(mask))
+	if(nrow(pts)==0){
+		return(mask)
+	}
+	
+	# Compute the points on the center of each edge of each pixel
+	pts2 <- matrix(0, nrow(pts)*4,2)
+	pts2[,1] <- c(pts[,1]-0.5, pts[,1]+0.5, pts[,1], pts[,1])
+	pts2[,2] <- c(pts[,2], pts[,2], pts[,2]-0.5, pts[,2]+0.5)
+	pts2 <- pts2[!duplicated(pts2),]
+	
+	# Convex hull of corner points
+	ptspoly <- pts2[chull(pts2),]
+	np <- nrow(mask)*ncol(mask)
+	testpts <- matrix(0, np,2)
+	testpts[,1] <- rep(1:nrow(mask), ncol(mask))
+	testpts[,2] <- sort(rep(1:ncol(mask), nrow(mask)))
+	
+	# test whether each point center is within the convex hull
+	# uses in.out from package mgcv
+	flags <- in.out(ptspoly, testpts)
+	return(which(flags))
+}
+
+#-
+#' INTERNAL
+#' Counts the number of pixels not in a mask that are surrounded by at least 3 mask pixels
+#' 
+#' @details Uses C code from the file countholesC.c
+#' 
+#' @param sparsemask the mask in which to count holes (sparse vector)
+#' @param nr number of rows
+#' @param nc number of columns
+#'
+#' 
+#' @return an integer giving the number of holes in the mask
+#' @useDynLib RCI countholesC
+#-
+CountHolesC <- function(sparsemask, nr, nc){
+	mask <- matrix(0, nr, nc)
+	mask[sparsemask] <- 1
+    d <- dim(mask)
+	count <- 0
+    # Use the C function
+	out <- .C("countholesC",
+		mat = as.double(mask),
+		as.integer(d),
+		ct = as.integer(count)
+	)
+		
+	ret = out$ct
+	return(ret)
+}
+
+#-
+#' INTERNAL
+#' Computes the sliding window histogram equalization of a matrix
+#' 
+#' @details Uses C code in slidinghistequalC.c
+#' 
+#' @param mat the matrix to equalize
+#' @param radius the radius of the sliding window (total window size is a square window
+#' with sides 2*radius+1)
+#' @param fullmax the maximum value in the equalized image
+#' 
+#' @return The equalized matrix
+#' 
+#' @useDynLib RCI slidinghistequalC
+#' 
+#' @export
+#-
+SlidingHistEqualC <- function(mat, radius, fullmax=4096){
+	# Interfaces with the C function for sliding window histogram equalization
+    d = dim(mat)
+	
+    # Use the C function
+	out <- .C("slidinghistequalC",
+		mat = as.double(mat),
+		as.integer(d),
+		as.integer(radius),
+		as.integer(fullmax)
+	)
+		
+	ret = matrix(out$mat, d[1], d[2])
+	return(ret)
+}
+
+#-
 #' Finds the extrema in an image.
 #' 
 #' @param image the image matrix

@@ -2,7 +2,7 @@
 \alias{GetMask}
 \title{Return the requested mask from the specified database}
 \usage{
-  GetMask(db, id, format = "sparse")
+  GetMask(db, id, sparse = T)
 }
 \arguments{
   \item{db}{a database connection}
