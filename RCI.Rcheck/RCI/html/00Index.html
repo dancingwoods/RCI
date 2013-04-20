@@ -23,12 +23,14 @@
 <td>INTERNAL Adds the overlap edges to a mask database</td></tr>
 <tr><td width="25%"><a href="AddMask.html">AddMask</a></td>
 <td>Plots a mask over an already plotted image</td></tr>
+<tr><td width="25%"><a href="AddMaskConnections.html">AddMaskConnections</a></td>
+<td>INTERNAL Adds the overlap edges to a mask database</td></tr>
 <tr><td width="25%"><a href="AddMasks.html">AddMasks</a></td>
 <td>Generate masks according to the given method and add them to the database</td></tr>
 <tr><td width="25%"><a href="AddMaskSet.html">AddMaskSet</a></td>
 <td>Plots sets of masks over an already plotted image</td></tr>
 <tr><td width="25%"><a href="AssignToPeaks.html">AssignToPeaks</a></td>
-<td>Assigns the non-zero pixels of 'region' to one of the maxima of the iamge by hillclimbing on image</td></tr>
+<td>Assigns the non-zero pixels of 'region' to one of the maxima of the image by hillclimbing on image</td></tr>
 <tr><td width="25%"><a href="ClipImage.html">ClipImage</a></td>
 <td>Clips a border from around an image matrix</td></tr>
 <tr><td width="25%"><a href="ClusterCells.html">ClusterCells</a></td>
@@ -39,6 +41,8 @@
 <td>INTERNAL Compute the overlap of a single mask with a list of masks</td></tr>
 <tr><td width="25%"><a href="CompMasksC.html">CompMasksC</a></td>
 <td>INTERNAL Compute the overlap matrix between a set of masks</td></tr>
+<tr><td width="25%"><a href="ComputeMaskFeatures.html">ComputeMaskFeatures</a></td>
+<td>Computed features of masks that are currently in the mask database. This is sort of hack - should be more general and allow users to specify feature functions</td></tr>
 <tr><td width="25%"><a href="ConMaskDb.html">ConMaskDb</a></td>
 <td>Connects to an experiment's mask database</td></tr>
 <tr><td width="25%"><a href="ConvolveImage.html">ConvolveImage</a></td>
@@ -61,6 +65,8 @@
 <td>Embeds an image in a larger matrix of 0's and tapers the image edges using a Hanning window</td></tr>
 <tr><td width="25%"><a href="EmbedImage.html">EmbedImage</a></td>
 <td>Embeds an image matrix in a larger matrix with a border of 0's</td></tr>
+<tr><td width="25%"><a href="EqualThreshMasks.html">EqualThreshMasks</a></td>
+<td>Generates a set of masks using thresholding of the sliding histogram equalized version of an image</td></tr>
 <tr><td width="25%"><a href="FFTPhaseCor.html">FFTPhaseCor</a></td>
 <td>INTERNAL Computes sub-pixel shifts values using phase correlation (FFT implementation)</td></tr>
 <tr><td width="25%"><a href="FFTXCor.html">FFTXCor</a></td>
@@ -77,6 +83,8 @@
 <td>Return the requested mask from the specified database</td></tr>
 <tr><td width="25%"><a href="GetMasks.html">GetMasks</a></td>
 <td>Returns a list of the masks in a database</td></tr>
+<tr><td width="25%"><a href="GetPhase.html">GetPhase</a></td>
+<td>Gets the phase of a given frequency band of a vector using the FFT</td></tr>
 <tr><td width="25%"><a href="GetSeries.html">GetSeries</a></td>
 <td>Return average time series for each cell in a mask</td></tr>
 <tr><td width="25%"><a href="GetShapeFeatures.html">GetShapeFeatures</a></td>
@@ -95,12 +103,18 @@
 <td>INTERNAL Inverts a mask matrix so that the mask region is turned to backgroun and vice versa</td></tr>
 <tr><td width="25%"><a href="LoGKernel.html">LoGKernel</a></td>
 <td>Returns a Laplacian of Gaussian kernel</td></tr>
+<tr><td width="25%"><a href="LoGMasks.html">LoGMasks</a></td>
+<td>Generates a set of masks using the Laplacian of Gaussian technique for the given scale and kernel size</td></tr>
+<tr><td width="25%"><a href="LogSeq.html">LogSeq</a></td>
+<td>Generate a sequence with log scale jumps</td></tr>
 <tr><td width="25%"><a href="MaskDbSetup.html">MaskDbSetup</a></td>
 <td>INTERNAL Creates an empty mask database with the appropriate tables</td></tr>
 <tr><td width="25%"><a href="MaskHull.html">MaskHull</a></td>
 <td>INTERNAL Computes the convex hull of a mask</td></tr>
 <tr><td width="25%"><a href="MatrixToSparse.html">MatrixToSparse</a></td>
 <td>INTERNAL Converts a matrix mask into a sparse mask.  Assumes that the non-mask pixels of the matrix are NA.</td></tr>
+<tr><td width="25%"><a href="MatrixToSparseMasks.html">MatrixToSparseMasks</a></td>
+<td>Converts a matrix with unique positive integers on each mask into a sparse mask list</td></tr>
 <tr><td width="25%"><a href="MultiTaperSpectrum.html">MultiTaperSpectrum</a></td>
 <td>Uses multi-taper methods to etimate a spectrum for the given vector</td></tr>
 <tr><td width="25%"><a href="OptimRotate.html">OptimRotate</a></td>
@@ -109,12 +123,16 @@
 <td>INTERNAL Computes the rigid body motion alignment parameters by optimizing some error function comparing the two images. (uses optimization routines in the neldermead package)</td></tr>
 <tr><td width="25%"><a href="OptimTranslate.html">OptimTranslate</a></td>
 <td>Uses optimization of an objective function to compute the best alignment translation between two images (uses optimization routines in the neldermead package)</td></tr>
+<tr><td width="25%"><a href="plot.MTSpectrum.html">plot.MTSpectrum</a></td>
+<td>Plots a multitaper spectral estimate created by MultiTaperSpectrum</td></tr>
 <tr><td width="25%"><a href="RegisterCalExp.html">RegisterCalExp</a></td>
 <td>Removes in-plane motion effects using rigid body alignment of the image frames</td></tr>
 <tr><td width="25%"><a href="RemoveMask.html">RemoveMask</a></td>
-<td>Remove a mask from a mask database</td></tr>
+<td>Remove a mask and its feature links from the database</td></tr>
 <tr><td width="25%"><a href="ReorderFFT.html">ReorderFFT</a></td>
 <td>INTERNAL Reorders the matrix returned by fft</td></tr>
+<tr><td width="25%"><a href="RestrictMaskSize.html">RestrictMaskSize</a></td>
+<td>Removes masks from the database whose size is less than min pixels or greater than max pixels</td></tr>
 <tr><td width="25%"><a href="RotateFFT.html">RotateFFT</a></td>
 <td>Rotates an image by the given angle using a sequence of Fourier domain shears as described in Eddy 1996.</td></tr>
 <tr><td width="25%"><a href="RotateImg.html">RotateImg</a></td>
@@ -133,9 +151,11 @@
 <td>INTERNAL Computes the sliding window histogram equalization of a matrix</td></tr>
 <tr><td width="25%"><a href="SparseToMatrix.html">SparseToMatrix</a></td>
 <td>INTERNAL Converts a sparse mask to a matrix mask</td></tr>
+<tr><td width="25%"><a href="summary.MaskDb.html">summary.MaskDb</a></td>
+<td>Summary function to quickly see the details/statistics of a mask database object</td></tr>
 <tr><td width="25%"><a href="TranslateFFT.html">TranslateFFT</a></td>
 <td>Shifts an image by the given (fractional pixel) amounts</td></tr>
 <tr><td width="25%"><a href="ViewCI.html">ViewCI</a></td>
-<td>Opens the GUI viewer to manipulate the segmentation process.</td></tr>
+<td>#INTERNAL #Creates an empty database controller # #</td></tr>
 </table>
 </body></html>

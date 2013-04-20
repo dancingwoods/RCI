@@ -86,6 +86,11 @@ MaskDbSetup <- function(db, calexp, tag, dt=NA, description=NA, datafile=NA){
 	#   id - primary key int
 	#   maskid1 - id of first mask
 	#   maskid2 - id of second mask
+	# 
+	# TABLE: images
+	#   id - primary key int
+	#   tag - name of summary image
+	#   image - text string of image
 	
 	if(is.null(tag)){
 		cat("error: no tag provided\n")
@@ -101,7 +106,7 @@ MaskDbSetup <- function(db, calexp, tag, dt=NA, description=NA, datafile=NA){
 	dbGetQuery(db$db, "CREATE TABLE features (id INTEGER PRIMARY KEY, tag TEXT NOT NULL, description TEXT, UNIQUE(tag))")
 	dbGetQuery(db$db, "CREATE TABLE feats_masks (id INTEGER PRIMARY KEY, maskid INTEGER NOT NULL, featureid INTEGER NOT NULL, fvalue REAL NOT NULL, UNIQUE(maskid, featureid))")
 	dbGetQuery(db$db, "CREATE TABLE edges (id INTEGER PRIMARY KEY, maskid1 INTEGER NOT NULL, maskid2 INTEGER NOT NULL)")
-	
+	dbGetQuery(db$db, "CREATE TABLE images (id INTEGER PRIMARY KEY, tag TEXT NOT NULL, image TEXT NOT NULL)")
 	if(is.na(dt)){
 		dt <- 0
 	}
@@ -387,11 +392,31 @@ AddMasks <- function(db, calexp, method, channel=2, scales=NULL, invert=F){
 	cat("\n")
 }
 
+AddImages <- function(db, calexp){
+	mimg1 <- apply(calexp$data[1,,,], c(2,3), mean)
+	mimg2 <- apply(calexp$data[2,,,], c(2,3), mean)
+	mimg1eq <- SlidingHistEqualC(mimg1, 8)
+	mimg2eq <- SlidingHistEqualC(mimg2, 8)
+
+	dbGetQuery(db$db, paste("INSERT into images (tag, image) values ('mimg1', '", paste(as.vector(mimg1), collapse=", "),"')"))
+	dbGetQuery(db$db, paste("INSERT into images (tag, image) values ('mimg1eq', '", paste(as.vector(mimg1eq), collapse=", "),"')"))
+	dbGetQuery(db$db, paste("INSERT into images (tag, image) values ('mimg2', '", paste(as.vector(mimg2), collapse=", "),"')"))
+	dbGetQuery(db$db, paste("INSERT into images (tag, image) values ('mimg2eq', '", paste(as.vector(mimg2eq), collapse=", "),"')"))
+
+}
 
 
 #####################################################################################
 ################ Functions to manipulate masks (extract, get features etc)  #########
 #####################################################################################
+
+GetImage <- function(db, tag){
+	qry = paste("SELECT image from images where tag='", tag, "'", sep="")
+	imgstr <- dbGetQuery(db$db, qry)[1,1]
+	dims <- dbGetQuery(db$db, "SELECT nx, ny from experiment")
+	vec <- as.double(strsplit(imgstr, split=", ")[[1]])
+	return(matrix(vec, dims[1,1], dims[1,2]))
+}
 
 #-
 #' Sets the label field for a particular mask in a mask database
@@ -763,28 +788,48 @@ CompMasksC <- function(masklist){
 #' @export
 #-
 AddMaskConnections <- function(db){
+
+	# Remove any existing connections in the database
+	dbGetQuery(db$db, "delete from edges")
+	
 	masks <- dbGetQuery(db$db, "select id, mask from masks order by id")
 	ToVector <- function(row){
 		return(c(-strtoi(row[1]), as.integer(strsplit(row[2], split=", ")[[1]])))
 	}
 	masklist <- apply(masks, 1, ToVector)
-	cmat <- CompMasksC(masklist)
 	ids <- strtoi(masks[,1])
 	
-	# Remove any existing connections in the database
-	dbGetQuery(db$db, "delete from edges")
+	if(length(masklist) <= 46340){
+		# few enough masks to compute overlap simultaneously.  need to rethink implementation
+		# for scale
+		cmat <- CompMasksC(masklist)
 	
-	# Make data.frame of connections to add
-	cons <- arrayInd(which(cmat), dim(cmat))
-	cons <- cons[which(cons[,1]>cons[,2]),]
-	cons[,1] <- ids[cons[,1]]
-	cons[,2] <- ids[cons[,2]]
-	cons <- as.data.frame(cons)
-	names(cons) <- c("maskid1", "maskid2")
-	# Add edges from the data.frame using a prepared query
-	dbBeginTransaction(db$db)
-	dbGetPreparedQuery(db$db, "INSERT INTO edges (maskid1, maskid2) VALUES (?,?)", bind.data=cons)
-	dbCommit(db$db)
+		# Make data.frame of connections to add
+		cons <- arrayInd(which(cmat), dim(cmat))
+		cons <- cons[which(cons[,1]>cons[,2]),]
+		cons[,1] <- ids[cons[,1]]
+		cons[,2] <- ids[cons[,2]]
+		cons <- as.data.frame(cons)
+		names(cons) <- c("maskid1", "maskid2")
+		# Add edges from the data.frame using a prepared query
+		dbBeginTransaction(db$db)
+		dbGetPreparedQuery(db$db, "INSERT INTO edges (maskid1, maskid2) VALUES (?,?)", bind.data=cons)
+		dbCommit(db$db)
+	}else{
+		for(i in 1:(length(masklist)-1)){
+			id <- ids[i]
+			tmpids <- ids[-(1:i)]
+			cvec <- CompMaskC(masklist[[i]], masklist[-(1:i)])
+			w <- which(cvec==1)
+			cons <- cbind(rep(id, length(w)), tmpids[w])
+			cons <- as.data.frame(cons)
+			names(cons) <- c("maskid1", "maskid2")
+			dbBeginTransaction(db$db)
+			dbGetPreparedQuery(db$db, "INSERT INTO edges (maskid1, maskid2) VALUES (?,?)", bind.data=cons)
+			dbCommit(db$db)
+		}
+	}
+	
 }
 
 
@@ -872,7 +917,7 @@ InvertMask <- function(mask){
 #' @return A matrix of dimension (ny, nx) with 1's in the mask pixels and background
 #' elsewhere
 #-
-SparseToMatrix <- function(sm, ny=128, nx=128, background=NA){
+SparseToMatrix <- function(sm, ny=126, nx=126, background=NA){
 	mat <- matrix(background, ny, nx)
 	mat[sm[which(sm>0)]] <- 1
 	return(mat)

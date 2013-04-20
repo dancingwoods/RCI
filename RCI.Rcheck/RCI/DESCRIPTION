@@ -10,5 +10,5 @@ Imports: RSQLite, randomForest, gWidgets, gWidgetsRGtk2, cairoDevice,
         R.utils, mgcv, RSEIS
 Collate: 'datainport.R' 'motion.R' 'plotting.R' 'segmentation.R'
         'gui.R' 'imageprocessing.R' 'timeseries.R' 'clustering.R'
-Built: R 2.14.2; universal-apple-darwin9.8.0; 2013-03-25 22:59:04 UTC; unix
-Archs: i386, x86_64
+        'classifier.R'
+Built: R 3.0.0; x86_64-apple-darwin10.8.0; 2013-04-09 17:53:00 UTC; unix

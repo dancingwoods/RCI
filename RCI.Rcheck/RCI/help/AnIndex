@@ -1,5 +1,6 @@
 AddConMat	AddConMat
 AddMask	AddMask
+AddMaskConnections	AddMaskConnections
 AddMasks	AddMasks
 AddMaskSet	AddMaskSet
 AssignToPeaks	AssignToPeaks
@@ -8,6 +9,7 @@ ClusterCells	ClusterCells
 ClusterCorrelation	ClusterCorrelation
 CompMaskC	CompMaskC
 CompMasksC	CompMasksC
+ComputeMaskFeatures	ComputeMaskFeatures
 ConMaskDb	ConMaskDb
 ConvolveImage	ConvolveImage
 CountHolesC	CountHolesC
@@ -19,6 +21,7 @@ DbAddMask	DbAddMask
 DbSetup	DbSetup
 EmbedAndTaperImage	EmbedAndTaperImage
 EmbedImage	EmbedImage
+EqualThreshMasks	EqualThreshMasks
 FFTPhaseCor	FFTPhaseCor
 FFTXCor	FFTXCor
 FilterVector	FilterVector
@@ -27,6 +30,7 @@ GetExtrema	GetExtrema
 GetInnerMasks	GetInnerMasks
 GetMask	GetMask
 GetMasks	GetMasks
+GetPhase	GetPhase
 GetSeries	GetSeries
 GetShapeFeatures	GetShapeFeatures
 HillClimbC	HillClimbC
@@ -36,16 +40,21 @@ ImageToCoordMat	ImageToCoordMat
 IntensityCorrection	IntensityCorrection
 InvertMask	InvertMask
 LoGKernel	LoGKernel
+LoGMasks	LoGMasks
+LogSeq	LogSeq
 MaskDbSetup	MaskDbSetup
 MaskHull	MaskHull
 MatrixToSparse	MatrixToSparse
+MatrixToSparseMasks	MatrixToSparseMasks
 MultiTaperSpectrum	MultiTaperSpectrum
 OptimRotate	OptimRotate
 OptimShift	OptimShift
 OptimTranslate	OptimTranslate
+plot.MTSpectrum	plot.MTSpectrum
 RegisterCalExp	RegisterCalExp
 RemoveMask	RemoveMask
 ReorderFFT	ReorderFFT
+RestrictMaskSize	RestrictMaskSize
 RotateFFT	RotateFFT
 RotateImg	RotateImg
 SetMaskLabel	SetMaskLabel
@@ -55,5 +64,6 @@ ShiftVector	ShiftVector
 SimpleModesC	SimpleModesC
 SlidingHistEqualC	SlidingHistEqualC
 SparseToMatrix	SparseToMatrix
+summary.MaskDb	summary.MaskDb
 TranslateFFT	TranslateFFT
 ViewCI	ViewCI

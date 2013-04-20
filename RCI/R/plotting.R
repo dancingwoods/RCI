@@ -100,6 +100,35 @@ AddMaskSet <- function(mask, alpha=0.5, rgb=NULL,...){
 	}
 }
 
+PlotSegmentation <- function(db){
+	mimg1 <- GetImage(db, 'mimg1')
+	mimg2 <- GetImage(db, 'mimg2')
+	selmat <- dbGetQuery(db$db, "select mask, segmentation from masks")
+
+	convertmask <- function(str){
+		return(as.integer(strsplit(str, split=", ")[[1]]))
+	}
+
+	dims <- as.integer(dbGetQuery(db$db, "select nx, ny from experiment")[1,])
+	nx <- dims[1]
+	ny <- dims[2]
+	par(mfrow=c(2,2), mar=rep(0.1, 4))
+	Image(mimg1)
+	Image(mimg1)
+	for(i in 1:nrow(selmat)){
+		if(selmat[i,2]==3){
+			AddMask(SparseToMatrix(convertmask(selmat[i,1]), nx, ny))
+		}
+	}
+	Image(mimg2)
+	Image(mimg2)
+	for(i in 1:nrow(selmat)){
+		if(selmat[i,2]==2){
+			AddMask(SparseToMatrix(convertmask(selmat[i,1]), nx, ny))
+		}
+	}
+}
+
 #-
 #' Plots a multitaper spectral estimate created by MultiTaperSpectrum
 #' 

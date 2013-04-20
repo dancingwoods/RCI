@@ -1,66 +1,109 @@
 * using log directory ‘/Users/bwoods/git/rci/RCI.Rcheck’
-* using R version 2.14.2 (2012-02-29)
-* using platform: x86_64-apple-darwin9.8.0 (64-bit)
+* using R version 3.0.0 (2013-04-03)
+* using platform: x86_64-apple-darwin10.8.0 (64-bit)
 * using session charset: UTF-8
 * checking for file ‘RCI/DESCRIPTION’ ... OK
 * this is package ‘RCI’ version ‘1.0’
 * checking package namespace information ... OK
 * checking package dependencies ... OK
-* checking if this is a source package ... OK
+* checking if this is a source package ... WARNING
+Subdirectory ‘RCI/src’ contains apparent object files/libraries
+  RCI.so compmaskC.o compmasksC.o countholesC.o hillclimbC.o
+  histequalC.o labelbumpsC.o localmaxC.o maskcorC.o mylib.o
+  slidinghistequalC.o
+Object files/libraries should not be included in a source package.
+
+In addition to the above warning(s), found the following notes:
+
+Found the following apparent object files/libraries:
+  src-i386/RCI.so src-i386/compmaskC.o src-i386/compmasksC.o
+  src-i386/countholes.o src-i386/countholesC.o src-i386/hillclimbC.o
+  src-i386/histequalC.o src-i386/labelbumpsC.o src-i386/localmaxC.o
+  src-i386/maskcorC.o src-i386/meanshiftC.o src-i386/mergemasksC.o
+  src-i386/mylib.o src-i386/slidinghistequalC.o src-x86_64/RCI.so
+  src-x86_64/compmaskC.o src-x86_64/compmasksC.o
+  src-x86_64/countholes.o src-x86_64/countholesC.o
+  src-x86_64/hillclimbC.o src-x86_64/histequalC.o
+  src-x86_64/labelbumpsC.o src-x86_64/localmaxC.o src-x86_64/maskcorC.o
+  src-x86_64/meanshiftC.o src-x86_64/mergemasksC.o src-x86_64/mylib.o
+  src-x86_64/slidinghistequalC.o
+Object files/libraries should not be included in a source package.
 * checking if there is a namespace ... OK
 * checking for executable files ... OK
+* checking for hidden files and directories ... NOTE
+Found the following hidden files and directories:
+  R/.Rhistory
+These were most likely included in error. See section ‘Package
+structure’ in the ‘Writing R Extensions’ manual.
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
 * checking whether package ‘RCI’ can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
-* checking for portable file names ... OK
-* checking for sufficient/correct file permissions ... OK
 * checking DESCRIPTION meta-information ... OK
 * checking top-level files ... OK
+* checking for left-over files ... OK
 * checking index information ... OK
 * checking package subdirectories ... WARNING
 Subdirectory ‘inst’ contains no files.
 * checking R files for non-ASCII characters ... OK
 * checking R files for syntax errors ... OK
-* loading checks for arch ‘i386’
-** checking whether the package can be loaded ... OK
-** checking whether the package can be loaded with stated dependencies ... OK
-** checking whether the package can be unloaded cleanly ... OK
-** checking whether the namespace can be loaded with stated dependencies ... OK
-** checking whether the namespace can be unloaded cleanly ... OK
-* loading checks for arch ‘x86_64’
-** checking whether the package can be loaded ... OK
-** checking whether the package can be loaded with stated dependencies ... OK
-** checking whether the package can be unloaded cleanly ... OK
-** checking whether the namespace can be loaded with stated dependencies ... OK
-** checking whether the namespace can be unloaded cleanly ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
 * checking for unstated dependencies in R code ... OK
-* checking S3 generic/method consistency ... OK
+* checking S3 generic/method consistency ... WARNING
+summary:
+  function(object, ...)
+summary.MaskDb:
+  function(db, flag)
+
+plot:
+  function(x, ...)
+plot.MTSpectrum:
+  function(spect, maglog, minfreq, maxfreq, ...)
+
+See section ‘Generic functions and methods’ of the ‘Writing R
+Extensions’ manual.
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
 * checking R code for possible problems ... NOTE
-AddConMat: no visible global function definition for
+ShiftFFTVector: warning in complex(real = cos(2 * pi * myind * amt/l),
+  im = sin(2 * pi * myind * amt/l)): partial argument match of 'im' to
+  'imaginary'
+ShiftVector: warning in complex(real = cos(2 * pi * myind * amt/l), im
+  = sin(2 * pi * myind * amt/l)): partial argument match of 'im' to
+  'imaginary'
+AddMaskConnections: no visible global function definition for
+  ‘dbGetQuery’
+AddMaskConnections: no visible global function definition for
   ‘dbBeginTransaction’
-AddConMat: no visible global function definition for
+AddMaskConnections: no visible global function definition for
   ‘dbGetPreparedQuery’
-AddConMat: no visible global function definition for ‘dbCommit’
-AssignToPeaks: no visible binding for global variable ‘bumps’
+AddMaskConnections: no visible global function definition for
+  ‘dbCommit’
+AddMasks: no visible global function definition for ‘dbGetQuery’
 ClusterCells: no visible global function definition for ‘pam’
 ClusterCorrelation: no visible binding for global variable ‘clust’
 ClusterCorrelation: no visible binding for global variable ‘mask’
+ComputeMaskFeatures: no visible global function definition for
+  ‘dbGetQuery’
+ComputeMaskFeatures : LimitMasks: no visible global function definition
+  for ‘dbGetQuery’
+ComputeMaskFeatures: no visible global function definition for
+  ‘dbBeginTransaction’
+ComputeMaskFeatures: no visible global function definition for
+  ‘dbGetPreparedQuery’
+ComputeMaskFeatures: no visible global function definition for
+  ‘dbCommit’
 ConMaskDb: no visible global function definition for ‘dbConnect’
 ConMaskDb: no visible global function definition for ‘dbDriver’
-DbAddMask: no visible global function definition for ‘dbGetQuery’
 FilterVector: no visible global function definition for ‘butfilt’
-GetDataFeatures: no visible global function definition for ‘dbGetQuery’
-GetDataFeatures: no visible global function definition for ‘wrap’
-GetDataFeatures: no visible global function definition for
-  ‘slidinghistequalC’
 GetMask: no visible global function definition for ‘dbGetQuery’
-GetMasks: no visible global function definition for ‘dbGetQuery’
-GetShapeFeatures: no visible global function definition for
-  ‘dbGetQuery’
-GetShapeFeatures: no visible global function definition for
-  ‘countholesC’
+GetSparseMasks: no visible global function definition for ‘dbGetQuery’
 MaskDbSetup: no visible global function definition for ‘dbGetQuery’
 MaskHull: no visible global function definition for ‘in.out’
 MultiTaperSpectrum: no visible global function definition for
@@ -82,42 +125,18 @@ OptimTranslate: no visible global function definition for
   ‘neldermead.search’
 OptimTranslate: no visible global function definition for
   ‘neldermead.get’
+PullData: no visible global function definition for ‘dbGetQuery’
 RemoveMask: no visible global function definition for ‘dbGetQuery’
+RestrictMaskSize: no visible global function definition for
+  ‘dbGetQuery’
 SetMaskLabel: no visible global function definition for ‘dbGetQuery’
-ViewCI : UpdateDbDirectory: no visible global function definition for
-  ‘svalue<-’
-ViewCI : FindDbDirectory: no visible global function definition for
-  ‘gfile’
-ViewCI : UpdateClassifierDirectory: no visible global function
-  definition for ‘svalue<-’
-ViewCI : FindClassifierDirectory: no visible global function definition
-  for ‘gfile’
-ViewCI : UpdateHelperDirectory: no visible global function definition
-  for ‘svalue<-’
-ViewCI : FindHelperDirectory: no visible global function definition for
-  ‘gfile’
-ViewCI : UpdateDataDirectory: no visible global function definition for
-  ‘svalue<-’
-ViewCI : FindDataDirectory: no visible global function definition for
-  ‘gfile’
-ViewCI : SaveSession: no visible global function definition for ‘gfile’
-ViewCI : LoadSession: no visible global function definition for ‘gfile’
+ViewCI: no visible global function definition for ‘dbGetQuery’
 ViewCI : AddLabeledMasks: no visible global function definition for
   ‘visible<-’
-ViewCI : AddLabeledMasks: no visible global function definition for
-  ‘myimage’
-ViewCI : AddLabeledMasks: no visible global function definition for
-  ‘smtomat’
-ViewCI : AddLabeledMasks: no visible global function definition for
-  ‘addmaskset’
+ViewCI : ToggleMasks: no visible global function definition for
+  ‘visible<-’
 ViewCI : ImgHandler : PlotPage: no visible global function definition
   for ‘visible<-’
-ViewCI : ImgHandler : PlotPage: no visible global function definition
-  for ‘myimage’
-ViewCI : ImgHandler : PlotPage: no visible global function definition
-  for ‘addmask’
-ViewCI : ImgHandler : PlotPage: no visible global function definition
-  for ‘smtomat’
 ViewCI : ImgHandler : PlotPage: no visible global function definition
   for ‘enabled<-’
 ViewCI : ImgHandler : PagePrev: no visible global function definition
@@ -128,18 +147,6 @@ ViewCI : ImgHandler : CloseLabelWindow: no visible global function
   definition for ‘dispose’
 ViewCI : ImgHandler : SetLabel: no visible global function definition
   for ‘visible<-’
-ViewCI : ImgHandler : SetLabel: no visible global function definition
-  for ‘myimage’
-ViewCI : ImgHandler : SetLabel: no visible global function definition
-  for ‘addmask’
-ViewCI : ImgHandler : SetLabel: no visible global function definition
-  for ‘smtomat’
-ViewCI : ImgHandler: no visible global function definition for
-  ‘compMaskC’
-ViewCI : ImgHandler: no visible global function definition for
-  ‘mattosm’
-ViewCI : ImgHandler: no visible global function definition for
-  ‘invertmask’
 ViewCI : ImgHandler: no visible global function definition for
   ‘gwindow’
 ViewCI : ImgHandler: no visible global function definition for ‘ggroup’
@@ -150,52 +157,72 @@ ViewCI : ImgHandler: no visible global function definition for
 ViewCI : ImgHandler: no visible global function definition for
   ‘visible<-’
 ViewCI : ImgHandler: no visible global function definition for
-  ‘myimage’
-ViewCI : ImgHandler: no visible global function definition for
   ‘gbutton’
 ViewCI : ImgHandler: no visible global function definition for
   ‘enabled<-’
 ViewCI : ImgHandler: no visible global function definition for ‘glabel’
-ViewCI : UpdateExpDetails: no visible global function definition for
-  ‘svalue<-’
-ViewCI : SelectExperiment: no visible global function definition for
-  ‘svalue’
-ViewCI : SelectExperiment: no visible global function definition for
-  ‘dbConnect’
-ViewCI : SelectExperiment: no visible global function definition for
-  ‘dbDriver’
-ViewCI : SelectExperiment: no visible global function definition for
-  ‘visible<-’
-ViewCI : SelectExperiment: no visible global function definition for
-  ‘myimage’
 ViewCI: no visible global function definition for ‘gwindow’
 ViewCI: no visible global function definition for ‘ggroup’
-ViewCI: no visible global function definition for ‘gframe’
-ViewCI: no visible global function definition for ‘glayout’
-ViewCI: no visible global function definition for ‘glabel’
-ViewCI: no visible global function definition for ‘gbutton’
-ViewCI: no visible global function definition for ‘gtable’
-ViewCI: no visible global function definition for ‘visible<-’
 ViewCI: no visible global function definition for ‘ggraphics’
 ViewCI: no visible global function definition for ‘addHandlerChanged’
-deq: no visible global function definition for ‘dbGetQuery’
+ViewCI: no visible global function definition for ‘visible<-’
+ViewCI: no visible global function definition for ‘gbutton’
 summary.MaskDb: no visible global function definition for ‘dbGetQuery’
 * checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd cross-references ... OK
 * checking for missing documentation entries ... OK
 * checking for code/documentation mismatches ... WARNING
-Functions/methods with usage in documentation object 'CreateCalExpFromCSV' but not in code:
+Functions or methods with usage in documentation object 'AddConMat' but not in code:
+  AddConMat
+
+Functions or methods with usage in documentation object 'CreateCalExpFromCSV' but not in code:
   CreateCalExpFromCSV
 
-Functions/methods with usage in documentation object 'DbSetup' but not in code:
+Functions or methods with usage in documentation object 'CreateCurExp' but not in code:
+  CreateCurExp
+
+Functions or methods with usage in documentation object 'CreateDbController' but not in code:
+  CreateDbController
+
+Functions or methods with usage in documentation object 'DbAddMask' but not in code:
+  DbAddMask
+
+Functions or methods with usage in documentation object 'DbSetup' but not in code:
   DbSetup
 
-Functions/methods with usage in documentation object 'FFTXCor' but not in code:
+Functions or methods with usage in documentation object 'FFTXCor' but not in code:
   FFTXCor
 
-Functions/methods with usage in documentation object 'RotateImg' but not in code:
+Functions or methods with usage in documentation object 'GetDataFeatures' but not in code:
+  GetDataFeatures
+
+Functions or methods with usage in documentation object 'GetMasks' but not in code:
+  GetMasks
+
+Functions or methods with usage in documentation object 'GetShapeFeatures' but not in code:
+  GetShapeFeatures
+
+Functions or methods with usage in documentation object 'HillClimbC' but not in code:
+  HillClimbC
+
+Functions or methods with usage in documentation object 'HistEqualC' but not in code:
+  HistEqualC
+
+Functions or methods with usage in documentation object 'RotateImg' but not in code:
   RotateImg
+
+Functions or methods with usage in documentation object 'SimpleModesC' but not in code:
+  SimpleModesC
+
+Codoc mismatches from documentation object 'AddMaskSet':
+AddMaskSet
+  Code: function(mask, alpha = 0.5, rgb = NULL, ...)
+  Docs: function(mask, alpha = 0.5, ...)
+  Argument names in code not in docs:
+    rgb
+  Mismatches in argument names:
+    Position: 3 Code: rgb Docs: ...
 
 * checking Rd \usage sections ... WARNING
 Undocumented arguments in documentation object 'ClusterCells'
@@ -204,8 +231,21 @@ Undocumented arguments in documentation object 'ClusterCells'
 Undocumented arguments in documentation object 'EmbedAndTaperImage'
   ‘size’
 
-Undocumented arguments in documentation object 'MultiTaperSpectrum'
-  ‘vec’ ‘dt’ ‘dif’
+Undocumented arguments in documentation object 'GetMask'
+  ‘sparse’
+Documented arguments not in \usage in documentation object 'GetMask':
+  ‘format’
+
+Undocumented arguments in documentation object 'LoGMasks'
+  ‘ksize’
+Documented arguments not in \usage in documentation object 'LoGMasks':
+  ‘kside’
+
+Undocumented arguments in documentation object 'MaskDbSetup'
+  ‘calexp’ ‘tag’ ‘dt’ ‘description’ ‘datafile’
+
+Documented arguments not in \usage in documentation object 'MatrixToSparseMasks':
+  ‘return’
 
 Undocumented arguments in documentation object 'OptimTranslate'
   ‘bigsize’
@@ -215,9 +255,27 @@ Undocumented arguments in documentation object 'RegisterCalExp'
 Documented arguments not in \usage in documentation object 'RegisterCalExp':
   ‘upsamp’
 
+Undocumented arguments in documentation object 'RestrictMaskSize'
+  ‘minsize’ ‘maxsize’
+Documented arguments not in \usage in documentation object 'RestrictMaskSize':
+  ‘min’ ‘max’
+
+Undocumented arguments in documentation object 'ViewCI'
+  ‘calexp’
+
 Functions with \usage entries need to have the appropriate \alias
 entries, and all their arguments documented.
 The \usage entries must correspond to syntactically valid R code.
+See the chapter ‘Writing R documentation files’ in the ‘Writing R
+Extensions’ manual.
+S3 methods shown with full name in documentation object 'plot.MTSpectrum':
+  ‘plot.MTSpectrum’
+
+S3 methods shown with full name in documentation object 'summary.MaskDb':
+  ‘summary.MaskDb’
+
+The \usage entries for S3 methods should use the \method markup and not
+their full name.
 See the chapter ‘Writing R documentation files’ in the ‘Writing R
 Extensions’ manual.
 * checking Rd contents ... OK
@@ -237,6 +295,8 @@ Type X to quit or <RETURN> to proceed,
 or enter new name. (Default extension: sty)
 
 * checking PDF version of manual without hyperrefs or index ... OK
-WARNING: There were 4 warnings, see
+WARNING: There were 6 warnings.
+NOTE: There were 2 notes.
+See
   ‘/Users/bwoods/git/rci/RCI.Rcheck/00check.log’
-for details
+for details.

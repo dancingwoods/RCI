@@ -3,7 +3,7 @@ Title: R Calcium Imaging Analysis
 Version: 1.0
 Date: 2010-01-09
 Author: Bronwyn Woods
-Maintainer: Bronwyn WOods <bwoods@cmu.edu>
+Maintainer: Bronwyn Woods <bwoods@cmu.edu>
 Description: Tools for analyzing in-vivo two-photon calcium imaging data.
 License: GPL
 Imports:
@@ -24,3 +24,4 @@ Collate:
     'imageprocessing.R'
     'timeseries.R'
     'clustering.R'
+	'classifier.R'

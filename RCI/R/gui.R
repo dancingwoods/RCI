@@ -22,26 +22,31 @@
 ###############################################################################
 
 
+# NOTE: this is currently broken in R 3.0 due to problems with RGtk2 - use old version of R
+# Requires that mean images have been added to the database
 #-
 #' Opens the GUI viewer to manipulate the segmentation process.
 #' 
 #' @param db if specified, the viewer opens with the given dbController (looking
 #' in the directories stored in that object)
+#' @param cf a classifier object.  Needed to allow redoing segmentation after correcting labels
 #' 
 #' @return NULL
 #-
-ViewCI <- function(db, calexp){
-	options(guiToolkit="RGtk2")
+ViewCI <- function(db, cf=NULL){
+	#options(guiToolkit="tctkl")
 	
-	# A matrix with a row for each mask with the mask id and the current label
-	selmat <- dbGetQuery(db$db, "select id, label from masks order by id")
+	# A matrix with a row for each mask with the mask id and the current label and current segmentation
+	selmat <- dbGetQuery(db$db, "select id, label, segmentation from masks order by id")
 
-	mimg1 <- apply(calexp$data[1,,,], c(2,3), mean)
-	mimg2 <- apply(calexp$data[2,,,], c(2,3), mean)
-	mimg1eq <- SlidingHistEqualC(mimg1, 8)
-	mimg2eq <- SlidingHistEqualC(mimg2, 8)
-	nx <- dim(calexp$data)[4]
-	ny <- dim(calexp$data)[3]
+	mimg1 <- GetImage(db, 'mimg1')
+	mimg1eq <- GetImage(db, 'mimg1eq')
+	mimg2 <- GetImage(db, 'mimg2')
+	mimg2eq <- GetImage(db, 'mimg2eq')
+
+	dims <- as.integer(dbGetQuery(db$db, "select nx, ny from experiment")[1,])
+	nx <- dims[1]
+	ny <- dims[2]
 	
 	# Just to keep track of the IDs
 	negID <- 1
@@ -55,9 +60,15 @@ ViewCI <- function(db, calexp){
 	unknownColor <- c(0.9,0.5,0.5)
 	
 	sms <- GetSparseMasks(db)
-	maskson <- TRUE			
-				
-	AddLabeledMasks <- function(){
+
+	# If pred=T, show predicted masks
+	AddLabeledMasks <- function(pred=F){
+		if(pred){
+			wmasks <- 3
+		}else{
+			wmasks <- 2
+		}
+		
 		visible(imgwindow1) <- TRUE			
 		Image(mimg1, useRaster=T)
 		visible(imgwindow2) <- TRUE			
@@ -70,7 +81,7 @@ ViewCI <- function(db, calexp){
 		# Plot neurons in green
 		neuronmat = matrix(0, ny, nx)		
 		for(i in 1:nrow(selmat)){
-			if(!is.na(selmat[i,2]) && abs(selmat[i,2])==neuronID){
+			if(!is.na(selmat[i,wmasks]) && abs(selmat[i,wmasks])==neuronID){
 				neuronmat <- neuronmat+SparseToMatrix(sms[[i]], ny, nx, background=0)
 			}
 		}
@@ -89,7 +100,7 @@ ViewCI <- function(db, calexp){
 		# Plot astrocytes in blue
 		astromat = matrix(0, ny, nx)		
 		for(i in 1:nrow(selmat)){
-			if(!is.na(selmat[i,2]) && abs(selmat[i,2])==astroID){
+			if(!is.na(selmat[i,wmasks]) && abs(selmat[i,wmasks])==astroID){
 				astromat <- astromat+SparseToMatrix(sms[[i]], ny, nx, background=0)
 			}
 		}
@@ -109,8 +120,8 @@ ViewCI <- function(db, calexp){
 	}
 	
 	ToggleMasks <- function(h, ...){
-		if(maskson){
-			maskson <<- FALSE
+		val <- svalue(togglemasks)
+		if(val=="No Labels"){
 			visible(imgwindow1) <- TRUE			
 			Image(mimg1, useRaster=T)
 			visible(imgwindow2) <- TRUE			
@@ -119,12 +130,57 @@ ViewCI <- function(db, calexp){
 			Image(mimg1eq, useRaster=T)
 			visible(imgwindow4) <- TRUE						
 			Image(mimg2eq, useRaster=T)
+		}else if(val=="Hand Labels"){
+			AddLabeledMasks(F)
 		}else{
-			maskson <<- TRUE
-			AddLabeledMasks()
+			AddLabeledMasks(T)
 		}
 	}
 			
+	RedoSeg <- function(h, ...){
+		print("Merging data")
+		data <- cf$training
+		tmp <- PullData(db)
+		if(nrow(tmp)>0){
+			if( ncol(tmp) == (ncol(data)-1) ){
+				namecol <- as.data.frame(rep(dbGetQuery(db$db, "select tag from experiment")[1,1], nrow(tmp)))
+				names(namecol) <- c("experiment")
+				tmp <- cbind(namecol, tmp)
+		 		data <- rbind(data, tmp)
+			}
+		}
+		print("Retraining Classifier")
+		cf <<- InitiateMaskClassifier(data)
+		print("Recomputing Predictions")
+		PredictExperiment(cf, db)
+		selmat <<- dbGetQuery(db$db, "select id, label, segmentation from masks order by id")
+		ToggleMasks(h)
+	}
+
+	InitiateFromClass <- function(h, ...){
+		data <- PullData(db, F)
+		data[is.na(data)]=0
+		labs <- data[,which(names(data)=="label")]
+		data  <- data[, -(which(names(data)=="label"))]
+		classes <- predict(cf$cf, data)
+		
+		res <- cbind(data[, which(names(data)=="id")], labs, classes)
+		res <- res[order(res[,1]),]
+
+		
+
+		w <- c(which(is.na(res[,2])), which(res[,2]==0))
+		res[w,2] <- res[w,3]
+		
+		res <- as.data.frame(res[,c(2,1)])
+		names(res) <- c("label", "id")
+		print(table(res[,1]))
+
+		dbBeginTransaction(db$db)
+		dbGetPreparedQuery(db$db, "UPDATE masks SET label=? where id=?", bind.data=res)
+		dbCommit(db$db)
+		selmat <<- dbGetQuery(db$db, "select id, label, segmentation from masks order by id")
+	}
 
 	# When someone clicks on or selects a region in the image
 	ImgHandler <- function(h, ...){
@@ -203,7 +259,12 @@ ViewCI <- function(db, calexp){
 	
 		
 		CloseLabelWindow <- function(h, ...){
-			AddLabeledMasks()
+			if(svalue(togglemasks)=="Final Segmentation"){
+				AddLabeledMasks(T)
+			}else{
+				AddLabeledMasks(F)
+				svalue(togglemasks) <<- "Hand Labels"
+			}
 			dispose(mswin)
 		}
 	
@@ -402,6 +463,9 @@ ViewCI <- function(db, calexp){
 		
 	imgsubgroupA <- ggroup(cont=vexpgroup)
 	imgsubgroupB <- ggroup(cont=vexpgroup)
+
+	imgwindowPA <- ggraphics(container=imgsubgroupA)
+	imgwindowPB <- ggraphics(container=imgsubgroupB)
 	
 	imgwindow1 <- ggraphics(container=imgsubgroupA)
 	addHandlerChanged(imgwindow1, ImgHandler)
@@ -414,6 +478,9 @@ ViewCI <- function(db, calexp){
 
 	imgwindow4 <- ggraphics(container=imgsubgroupB)
 	addHandlerChanged(imgwindow4, ImgHandler)
+
+	imgwindowPA2 <- ggraphics(container=imgsubgroupA)
+	imgwindowPB2 <- ggraphics(container=imgsubgroupB)
 	
 	visible(imgwindow1) <- TRUE
 	par(mar=c(0,0,0,0))
@@ -430,10 +497,42 @@ ViewCI <- function(db, calexp){
 	visible(imgwindow4) <- TRUE
 	par(mar=c(0,0,0,0))
 	Image(mimg2eq, useRaster=T)
+
+	visible(imgwindowPA) <- TRUE
+	par(mar=c(0,0,0,0))
+	Image(mimg1, useRaster=T)
+
+	visible(imgwindowPA2) <- TRUE
+	par(mar=c(0,0,0,0))
+
+	Image(mimg2, useRaster=T)
+	visible(imgwindowPB) <- TRUE
+	par(mar=c(0,0,0,0))
+	Image(mimg1eq, useRaster=T)
+
+	visible(imgwindowPB2) <- TRUE
+	par(mar=c(0,0,0,0))
+	Image(mimg2eq, useRaster=T)
+
 	
-	AddLabeledMasks()
+	togglemasks <- gradio(c("No Labels", "Hand Labels", "Final Segmentation"), handler=ToggleMasks, cont=controlgroup)
 	
-	togglemaskbutton <- gbutton("Toggle Masks", handler=ToggleMasks, cont=controlgroup)
+	initatebutton <- gbutton("Initiate hand labels from classifier", handler=InitiateFromClass, cont=controlgroup)
+	redosegbutton <- gbutton("Recompute Segmentation", handler=RedoSeg, cont=controlgroup)
+
+	if(is.null(cf)){
+		visible(redosegbutton) <- FALSE
+		visible(inititebutton) <- FALSE
+	}
+	
+	if(all(is.na(selmat[,3]))){
+		AddLabeledMasks(F)
+		svalue(togglemasks) <- "Hand Labels"
+	}else{
+		AddLabeledMasks(T)
+		svalue(togglemasks) <- "Final Segmentation"
+	}
+	
 	return()
 	
 }

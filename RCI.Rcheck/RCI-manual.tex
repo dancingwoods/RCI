@@ -23,8 +23,8 @@
 \item[Imports]\AsIs{RSQLite, randomForest, gWidgets, gWidgetsRGtk2, cairoDevice,
 R.utils, mgcv, RSEIS}
 \item[Collate]\AsIs{'datainport.R' 'motion.R' 'plotting.R' 'segmentation.R'
-'gui.R' 'imageprocessing.R' 'timeseries.R' 'clustering.R'}
-\item[Archs]\AsIs{i386, x86\_64}
+'gui.R' 'imageprocessing.R' 'timeseries.R' 'clustering.R'
+'classifier.R'}
 \end{description}
 \Rdcontents{\R{} topics documented:}
 \inputencoding{utf8}
@@ -92,6 +92,28 @@ colored region on an already plotted image.
 NULL
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{AddMaskConnections}{INTERNAL Adds the overlap edges to a mask database}{AddMaskConnections}
+%
+\begin{Description}\relax
+INTERNAL Adds the overlap edges to a mask database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  AddMaskConnections(db)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the mask database object
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{AddMasks}{Generate masks according to the given method and add them to the database}{AddMasks}
 %
 \begin{Description}\relax
@@ -101,7 +123,8 @@ to the database
 %
 \begin{Usage}
 \begin{verbatim}
-  AddMasks(db, calexp, method)
+  AddMasks(db, calexp, method, channel = 2, scales = NULL,
+    invert = F)
 \end{verbatim}
 \end{Usage}
 %
@@ -112,7 +135,16 @@ to the database
 \item[\code{calexp}] the calcium experiment data object
 
 \item[\code{method}] what method should be used to generate
-masks to add
+masks to add. 'LoG' Laplacian of Gaussian
+
+\item[\code{channel}] which data channel to use for computing
+the masks
+
+\item[\code{scales}] which smoothing scales to use for method
+(LoG)
+
+\item[\code{invert}] boolean, should the mean image be inverted
+to find dark regions instead of bright?
 \end{ldescription}
 \end{Arguments}
 \inputencoding{utf8}
@@ -150,11 +182,11 @@ chosen)
 NULL
 \end{Value}
 \inputencoding{utf8}
-\HeaderA{AssignToPeaks}{Assigns the non-zero pixels of 'region' to one of the maxima of the iamge by hillclimbing on image}{AssignToPeaks}
+\HeaderA{AssignToPeaks}{Assigns the non-zero pixels of 'region' to one of the maxima of the image by hillclimbing on image}{AssignToPeaks}
 %
 \begin{Description}\relax
 Assigns the non-zero pixels of 'region' to one of the
-maxima of the iamge by hillclimbing on image
+maxima of the image by hillclimbing on image
 \end{Description}
 %
 \begin{Usage}
@@ -320,11 +352,10 @@ masks
 %
 \begin{Arguments}
 \begin{ldescription}
-\item[\code{masklist}] A list of sparse masks as returned by
-GetMasks.  Each element of this list is a vector whose
-first element is the negative id of the mask and whose
-other elements are the sorted indices of the mask
-pixels.
+\item[\code{masklist}] A list of sparse masks.  Each element of
+this list is a vector whose first element is the negative
+id of the mask and whose other elements are the sorted
+indices of the mask pixels.
 \end{ldescription}
 \end{Arguments}
 %
@@ -339,6 +370,35 @@ relationships between the masks.  The masks are sorted in
 the matrix in the same order as they are given in
 masklist.
 \end{Value}
+\inputencoding{utf8}
+\HeaderA{ComputeMaskFeatures}{Computed features of masks that are currently in the mask database. This is sort of hack - should be more general and allow users to specify feature functions}{ComputeMaskFeatures}
+%
+\begin{Description}\relax
+Computed features of masks that are currently in the mask
+database. This is sort of hack - should be more general
+and allow users to specify feature functions
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ComputeMaskFeatures(db, calexp, feature)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the mask database object
+
+\item[\code{calexp}] the calcium experiment object
+
+\item[\code{feature}] string indicating which feature to
+compute
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Current feature options: "size" - mask size in pixels
+\end{Details}
 \inputencoding{utf8}
 \HeaderA{ConMaskDb}{Connects to an experiment's mask database}{ConMaskDb}
 %
@@ -408,14 +468,18 @@ are surrounded by at least 3 mask pixels
 %
 \begin{Usage}
 \begin{verbatim}
-  CountHolesC(mask)
+  CountHolesC(sparsemask, nr, nc)
 \end{verbatim}
 \end{Usage}
 %
 \begin{Arguments}
 \begin{ldescription}
-\item[\code{mask}] the mask in which to count holes.  NA or 0 in
-the background.
+\item[\code{sparsemask}] the mask in which to count holes
+(sparse vector)
+
+\item[\code{nr}] number of rows
+
+\item[\code{nc}] number of columns
 \end{ldescription}
 \end{Arguments}
 %
@@ -711,6 +775,43 @@ argument, else returns the original image
 a matrix of size (nrow+2*border) by (ncol+ 2*border)
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{EqualThreshMasks}{Generates a set of masks using thresholding of the sliding histogram equalized version of an image}{EqualThreshMasks}
+%
+\begin{Description}\relax
+Generates a set of masks using thresholding of the
+sliding histogram equalized version of an image
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  EqualThreshMasks(image, thresh, radius = 8,
+    fullmax = 4096, sparse = T)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{image}] the image to use to generate masks
+
+\item[\code{thresh}] the threshold to use (pixels above thresh
+in equalized image are found)
+
+\item[\code{radius}] the radius for the window used for
+equalization
+
+\item[\code{fullmax}] the maximum value possible (for
+equalization)
+
+\item[\code{sparse}] boolean, should the function return sparse
+masks instead of a matrix for plotting
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a matrix with unique integers at mask locations and 0 in
+the background, or a a sparse masks object
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{FFTPhaseCor}{INTERNAL Computes sub-pixel shifts values using phase correlation (FFT implementation)}{FFTPhaseCor}
 %
 \begin{Description}\relax
@@ -956,7 +1057,7 @@ Return the requested mask from the specified database
 %
 \begin{Usage}
 \begin{verbatim}
-  GetMask(db, id, format = "sparse")
+  GetMask(db, id, sparse = T)
 \end{verbatim}
 \end{Usage}
 %
@@ -1000,6 +1101,31 @@ first element of each mask vector is the negative index
 of the mask.  The remaining elements of each vector are
 the indices of the mask pixels.
 \end{Value}
+\inputencoding{utf8}
+\HeaderA{GetPhase}{Gets the phase of a given frequency band of a vector using the FFT}{GetPhase}
+%
+\begin{Description}\relax
+Gets the phase of a given frequency band of a vector
+using the FFT
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetPhase(vec, low, high, dt = 1/1000)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{vec}] vector of data
+
+\item[\code{low}] lower bound of frequency band
+
+\item[\code{high}] upper bound of frequency band
+
+\item[\code{dt}] deltaT, or 1/sampling rate
+\end{ldescription}
+\end{Arguments}
 \inputencoding{utf8}
 \HeaderA{GetSeries}{Return average time series for each cell in a mask}{GetSeries}
 %
@@ -1256,6 +1382,64 @@ smoother
 a matrix giving the LoG kernel
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{LoGMasks}{Generates a set of masks using the Laplacian of Gaussian technique for the given scale and kernel size}{LoGMasks}
+%
+\begin{Description}\relax
+Generates a set of masks using the Laplacian of Gaussian
+technique for the given scale and kernel size
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  LoGMasks(image, scale, ksize = 15, sparse = T)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{image}] the image to use to generate masks
+
+\item[\code{scale}] the scale of the kernel to use
+
+\item[\code{kside}] the size of the kernel
+
+\item[\code{sparse}] boolean, should the function return sparse
+masks instead of a matrix for plotting
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a matrix with unique integers at mask locations and 0 in
+the background, or a a sparse masks object
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{LogSeq}{Generate a sequence with log scale jumps}{LogSeq}
+%
+\begin{Description}\relax
+Generate a sequence with log scale jumps
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  LogSeq(minv, maxv, length.out)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{minv}] the value at the low end of the scale.  This
+is set to 0.01 if it is <=0
+
+\item[\code{maxv}] the value at the high end of the scale
+
+\item[\code{length.out}] the number of values to return
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a vector with the requested sequence
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{MaskDbSetup}{INTERNAL Creates an empty mask database with the appropriate tables}{MaskDbSetup}
 %
 \begin{Description}\relax
@@ -1265,7 +1449,8 @@ appropriate tables
 %
 \begin{Usage}
 \begin{verbatim}
-  MaskDbSetup(db)
+  MaskDbSetup(db, calexp, tag, dt = NA, description = NA,
+    datafile = NA)
 \end{verbatim}
 \end{Usage}
 %
@@ -1288,14 +1473,18 @@ INTERNAL Computes the convex hull of a mask
 %
 \begin{Usage}
 \begin{verbatim}
-  MaskHull(mask)
+  MaskHull(sparsemask, nr, nc)
 \end{verbatim}
 \end{Usage}
 %
 \begin{Arguments}
 \begin{ldescription}
-\item[\code{mask}] the mask for which to find the convex hull.
-Background pixels should be NA
+\item[\code{sparsemask}] the sparse mask (vector) for which to
+find the convex hull.
+
+\item[\code{nr}] the number of rows in the image
+
+\item[\code{nc}] the number of columns in the image
 \end{ldescription}
 \end{Arguments}
 %
@@ -1305,8 +1494,8 @@ maphull(maphull(x))!=maphull(x), but using this anyway
 \end{Details}
 %
 \begin{Value}
-a matrix with 1's on the convex hull of the mask and NA
-in the background
+a sparse representation of the convex hull of the given
+mask
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{MatrixToSparse}{INTERNAL Converts a matrix mask into a sparse mask.  Assumes that the non-mask pixels of the matrix are NA.}{MatrixToSparse}
@@ -1333,6 +1522,30 @@ pixels
 a vector of indices of the mask pixels
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{MatrixToSparseMasks}{Converts a matrix with unique positive integers on each mask into a sparse mask list}{MatrixToSparseMasks}
+%
+\begin{Description}\relax
+Converts a matrix with unique positive integers on each
+mask into a sparse mask list
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  MatrixToSparseMasks(maskmat)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{maskmat}] the matrix with unique integers on each
+mask
+
+\item[\code{return}] a sparsemasks object with a list of masks
+in the \$masks element and the dimensions of the original
+image in the \$dims element
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
 \HeaderA{MultiTaperSpectrum}{Uses multi-taper methods to etimate a spectrum for the given vector}{MultiTaperSpectrum}
 %
 \begin{Description}\relax
@@ -1345,6 +1558,17 @@ given vector
   MultiTaperSpectrum(vec, dt = 0.1247232, dif = T)
 \end{verbatim}
 \end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{vec}] the vector of data
+
+\item[\code{dt}] deltaT, or 1/sampling rate
+
+\item[\code{dif}] boolean, should the vector be differenced
+before estimating the spectrum
+\end{ldescription}
+\end{Arguments}
 \inputencoding{utf8}
 \HeaderA{OptimRotate}{INTERNAL Uses optimization of an objective function to compute the best alignment rotation between two images}{OptimRotate}
 %
@@ -1466,6 +1690,40 @@ a real valued vector of length 2, giving estimates of x
 and y translation
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{plot.MTSpectrum}{Plots a multitaper spectral estimate created by MultiTaperSpectrum}{plot.MTSpectrum}
+%
+\begin{Description}\relax
+Plots a multitaper spectral estimate created by
+MultiTaperSpectrum
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  plot.MTSpectrum(spect, maglog = TRUE, minfreq = 0,
+    maxfreq = NULL, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{spect}] the multitaper spectrum object
+
+\item[\code{maglog}] should the magnitide be plotted on the log
+scale
+
+\item[\code{minfreq}] the minimum frequency to plot
+
+\item[\code{maxfreq}] the maximum frequency to plot (NULL for
+Nyquist frequency)
+
+\item[\code{...}] other graphical parameters
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{RegisterCalExp}{Removes in-plane motion effects using rigid body alignment of the image frames}{RegisterCalExp}
 %
 \begin{Description}\relax
@@ -1516,34 +1774,25 @@ size nframes-by-2
 \end{ldescription}
 \end{Value}
 \inputencoding{utf8}
-\HeaderA{RemoveMask}{Remove a mask from a mask database}{RemoveMask}
+\HeaderA{RemoveMask}{Remove a mask and its feature links from the database}{RemoveMask}
 %
 \begin{Description}\relax
-Remove a mask from a mask database
+Remove a mask and its feature links from the database
 \end{Description}
 %
 \begin{Usage}
 \begin{verbatim}
-  RemoveMask(db, maskid)
+  RemoveMask(db, id)
 \end{verbatim}
 \end{Usage}
 %
 \begin{Arguments}
 \begin{ldescription}
-\item[\code{db}] a database connection
+\item[\code{db}] the mask database object
 
-\item[\code{maskid}] the ID of the mask to remove
+\item[\code{id}] the id of the mask to remove
 \end{ldescription}
 \end{Arguments}
-%
-\begin{Details}\relax
-Removes a mask, as well as any associated features and
-edges
-\end{Details}
-%
-\begin{Value}
-NULL
-\end{Value}
 \inputencoding{utf8}
 \HeaderA{ReorderFFT}{INTERNAL Reorders the matrix returned by fft}{ReorderFFT}
 %
@@ -1579,6 +1828,29 @@ high-to-low-to-high in each dimension
 \begin{Value}
 the reordered matrix
 \end{Value}
+\inputencoding{utf8}
+\HeaderA{RestrictMaskSize}{Removes masks from the database whose size is less than min pixels or greater than max pixels}{RestrictMaskSize}
+%
+\begin{Description}\relax
+Removes masks from the database whose size is less than
+min pixels or greater than max pixels
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  RestrictMaskSize(db, minsize = NA, maxsize = NA)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the mask database object
+
+\item[\code{min}] the minimum mask size (pixels) to retain
+
+\item[\code{max}] the maximum mask size (pixels) to retain
+\end{ldescription}
+\end{Arguments}
 \inputencoding{utf8}
 \HeaderA{RotateFFT}{Rotates an image by the given angle using a sequence of Fourier domain shears as described in Eddy 1996.}{RotateFFT}
 %
@@ -1845,6 +2117,31 @@ A matrix of dimension (ny, nx) with 1's in the mask
 pixels and background elsewhere
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{summary.MaskDb}{Summary function to quickly see the details/statistics of a mask database object}{summary.MaskDb}
+%
+\begin{Description}\relax
+Summary function to quickly see the details/statistics of
+a mask database object
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  summary.MaskDb(db, flag = "default")
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the mask database option
+
+\item[\code{flag}] type of summary to give
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{TranslateFFT}{Shifts an image by the given (fractional pixel) amounts}{TranslateFFT}
 %
 \begin{Description}\relax
@@ -1885,28 +2182,99 @@ sub-pixel, resulting in Fourier interpolation.
 the shifted image (matrix)
 \end{Value}
 \inputencoding{utf8}
-\HeaderA{ViewCI}{Opens the GUI viewer to manipulate the segmentation process.}{ViewCI}
+\HeaderA{ViewCI}{\#INTERNAL \#Creates an empty database controller \# \#}{ViewCI}
 %
 \begin{Description}\relax
-Opens the GUI viewer to manipulate the segmentation
-process.
+\#INTERNAL \#Creates an empty database controller \# \#
 \end{Description}
 %
 \begin{Usage}
 \begin{verbatim}
-  ViewCI(dbController = NULL)
+  ViewCI(db, calexp)
 \end{verbatim}
 \end{Usage}
 %
 \begin{Arguments}
 \begin{ldescription}
-\item[\code{dbController}] if specified, the viewer opens with
-the given dbController (looking in the directories stored
-in that object)
+\item[\code{db}] if specified, the viewer opens with the given
+dbController (looking in the directories stored in that
+object)
 \end{ldescription}
 \end{Arguments}
 %
+\begin{Details}\relax
+A database controller holds information about the
+directories \#where the databases, data, classifiers, and
+helper files are stored. \\{} \# \#
+\end{Details}
+%
 \begin{Value}
+A list \#\begin{ldescription}
+\item[\code{db.directory}] the directory holding SQLite
+databases\end{ldescription}
+\#\begin{ldescription}
+\item[\code{data.directory}] the directory holding
+data associated with each database. \# each of these
+should have a \bsl{}\$data element
+\end{ldescription}
+\#\begin{ldescription}
+\item[\code{helper.directory}] the directory in which to place
+helper files generated by the GUI
+\end{ldescription}
+\#\begin{ldescription}
+\item[\code{classifier.direcoty}] the directory that contains
+the classifiers used in segmentation\end{ldescription}
+\#\begin{ldescription}
+\item[\code{expdf}] a
+data.frame in which to put information about each
+experiment, currently empty\end{ldescription}
+\#INTERNAL \#Create an object
+to store information about the currently selected
+experiment. \# \#
+
+A list with fields to store information about the
+experiment (initially empty) \#\begin{ldescription}
+\item[\code{name}] the experiment
+name\end{ldescription}
+\#\begin{ldescription}
+\item[\code{data}] if loaded, the data object for this
+object\end{ldescription}
+\#\begin{ldescription}
+\item[\code{db}] the database connection for this
+experiment\end{ldescription}
+\#\begin{ldescription}
+\item[\code{nmasks}] the number of candidate masks
+in the database for this experiment\end{ldescription}
+\#\begin{ldescription}
+\item[\code{features}] the
+tags of the features that exist in this database
+\end{ldescription}
+\#\begin{ldescription}
+\item[\code{sources}] the tage for the mask sources present in
+this database\end{ldescription}
+\#\begin{ldescription}
+\item[\code{selmat}] a matrix where the first
+column is the ID of the mask and the second column gives
+the annotation for the mask\end{ldescription}
+\#\begin{ldescription}
+\item[\code{sms}] the list of
+sparse masks for the experiment retreived from the
+database with GetMasks()\end{ldescription}
+\#\begin{ldescription}
+\item[\code{mimg1}] the matrix giving
+the mean image for channel 1\end{ldescription}
+\#\begin{ldescription}
+\item[\code{mimg2}] the matrix
+giving the mean image for channel 2\end{ldescription}
+\#\begin{ldescription}
+\item[\code{nx}] the
+number of columns in the images for this experiment
+\end{ldescription}
+\#\begin{ldescription}
+\item[\code{ny}] the number of rows in the images\end{ldescription}
+Opens the
+GUI viewer to manipulate the segmentation process.
+
 NULL
 \end{Value}
 \printindex{}

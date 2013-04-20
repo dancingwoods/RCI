@@ -1,12 +1,14 @@
 AddConMat               INTERNAL Adds the overlap edges to a mask
                         database
 AddMask                 Plots a mask over an already plotted image
+AddMaskConnections      INTERNAL Adds the overlap edges to a mask
+                        database
 AddMaskSet              Plots sets of masks over an already plotted
                         image
 AddMasks                Generate masks according to the given method
                         and add them to the database
 AssignToPeaks           Assigns the non-zero pixels of 'region' to one
-                        of the maxima of the iamge by hillclimbing on
+                        of the maxima of the image by hillclimbing on
                         image
 ClipImage               Clips a border from around an image matrix
 ClusterCells            Clustering
@@ -15,6 +17,10 @@ CompMaskC               INTERNAL Compute the overlap of a single mask
                         with a list of masks
 CompMasksC              INTERNAL Compute the overlap matrix between a
                         set of masks
+ComputeMaskFeatures     Computed features of masks that are currently
+                        in the mask database. This is sort of hack -
+                        should be more general and allow users to
+                        specify feature functions
 ConMaskDb               Connects to an experiment's mask database
 ConvolveImage           Convolves an image with the given kernel matrix
 CountHolesC             INTERNAL Counts the number of pixels not in a
@@ -34,6 +40,9 @@ EmbedAndTaperImage      Embeds an image in a larger matrix of 0's and
                         tapers the image edges using a Hanning window
 EmbedImage              Embeds an image matrix in a larger matrix with
                         a border of 0's
+EqualThreshMasks        Generates a set of masks using thresholding of
+                        the sliding histogram equalized version of an
+                        image
 FFTPhaseCor             INTERNAL Computes sub-pixel shifts values using
                         phase correlation (FFT implementation)
 FFTXCor                 INTERNAL Computes sub-pixel shifts values using
@@ -48,6 +57,8 @@ GetInnerMasks           INTERNAL Selects the masks from the given list
 GetMask                 Return the requested mask from the specified
                         database
 GetMasks                Returns a list of the masks in a database
+GetPhase                Gets the phase of a given frequency band of a
+                        vector using the FFT
 GetSeries               Return average time series for each cell in a
                         mask
 GetShapeFeatures        INTERNAL Computes the features related to just
@@ -66,12 +77,18 @@ IntensityCorrection     Performs intensity correction on the given
 InvertMask              INTERNAL Inverts a mask matrix so that the mask
                         region is turned to backgroun and vice versa
 LoGKernel               Returns a Laplacian of Gaussian kernel
+LoGMasks                Generates a set of masks using the Laplacian of
+                        Gaussian technique for the given scale and
+                        kernel size
+LogSeq                  Generate a sequence with log scale jumps
 MaskDbSetup             INTERNAL Creates an empty mask database with
                         the appropriate tables
 MaskHull                INTERNAL Computes the convex hull of a mask
 MatrixToSparse          INTERNAL Converts a matrix mask into a sparse
                         mask.  Assumes that the non-mask pixels of the
                         matrix are NA.
+MatrixToSparseMasks     Converts a matrix with unique positive integers
+                        on each mask into a sparse mask list
 MultiTaperSpectrum      Uses multi-taper methods to etimate a spectrum
                         for the given vector
 OptimRotate             INTERNAL Uses optimization of an objective
@@ -88,8 +105,11 @@ OptimTranslate          Uses optimization of an objective function to
                         neldermead package)
 RegisterCalExp          Removes in-plane motion effects using rigid
                         body alignment of the image frames
-RemoveMask              Remove a mask from a mask database
+RemoveMask              Remove a mask and its feature links from the
+                        database
 ReorderFFT              INTERNAL Reorders the matrix returned by fft
+RestrictMaskSize        Removes masks from the database whose size is
+                        less than min pixels or greater than max pixels
 RotateFFT               Rotates an image by the given angle using a
                         sequence of Fourier domain shears as described
                         in Eddy 1996.
@@ -111,5 +131,9 @@ SparseToMatrix          INTERNAL Converts a sparse mask to a matrix
                         mask
 TranslateFFT            Shifts an image by the given (fractional pixel)
                         amounts
-ViewCI                  Opens the GUI viewer to manipulate the
-                        segmentation process.
+ViewCI                  #INTERNAL #Creates an empty database controller
+                        # #
+plot.MTSpectrum         Plots a multitaper spectral estimate created by
+                        MultiTaperSpectrum
+summary.MaskDb          Summary function to quickly see the
+                        details/statistics of a mask database object
