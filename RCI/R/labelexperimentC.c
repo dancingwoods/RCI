@@ -5,6 +5,8 @@
 #include <Rmath.h>
 #include "mylib.h"
 
+// NOT REALLY DONE - MIGHT NOT WANT TO
+
 /*
 probs is a nrow-by-ncol matrix with columns 
 (hand label, probs for each class with negative class first)

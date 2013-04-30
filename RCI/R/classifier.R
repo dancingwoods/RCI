@@ -67,56 +67,47 @@ PredictExperiment <- function(classifier, db, enforcelabels=T){
 		ovlp[which(ovlp==probs[i,1])]=i
 	}
 	
-	out <- .C("labelexperimentC",
-		as.double(as.vector(probs[,-1])),
-		as.integer(nrow(probs)),
-		as.integer(ncol(probs)-1),
-		as.integer(as.vector(ovlp)),
-		as.integer(nrow(ovlp)),
-		pvec = as.integer(rep(0, nrow(probs))),
-		as.integer(enforcelabels)
-	)
 	
 	# 
 	# # results vector to store predicted class
-	# pvec  <- rep(NA, nrow(probs))
-	# 
-	# # iterate through and check the labels (if enforcing labels)
-	# if(enforcelabels){
-	# 	for(i in 1:nrow(probs)){
-	# 		# if not already locked
-	# 		if(is.na(pvec[i])){
-	# 			# if negative, transfer label TODO rethink this since lots of automatic negatives
-	# 			# if(probs[i,2]==1){
-	# 			# 		pvec[i] <- 1
-	# 			# if has a label, set any overlapping masks to negative
-	# 			#}else 
-	# 			if(probs[i,2]>1){
-	# 				pvec[i] <- probs[i,2]
-	# 				oids <- c(ovlp[which(ovlp[,1]==probs[i,1]),2], ovlp[which(ovlp[,2]==probs[i,1]), 1])
-	# 				oinds <- which(probs[,1] %in% oids)
-	# 				oinds <- oinds[which(oinds>i)]
-	#  				pvec[oinds] <- 1
-	# 			}
-	# 		}
-	# 	}
-	# }
-	# 
-	# # Now go through remaining masks and choose any that are segmented (with unknown label)	
-	# for(i in 1:nrow(probs)){
-	# 	if(is.na(pvec[i])){
-	# 		# If haven't already constrained this mask to be negative
-	# 		wmax <- which.max(probs[i,-(1:2)])
-	# 		pvec[i] <- wmax
-	# 		if(wmax!=1){
-	# 			# Assign overlapping masks to negative value
-	# 			oids <- c(ovlp[which(ovlp[,1]==probs[i,1]),2], ovlp[which(ovlp[,2]==probs[i,1]), 1])
-	# 			oinds <- which(probs[,1] %in% oids)
-	# 			oinds <- oinds[which(oinds>i)]
-	#  			pvec[oinds] <- 1
-	# 		}
-	# 	}
-	# }
+	pvec  <- rep(NA, nrow(probs))
+	
+	# iterate through and check the labels (if enforcing labels)
+	if(enforcelabels){
+		for(i in 1:nrow(probs)){
+			# if not already locked
+			if(is.na(pvec[i])){
+				# if negative, transfer label TODO rethink this since lots of automatic negatives
+				# if(probs[i,2]==1){
+				# 		pvec[i] <- 1
+				# if has a label, set any overlapping masks to negative
+				#}else 
+				if(probs[i,2]>1){
+					pvec[i] <- probs[i,2]
+					oids <- c(ovlp[which(ovlp[,1]==probs[i,1]),2], ovlp[which(ovlp[,2]==probs[i,1]), 1])
+					oinds <- which(probs[,1] %in% oids)
+					oinds <- oinds[which(oinds>i)]
+	 				pvec[oinds] <- 1
+				}
+			}
+		}
+	}
+	
+	# Now go through remaining masks and choose any that are segmented (with unknown label)	
+	for(i in 1:nrow(probs)){
+		if(is.na(pvec[i])){
+			# If haven't already constrained this mask to be negative
+			wmax <- which.max(probs[i,-(1:2)])
+			pvec[i] <- wmax
+			if(wmax!=1){
+				# Assign overlapping masks to negative value
+				oids <- c(ovlp[which(ovlp[,1]==probs[i,1]),2], ovlp[which(ovlp[,2]==probs[i,1]), 1])
+				oinds <- which(probs[,1] %in% oids)
+				oinds <- oinds[which(oinds>i)]
+	 			pvec[oinds] <- 1
+			}
+		}
+	}
 	
 	addseg <- cbind(out$pvec, probs[,1])
 	addseg <- as.data.frame(addseg)
@@ -129,6 +120,38 @@ PredictExperiment <- function(classifier, db, enforcelabels=T){
 
 }
 
+GetGroups <- function(db, ids, labels, minid=1){
+	
+}
+
+# TODO - detect if vertex is in multiple cliques, if so assign to larger clique and remove from
+#  smaller.  Remove smaller clique if reduced to length 1.
+# 
+# returns a vector where ungrouped masks are 0, and groups each have a unique integer id >0
+# returns in the same order as the ids are passed into the function
+# minid is the starting id assigned to groups.  will increment from there.  integer
+GetCliques <- function(db, ids, minid=1){
+	idsstring <- paste(ids, collapse=", ")
+	qry <- paste("select maskid1, maskid2 from edges where maskid1 IN (",idsstring, ") AND maskid2 IN (", idsstring,")")
+	cons <- dbGetQuery(db$db, qry)
+
+	cons <- as.matrix(cons)
+	cons <- apply(cons, c(1,2), toString)
+	graph <- graph.edgelist(cons, directed=F)
+	
+	# cliques is list of maximal cliques with the graph vertex ids
+	# we need to convert these back to mask ids
+	cliques <- maximal.cliques(graph)
+	vertexids <- as.integer(V(graph)$name)
+	
+	ret <- rep(0, length(ids))
+	for(i in 1:length(cliques)){
+		vids <- vertexids[cliques[[i]]+1]
+		ret[which(ids %in% vids)] <- i-1+minid
+	}
+	
+	return(ret)
+}
 
 # Checks each database in the given directory and pulls any
 # labeled data
@@ -136,32 +159,31 @@ PullAllData <- function(directory){
 	dblist <- list.files(directory)[grep(".*sqlite", list.files(directory))]
 	
 	count <- 1
+	# Get first experiment with data
 	while(count <= length(dblist)){
-		cat("-- ", dblist[count], "\n")
 		tmp <- PullData(ConMaskDb(paste(directory, dblist[count], sep="")))
 		if(nrow(tmp)>0){
 			break
 		}
 	}
 	if(nrow(tmp)==0){
-		cat("No labeled data found\n")
-		return(NA)
+		# If never found any experiment with data
+		stop("No data found.")
 	}else{
+		# Else add the relevant experiment name
 		namecol <- as.data.frame(rep(dblist[count], nrow(tmp)))
 		names(namecol) <- c("experiment")
 		ret <- cbind(namecol, tmp)
 	}
+	# Iterate through the remaining experiments and add any data
 	count <-  count+1
-	print(names(ret))
 	for(i in count:length(dblist)){
-		cat("----", dblist[i], "\n")
 		tmp <- PullData(ConMaskDb(paste(directory, dblist[i], sep="")))
 		if(nrow(tmp)>0){
 			if( ncol(tmp) == (ncol(ret)-1) ){
 				namecol <- as.data.frame(rep(dblist[i], nrow(tmp)))
 				names(namecol) <- c("experiment")
 				tmp <- cbind(namecol, tmp)
-				print(names(tmp))
 		 		ret <- rbind(ret, tmp)
 			}
 		}
@@ -181,7 +203,7 @@ PullAllData <- function(directory){
 #' 
 #' @export
 #-
-PullData <- function(db, labeled=T){
+PullData <- function(db, labeled=TRUE, group=TRUE){
 	features <- dbGetQuery(db$db, "SELECT id, tag FROM features")
 	df <- dim(features)
 	scaleids <- grep(paste("Scale_.*", sep=""), features[,2])
@@ -207,7 +229,7 @@ PullData <- function(db, labeled=T){
 		qry <- paste(qry, "GROUP BY m.id")
 		return(as.data.frame(dbGetQuery(db$db, qry)))
 	}else{
-		return(NA)
+		stop("No data found in the supplied database.")
 	}
 }
 

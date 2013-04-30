@@ -14,7 +14,8 @@ Imports:
     cairoDevice,
     R.utils,
     mgcv,
-    RSEIS
+    RSEIS,
+	igraph
 Collate:
     'datainport.R'
     'motion.R'

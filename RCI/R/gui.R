@@ -21,6 +21,133 @@
 # 
 ###############################################################################
 
+# Uses RefClass to return the values from the GUI.  The initializer fires up the GUI, and then
+# the result is put into the maskmat field which can then be retrieved with
+# foo = CellID$new(db)
+# result = foo$maskmat
+CellID <- suppressWarnings(setRefClass(
+	"CellID",
+	fields=list(
+		maskmat = "ANY"
+	),
+	methods = list(
+		initialize = function(db){
+			# A matrix with a row for each mask with the mask id and the current label and current segmentation
+			selmat <- dbGetQuery(db$db, "select id, label, segmentation from masks order by id")
+
+			mimg1 <- GetImage(db, 'mimg1')
+			mimg1eq <- GetImage(db, 'mimg1eq')
+			mimg2 <- GetImage(db, 'mimg2')
+			mimg2eq <- GetImage(db, 'mimg2eq')
+
+			dims <- as.integer(dbGetQuery(db$db, "select nx, ny from experiment")[1,])
+			nx <- dims[1]
+			ny <- dims[2]
+	
+			maskmatrixA <- matrix(NA, ny, nx)
+			maskmatrixB <- matrix(NA, ny, nx)
+	
+			ImgHandlerA <- function(h, ...){
+				xval <- round(h$x*nx)[1]
+				yval <- round((1-h$y)*ny)[1]
+		
+				if(is.na(maskmatrixA[yval, xval])){
+					maskmatrixA[yval, xval] <<- 1
+				}else{
+					maskmatrixA[yval, xval] <<- NA
+				}
+	
+				RedrawImages()
+				SaveMasks()
+			}
+	
+			ImgHandlerB <- function(h, ...){
+				xval <- round(h$x*nx)[1]
+				yval <- round((1-h$y)*ny)[1]
+		
+				if(is.na(maskmatrixA[yval, xval])){
+					maskmatrixB[yval, xval] <<- 1
+				}else{
+					maskmatrixB[yval, xval] <<- NA
+				}
+	
+				RedrawImages()
+				SaveMasks()
+			}
+	
+			SaveMasks <- function(){
+				maskmat <<- matrix(0, ny, nx)
+				maskmat[which(!is.na(maskmatrixA))] <<- 1
+				maskmat[which(!is.na(maskmatrixB))] <<- 2
+			}
+	
+			RedrawImages <- function(){
+				visible(imgwindow1) <- TRUE			
+				Image(mimg1, useRaster=T)
+				AddMask(maskmatrixA, rgb=c(0,0,1))
+				AddMask(maskmatrixB, rgb=c(0,1,0))
+				visible(imgwindow2) <- TRUE			
+				Image(mimg2, useRaster=T)
+				AddMask(maskmatrixA, rgb=c(0,0,1))
+				AddMask(maskmatrixB, rgb=c(0,1,0))
+				visible(imgwindow3) <- TRUE			
+				Image(mimg1eq, useRaster=T)
+				AddMask(maskmatrixA, rgb=c(0,0,1))
+				AddMask(maskmatrixB, rgb=c(0,1,0))
+				visible(imgwindow4) <- TRUE						
+				Image(mimg2eq, useRaster=T)
+				AddMask(maskmatrixA, rgb=c(0,0,1))
+				AddMask(maskmatrixB, rgb=c(0,1,0))
+		
+			}
+
+			########## Layout
+	
+			##The widgets
+			win <- gwindow("Calcium Imaging Segmenter", spacing=10)
+			maingroup <- ggroup(horizontal=FALSE, cont=win, spacing=5)
+			vexpgroup <- ggroup(horizontal=FALSE, cont=maingroup, expand=TRUE, spacing=10)
+			controlgroup <- ggroup(horizontal=TRUE, cont=maingroup, expand=TRUE, spacing=10)	
+
+			############################
+			##### view experiment group
+		
+			imgsubgroupA <- ggroup(cont=vexpgroup)
+			imgsubgroupB <- ggroup(cont=vexpgroup)
+
+
+			imgwindow1 <- ggraphics(container=imgsubgroupA)
+			addHandlerChanged(imgwindow1, ImgHandlerA)
+	
+			imgwindow2 <- ggraphics(container=imgsubgroupA)
+			addHandlerChanged(imgwindow2, ImgHandlerB)
+
+			imgwindow3 <- ggraphics(container=imgsubgroupB)
+			addHandlerChanged(imgwindow3, ImgHandlerA)
+
+			imgwindow4 <- ggraphics(container=imgsubgroupB)
+			addHandlerChanged(imgwindow4, ImgHandlerB)
+	
+			visible(imgwindow1) <- TRUE
+			par(mar=c(0,0,0,0))
+			Image(mimg1, useRaster=T)
+
+			visible(imgwindow2) <- TRUE
+			par(mar=c(0,0,0,0))
+			Image(mimg2, useRaster=T)
+
+			visible(imgwindow3) <- TRUE
+			par(mar=c(0,0,0,0))
+			Image(mimg1eq, useRaster=T)
+
+			visible(imgwindow4) <- TRUE
+			par(mar=c(0,0,0,0))
+			Image(mimg2eq, useRaster=T)
+
+		}
+	)
+))
+
 
 # NOTE: this is currently broken in R 3.0 due to problems with RGtk2 - use old version of R
 # Requires that mean images have been added to the database
