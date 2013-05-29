@@ -11,7 +11,8 @@
   \item{calexp}{the calcium experiment data object}
 
   \item{method}{what method should be used to generate
-  masks to add. 'LoG' Laplacian of Gaussian}
+  masks to add. 'LoG' Laplacian of Gaussian, EqThresh
+  thresholding of equalized image}
 
   \item{channel}{which data channel to use for computing
   the masks}

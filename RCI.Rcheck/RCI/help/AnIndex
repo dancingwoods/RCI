@@ -3,6 +3,7 @@ AddMask	AddMask
 AddMaskConnections	AddMaskConnections
 AddMasks	AddMasks
 AddMaskSet	AddMaskSet
+AssignContiguous	AssignContiguous
 AssignToPeaks	AssignToPeaks
 ClipImage	ClipImage
 ClusterCells	ClusterCells
@@ -33,6 +34,8 @@ GetMasks	GetMasks
 GetPhase	GetPhase
 GetSeries	GetSeries
 GetShapeFeatures	GetShapeFeatures
+GetSparseMasks	GetSparseMasks
+GrpRFCreate	GrpRFCreate
 HillClimbC	HillClimbC
 HistEqualC	HistEqualC
 Image	Image
@@ -51,6 +54,10 @@ OptimRotate	OptimRotate
 OptimShift	OptimShift
 OptimTranslate	OptimTranslate
 plot.MTSpectrum	plot.MTSpectrum
+PlotMask	PlotMask
+PlotMaskSet	PlotMaskSet
+PredictExperiment	PredictExperiment
+PullData	PullData
 RegisterCalExp	RegisterCalExp
 RemoveMask	RemoveMask
 ReorderFFT	ReorderFFT

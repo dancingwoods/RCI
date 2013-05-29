@@ -10,19 +10,18 @@ Selects the masks from the given list that are contained in a region}
   masklist with non-NA pixels specifying the region in
   which to find masks}
 
-  \item{masklist}{a list, as returned by GetMasks, of
-  sparse masks (vectors where the first element is the
-  negative id of the mask and the other elements are the
-  mask indices)}
+  \item{masklist}{a list of sparse masks (vectors where the
+  first element is the negative id of the mask and the
+  other elements are the mask indices)}
 }
 \description{
   INTERNAL Selects the masks from the given list that are
   contained in a region
 }
 \details{
-  Given a list of masks as returned by GetMasks and a
-  matrix with a mask specifying a region, returns the masks
-  in the masklist that are completely contained in the
-  given region.
+  Given a list of masks (with negative ids as first
+  element) and a matrix with a mask specifying a region,
+  returns the masks in the masklist that are completely
+  contained in the given region.
 }
 

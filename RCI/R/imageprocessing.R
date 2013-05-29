@@ -188,6 +188,31 @@ AssignToPeaks <- function(region, image, restrict=T){
     
 }
 
+#-
+#' Assigns the non-zero pixels of 'region' to one contiguous (cardinal directions) regions
+#' 
+#' @param region a matrix with 1 in the regions to be assigned and 0 elsewhere
+#' 
+#' @return a matrix with unique integers in the pixels of each region
+#' 
+#' @useDynLib RCI labelcontiguousC
+#' @export
+#-
+AssignContiguous <- function(region){
+    d <- dim(region)
+
+    # Use the C function
+	out <- .C("labelcontiguousC",
+		ret = as.integer(region),
+		as.integer(d)
+	)
+		
+	ret <- matrix(out$ret, d[1], d[2])
+	return(ret)
+    
+}
+
+
 
 #-
 #' Convolves an image with the given kernel matrix
@@ -249,6 +274,19 @@ LoGKernel <- function(kdim, sigma){
 		}
 	}
 	kmat <- kmat-(sum(kmat)/kdim^2)
+	return(kmat)
+}
+
+GKernel <- function(kdim, sigma){
+	kmat <- matrix(NA, kdim, kdim)
+	for(i in 1:kdim){
+		for(j in 1:kdim){
+			x <- i-ceiling(kdim/2)
+			y <- j-ceiling(kdim/2)
+			kmat[i,j] <- 1/(2*pi*sigma^2) * exp(-1*(x^2+y^2)/(2*sigma^2))
+		}
+	}
+	#kmat <- kmat-(sum(kmat)/kdim^2)
 	return(kmat)
 }
 

@@ -3,7 +3,7 @@
 \title{INTERNAL
 Converts a sparse mask to a matrix mask}
 \usage{
-  SparseToMatrix(sm, ny = 128, nx = 128, background = NA)
+  SparseToMatrix(sm, ny = 126, nx = 126, background = NA)
 }
 \arguments{
   \item{sm}{the sparse representation of the mask (a vector

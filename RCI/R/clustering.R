@@ -63,31 +63,19 @@ ClusterCells <- function(calexp, mask, k, criteria="cor", freq=c(0.78,0.81), dt=
 }
 
 
-#-
-#' See correlation with clusters
-#' 
-#' @param calexp the calexp object
-#' @param clusters the cluster object as returned from ClusterCells
-#' 
-#' @export
-#-
-ClusterCorrelation <- function(calexp, clusters){
-	clmeans <- matrix(dim(calexp$data)[2], nrow(clusters$clusinfo))
-	for(i in 1:nrow(clust$clusinfo)){
-		wid <- as.integer(names(which(clust$clustering == i)))
-		clmask <- matrix(NA, nrow(mask), ncol(mask))
-		for(id in wid){
-			clmask[which(mask==id)]=i
-		}
-		clmeans[,i] = GetSeries(calexp, clmask)
+GetAllSeries <- function(db, calexp, classids, chan=2){
+	# Note - no check that the data in calexp actually matches the db (size etc)
+	
+	GetSeries <- function(smaskstring){
+		return(apply(apply(arrayInd(as.integer(strsplit(smaskstring, split=", ")[[1]]), 
+		       dim(calexp$data)[3:4]), 1, function(vec){return(calexp$data[chan,,vec[1], vec[2]])}), 1, mean))
 	}
 	
-	CorPixel <- function(pxl, meanser){
-		
-	}
-	
+	masks <- dbGetQuery(db$db, paste("select id, mask from masks where segmentation in (",paste(classids, collapse=", "),")"))
+	series <- sapply(masks[,3], GetSeries)
+	colnames(series) <- masks[,1]
+	return(series)
 }
-
 
 #-
 #' Return average time series for each cell in a mask
@@ -97,7 +85,7 @@ ClusterCorrelation <- function(calexp, clusters){
 #' indicates a cell to be clustered.
 #' @param channel the channel to get the cell traces from
 #-
-GetSeries <- function(calexp, mask, channel=2){
+GetSeries <- function(mask, calexp, channel=2){
 
 	# Get unique non-zero, non-NA values
 	uvs <- unique(as.vector(mask))

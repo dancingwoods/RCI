@@ -29,6 +29,8 @@
 <td>Generate masks according to the given method and add them to the database</td></tr>
 <tr><td width="25%"><a href="AddMaskSet.html">AddMaskSet</a></td>
 <td>Plots sets of masks over an already plotted image</td></tr>
+<tr><td width="25%"><a href="AssignContiguous.html">AssignContiguous</a></td>
+<td>Assigns the non-zero pixels of 'region' to one contiguous (cardinal directions) regions</td></tr>
 <tr><td width="25%"><a href="AssignToPeaks.html">AssignToPeaks</a></td>
 <td>Assigns the non-zero pixels of 'region' to one of the maxima of the image by hillclimbing on image</td></tr>
 <tr><td width="25%"><a href="ClipImage.html">ClipImage</a></td>
@@ -89,6 +91,10 @@
 <td>Return average time series for each cell in a mask</td></tr>
 <tr><td width="25%"><a href="GetShapeFeatures.html">GetShapeFeatures</a></td>
 <td>INTERNAL Computes the features related to just the shape of masks, adding them to the database</td></tr>
+<tr><td width="25%"><a href="GetSparseMasks.html">GetSparseMasks</a></td>
+<td>Returns a list of the masks in a database</td></tr>
+<tr><td width="25%"><a href="GrpRFCreate.html">GrpRFCreate</a></td>
+<td>Creates and trains a custom random forest classifier</td></tr>
 <tr><td width="25%"><a href="HillClimbC.html">HillClimbC</a></td>
 <td>INTERNAL Perform hill climbing on a matrix starting from a given point and returning the local maxima that is reached.</td></tr>
 <tr><td width="25%"><a href="HistEqualC.html">HistEqualC</a></td>
@@ -112,7 +118,7 @@
 <tr><td width="25%"><a href="MaskHull.html">MaskHull</a></td>
 <td>INTERNAL Computes the convex hull of a mask</td></tr>
 <tr><td width="25%"><a href="MatrixToSparse.html">MatrixToSparse</a></td>
-<td>INTERNAL Converts a matrix mask into a sparse mask.  Assumes that the non-mask pixels of the matrix are NA.</td></tr>
+<td>INTERNAL Converts a matrix to a sparse mask</td></tr>
 <tr><td width="25%"><a href="MatrixToSparseMasks.html">MatrixToSparseMasks</a></td>
 <td>Converts a matrix with unique positive integers on each mask into a sparse mask list</td></tr>
 <tr><td width="25%"><a href="MultiTaperSpectrum.html">MultiTaperSpectrum</a></td>
@@ -125,6 +131,14 @@
 <td>Uses optimization of an objective function to compute the best alignment translation between two images (uses optimization routines in the neldermead package)</td></tr>
 <tr><td width="25%"><a href="plot.MTSpectrum.html">plot.MTSpectrum</a></td>
 <td>Plots a multitaper spectral estimate created by MultiTaperSpectrum</td></tr>
+<tr><td width="25%"><a href="PlotMask.html">PlotMask</a></td>
+<td>Plots a mask over an already plotted image</td></tr>
+<tr><td width="25%"><a href="PlotMaskSet.html">PlotMaskSet</a></td>
+<td>Plots sets of masks over an already plotted image</td></tr>
+<tr><td width="25%"><a href="PredictExperiment.html">PredictExperiment</a></td>
+<td>Predicts an experiment using the classifier and MWIS</td></tr>
+<tr><td width="25%"><a href="PullData.html">PullData</a></td>
+<td>Pulls data from a mask database into a data.frame that has one row for each mask with the label, id, and feature values of that mask in the columns</td></tr>
 <tr><td width="25%"><a href="RegisterCalExp.html">RegisterCalExp</a></td>
 <td>Removes in-plane motion effects using rigid body alignment of the image frames</td></tr>
 <tr><td width="25%"><a href="RemoveMask.html">RemoveMask</a></td>
@@ -156,6 +170,6 @@
 <tr><td width="25%"><a href="TranslateFFT.html">TranslateFFT</a></td>
 <td>Shifts an image by the given (fractional pixel) amounts</td></tr>
 <tr><td width="25%"><a href="ViewCI.html">ViewCI</a></td>
-<td>#INTERNAL #Creates an empty database controller # #</td></tr>
+<td>Opens the GUI viewer to manipulate the segmentation process.</td></tr>
 </table>
 </body></html>

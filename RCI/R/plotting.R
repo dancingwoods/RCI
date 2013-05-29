@@ -21,6 +21,72 @@
 # 
 ###############################################################################
 
+PlotPerformance <- function(perf, ...){
+	
+	if(nrow(perf)==2){
+		plotmat <- matrix(NA, 3,4)
+		plotmat[,1] = c(perf[1,2]-perf[1,3]-perf[1,5], perf[1,5], perf[1,3])
+		plotmat[,2] = c(perf[1,4], 0, 0)
+		plotmat[,3] = c(perf[2,2]-perf[2,3]-perf[2,5], perf[2,5], perf[2,3])
+		plotmat[,4] = c(perf[2,4], 0, 0)
+		print(plotmat)
+		barplot(plotmat[,c(1,3)], col=c("black", grey(0.75), grey(1)), 
+			names.arg=c("Neurons", "Astrocytes"),  cex.names=1.5, ...)
+		barplot(plotmat[,c(2,4)], col=rgb(0.5, 0.7, 0.5), add=T, width=0.5, space=c(1.5, 1.4))
+		legend("topright", cex=1.5, bty="n", fill=c("black", grey(0.75), "white", rgb(0.5, 0.7, 0.5)), 
+			legend=c("Correct", "Marginal", "Missed", "New"))
+	
+		text(0.5, cex=1.5,plotmat[1,1]/2, paste(toString(round(plotmat[1,1]/sum(plotmat[,1])*100)), "%"), col="white")
+		text(0.5, cex=1.5,plotmat[2,1]/2 +plotmat[1,1], paste(toString(round(plotmat[2,1]/sum(plotmat[,1])*100)), "%"))
+		text(0.5, cex=1.5,plotmat[3,1]/2 + sum(plotmat[1:2,1]), paste(toString(round(plotmat[3,1]/sum(plotmat[,1])*100)), "%"))
+
+		text(1.7, cex=1.5,plotmat[1,3]/2, paste(toString(round(plotmat[1,3]/sum(plotmat[,3])*100)), "%"), col="white")
+		text(1.7, cex=1.5,plotmat[2,3]/2 +plotmat[1,3], paste(toString(round(plotmat[2,3]/sum(plotmat[,3])*100)), "%"))
+		text(1.7, cex=1.5,plotmat[3,3]/2 + sum(plotmat[1:2,3]), paste(toString(round(plotmat[3,3]/sum(plotmat[,3])*100)), "%"))
+	}
+	if(nrow(perf)==1){
+		plotmat <- matrix(NA, 3,2)
+		plotmat[,1] = c(perf[1,2]-sum(perf[1,c(3,5)]), perf[1,5], perf[1,3])
+		plotmat[,2] = c(perf[1,4], 0, 0)
+
+		totalcells <- sum(plotmat[,1])
+		maxy = min(max(totalcells, perf[1,4]), totalcells*1.5)
+
+		barplot(as.matrix(plotmat[,1], 3, 1), col=c("black", grey(0.75), grey(1)), 
+			names.arg=c("Cells"),  ylim=c(0,maxy), cex.names=1.5, xlim=c(0,1.5), ...)
+		barplot(plotmat[,2], col=rgb(0.5, 0.7, 0.5, alpha=0.75), add=T, width=0.5, space=c(1.7))
+	
+		text(0.5, cex=1.5,plotmat[1,1]/2, paste(toString(round(plotmat[1,1]/sum(plotmat[,1])*100)), "%"), col="white")
+		text(0.5, cex=1.5,plotmat[2,1]/2 +plotmat[1,1], paste(toString(round(plotmat[2,1]/sum(plotmat[,1])*100)), "%"))
+		text(0.5, cex=1.5,plotmat[3,1]/2 + sum(plotmat[1:2,1]), paste(toString(round(plotmat[3,1]/sum(plotmat[,1])*100)), "%"))
+		
+		text(1.1, cex=1.5, maxy-50, toString(plotmat[1,2]))
+		
+	}
+}
+
+ImageDb <- function(db, imagetag="mimg2"){
+	Image(GetImage(db, imagetag))
+}
+
+PlotMaskSetByID <- function(db, ids, rgb=NULL){
+	dims <- as.integer(dbGetQuery(db$db, "select nx, ny from experiment"))
+	mask <- matrix(NA, dims[2], dims[1])
+	for(id in ids){
+		mask[GetMask(db,id)]=id
+	}
+	if(is.null(rgb)){
+		PlotMaskSet(mask)
+	}else{
+		PlotMask(mask, rgb=rgb)
+	}
+}
+
+PlotSegmentation <- function(db, classid, rgb=NULL){
+	maskids <- dbGetQuery(db$db, paste("select id from masks where segmentation=",classid))[,1]
+	PlotMaskSetByID(db, maskids, rgb)
+}
+
 #-
 #' Plots an image of the given matrix with the origin in the upper left
 #' 
@@ -53,7 +119,7 @@ Image <-function(img, col=grey(seq(0,1,0.001)), ...){
 #' 
 #' @export
 #-
-AddMask <- function(mask, rgb=runif(3), alpha=0.5, ...){
+PlotMask <- function(mask, rgb=runif(3), alpha=0.5, ...){
 	if(mode(mask)=="logical"){
 		mask[which(mask==TRUE)]=1
 		mask[which(mask==FALSE)]=NA
@@ -80,7 +146,7 @@ AddMask <- function(mask, rgb=runif(3), alpha=0.5, ...){
 #' 
 #' @export
 #-
-AddMaskSet <- function(mask, alpha=0.5, rgb=NULL,...){
+PlotMaskSet <- function(mask, alpha=0.5, rgb=NULL,...){
 	mask[which(mask==0)]=NA
 	uids <- unique(as.vector(mask))
 	uids <- uids[which(!is.na(uids))]
@@ -100,34 +166,6 @@ AddMaskSet <- function(mask, alpha=0.5, rgb=NULL,...){
 	}
 }
 
-PlotSegmentation <- function(db){
-	mimg1 <- GetImage(db, 'mimg1')
-	mimg2 <- GetImage(db, 'mimg2')
-	selmat <- dbGetQuery(db$db, "select mask, segmentation from masks")
-
-	convertmask <- function(str){
-		return(as.integer(strsplit(str, split=", ")[[1]]))
-	}
-
-	dims <- as.integer(dbGetQuery(db$db, "select nx, ny from experiment")[1,])
-	nx <- dims[1]
-	ny <- dims[2]
-	par(mfrow=c(2,2), mar=rep(0.1, 4))
-	Image(mimg1)
-	Image(mimg1)
-	for(i in 1:nrow(selmat)){
-		if(selmat[i,2]==3){
-			AddMask(SparseToMatrix(convertmask(selmat[i,1]), nx, ny))
-		}
-	}
-	Image(mimg2)
-	Image(mimg2)
-	for(i in 1:nrow(selmat)){
-		if(selmat[i,2]==2){
-			AddMask(SparseToMatrix(convertmask(selmat[i,1]), nx, ny))
-		}
-	}
-}
 
 #-
 #' Plots a multitaper spectral estimate created by MultiTaperSpectrum

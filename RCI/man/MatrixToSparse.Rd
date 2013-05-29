@@ -1,20 +1,17 @@
 \name{MatrixToSparse}
 \alias{MatrixToSparse}
 \title{INTERNAL
-Converts a matrix mask into a sparse mask.  Assumes that the non-mask pixels
-of the matrix are NA.}
+Converts a matrix to a sparse mask}
 \usage{
   MatrixToSparse(mat)
 }
 \arguments{
-  \item{mat}{The mask as a matrix with NA in non-mask
-  pixels}
+  \item{mat}{the matrix to convert}
 }
 \value{
-  a vector of indices of the mask pixels
+  A list of indices representing the mask
 }
 \description{
-  INTERNAL Converts a matrix mask into a sparse mask.
-  Assumes that the non-mask pixels of the matrix are NA.
+  INTERNAL Converts a matrix to a sparse mask
 }
 

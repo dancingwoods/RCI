@@ -84,20 +84,20 @@ CellID <- suppressWarnings(setRefClass(
 			RedrawImages <- function(){
 				visible(imgwindow1) <- TRUE			
 				Image(mimg1, useRaster=T)
-				AddMask(maskmatrixA, rgb=c(0,0,1))
-				AddMask(maskmatrixB, rgb=c(0,1,0))
+				PlotMask(maskmatrixA, rgb=c(0,0,1))
+				PlotMask(maskmatrixB, rgb=c(0,1,0))
 				visible(imgwindow2) <- TRUE			
 				Image(mimg2, useRaster=T)
-				AddMask(maskmatrixA, rgb=c(0,0,1))
-				AddMask(maskmatrixB, rgb=c(0,1,0))
+				PlotMask(maskmatrixA, rgb=c(0,0,1))
+				PlotMask(maskmatrixB, rgb=c(0,1,0))
 				visible(imgwindow3) <- TRUE			
 				Image(mimg1eq, useRaster=T)
-				AddMask(maskmatrixA, rgb=c(0,0,1))
-				AddMask(maskmatrixB, rgb=c(0,1,0))
+				PlotMask(maskmatrixA, rgb=c(0,0,1))
+				PlotMask(maskmatrixB, rgb=c(0,1,0))
 				visible(imgwindow4) <- TRUE						
 				Image(mimg2eq, useRaster=T)
-				AddMask(maskmatrixA, rgb=c(0,0,1))
-				AddMask(maskmatrixB, rgb=c(0,1,0))
+				PlotMask(maskmatrixA, rgb=c(0,0,1))
+				PlotMask(maskmatrixB, rgb=c(0,1,0))
 		
 			}
 
@@ -215,13 +215,13 @@ ViewCI <- function(db, cf=NULL){
 		neuronmat[which(neuronmat>0)]=1
 		if(max(neuronmat)>0){		
 			visible(imgwindow1) <- TRUE
-			AddMaskSet(neuronmat, rgb=neuronColor, useRaster=T)
+			PlotMaskSet(neuronmat, rgb=neuronColor, useRaster=T)
 			visible(imgwindow2) <- TRUE
-			AddMaskSet(neuronmat, rgb=neuronColor, useRaster=T)
+			PlotMaskSet(neuronmat, rgb=neuronColor, useRaster=T)
 			visible(imgwindow3) <- TRUE
-			AddMaskSet(neuronmat, rgb=neuronColor, useRaster=T)
+			PlotMaskSet(neuronmat, rgb=neuronColor, useRaster=T)
 			visible(imgwindow4) <- TRUE
-			AddMaskSet(neuronmat, rgb=neuronColor, useRaster=T)
+			PlotMaskSet(neuronmat, rgb=neuronColor, useRaster=T)
 		}
 		
 		# Plot astrocytes in blue
@@ -234,13 +234,13 @@ ViewCI <- function(db, cf=NULL){
 		astromat[which(astromat>0)]=1
 		if(max(astromat)>0){		
 			visible(imgwindow1) <- TRUE
-			AddMaskSet(astromat, rgb=astroColor, useRaster=T)
+			PlotMaskSet(astromat, rgb=astroColor, useRaster=T)
 			visible(imgwindow2) <- TRUE
-			AddMaskSet(astromat, rgb=astroColor, useRaster=T)
+			PlotMaskSet(astromat, rgb=astroColor, useRaster=T)
 			visible(imgwindow3) <- TRUE
-			AddMaskSet(astromat, rgb=astroColor, useRaster=T)
+			PlotMaskSet(astromat, rgb=astroColor, useRaster=T)
 			visible(imgwindow4) <- TRUE
-			AddMaskSet(astromat, rgb=astroColor, useRaster=T)
+			PlotMaskSet(astromat, rgb=astroColor, useRaster=T)
 		}
 		
 		
@@ -335,10 +335,10 @@ ViewCI <- function(db, cf=NULL){
 						visible(ref.mswin[[(i-1)*5+j]]) <- TRUE
 						par(mar=c(0.1,0.2,0.1,0.1), mfrow=c(1,2))
 						Image(mimg1[yrange[1]:yrange[2], xrange[1]:xrange[2]], useRaster=T)
-						AddMask(SparseToMatrix(containedmasks[[sizeorder[snum*5+j]]], ny, nx)[yrange[1]:yrange[2], xrange[1]:xrange[2]], rgb=rgb, useRaster=T)
+						PlotMask(SparseToMatrix(containedmasks[[sizeorder[snum*5+j]]], ny, nx)[yrange[1]:yrange[2], xrange[1]:xrange[2]], rgb=rgb, useRaster=T)
 						par(mar=c(0.1,0.1,0.1,0.2))
 						Image(mimg2[yrange[1]:yrange[2], xrange[1]:xrange[2]], useRaster=T)
-						AddMask(SparseToMatrix(containedmasks[[sizeorder[snum*5+j]]], ny, nx)[yrange[1]:yrange[2], xrange[1]:xrange[2]], rgb=rgb, useRaster=T)
+						PlotMask(SparseToMatrix(containedmasks[[sizeorder[snum*5+j]]], ny, nx)[yrange[1]:yrange[2], xrange[1]:xrange[2]], rgb=rgb, useRaster=T)
 					}else{
 						visible(ref.mswin[[(i-1)*5+j]]) <- TRUE
 						mat = matrix(1, diff(yrange), diff(xrange))
@@ -434,10 +434,10 @@ ViewCI <- function(db, cf=NULL){
 				visible(ref.mswin[[index]]) <- TRUE
 				par(mar=c(0.1,0.2,0.1,0.1), mfrow=c(1,2))
 				Image(mimg1[yrange[1]:yrange[2], xrange[1]:xrange[2]], useRaster=T)
-				AddMask(SparseToMatrix(containedmasks[[sizeorder[ind]]], ny, nx)[yrange[1]:yrange[2], xrange[1]:xrange[2]], rgb=rgb, useRaster=T)
+				PlotMask(SparseToMatrix(containedmasks[[sizeorder[ind]]], ny, nx)[yrange[1]:yrange[2], xrange[1]:xrange[2]], rgb=rgb, useRaster=T)
 				par(mar=c(0.1,0.1,0.1,0.2))
 				Image(mimg2[yrange[1]:yrange[2], xrange[1]:xrange[2]], useRaster=T)
-				AddMask(SparseToMatrix(containedmasks[[sizeorder[ind]]], ny, nx)[yrange[1]:yrange[2], xrange[1]:xrange[2]], rgb=rgb, useRaster=T)
+				PlotMask(SparseToMatrix(containedmasks[[sizeorder[ind]]], ny, nx)[yrange[1]:yrange[2], xrange[1]:xrange[2]], rgb=rgb, useRaster=T)
 			}
 		}
 		
@@ -591,8 +591,8 @@ ViewCI <- function(db, cf=NULL){
 	imgsubgroupA <- ggroup(cont=vexpgroup)
 	imgsubgroupB <- ggroup(cont=vexpgroup)
 
-	imgwindowPA <- ggraphics(container=imgsubgroupA)
-	imgwindowPB <- ggraphics(container=imgsubgroupB)
+	# imgwindowPA <- ggraphics(container=imgsubgroupA)
+	# imgwindowPB <- ggraphics(container=imgsubgroupB)
 	
 	imgwindow1 <- ggraphics(container=imgsubgroupA)
 	addHandlerChanged(imgwindow1, ImgHandler)
@@ -606,8 +606,8 @@ ViewCI <- function(db, cf=NULL){
 	imgwindow4 <- ggraphics(container=imgsubgroupB)
 	addHandlerChanged(imgwindow4, ImgHandler)
 
-	imgwindowPA2 <- ggraphics(container=imgsubgroupA)
-	imgwindowPB2 <- ggraphics(container=imgsubgroupB)
+	# imgwindowPA2 <- ggraphics(container=imgsubgroupA)
+	# imgwindowPB2 <- ggraphics(container=imgsubgroupB)
 	
 	visible(imgwindow1) <- TRUE
 	par(mar=c(0,0,0,0))
@@ -625,22 +625,22 @@ ViewCI <- function(db, cf=NULL){
 	par(mar=c(0,0,0,0))
 	Image(mimg2eq, useRaster=T)
 
-	visible(imgwindowPA) <- TRUE
-	par(mar=c(0,0,0,0))
-	Image(mimg1, useRaster=T)
-
-	visible(imgwindowPA2) <- TRUE
-	par(mar=c(0,0,0,0))
-
-	Image(mimg2, useRaster=T)
-	visible(imgwindowPB) <- TRUE
-	par(mar=c(0,0,0,0))
-	Image(mimg1eq, useRaster=T)
-
-	visible(imgwindowPB2) <- TRUE
-	par(mar=c(0,0,0,0))
-	Image(mimg2eq, useRaster=T)
-
+	# visible(imgwindowPA) <- TRUE
+	# par(mar=c(0,0,0,0))
+	# Image(mimg1, useRaster=T)
+	# 
+	# visible(imgwindowPA2) <- TRUE
+	# par(mar=c(0,0,0,0))
+	# 
+	# Image(mimg2, useRaster=T)
+	# visible(imgwindowPB) <- TRUE
+	# par(mar=c(0,0,0,0))
+	# Image(mimg1eq, useRaster=T)
+	# 
+	# visible(imgwindowPB2) <- TRUE
+	# par(mar=c(0,0,0,0))
+	# Image(mimg2eq, useRaster=T)
+	# 
 	
 	togglemasks <- gradio(c("No Labels", "Hand Labels", "Final Segmentation"), handler=ToggleMasks, cont=controlgroup)
 	

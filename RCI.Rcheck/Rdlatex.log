@@ -64,10 +64,10 @@ ive/2008/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [9]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [10]
-Underfull \hbox (badness 10000) in paragraph at lines 631--634
-
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [11]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+Underfull \hbox (badness 10000) in paragraph at lines 659--662
+
+[11] (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [12]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [13]
@@ -75,19 +75,19 @@ Underfull \hbox (badness 10000) in paragraph at lines 631--634
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [14]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [15]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
-Underfull \hbox (badness 10000) in paragraph at lines 971--986
-
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [16]
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+Underfull \hbox (badness 10000) in paragraph at lines 999--1014
+
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [17]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [18]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [19]
-Underfull \hbox (badness 10000) in paragraph at lines 1175--1184
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+Underfull \hbox (badness 10000) in paragraph at lines 1202--1211
 
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [20]
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [21]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
@@ -102,8 +102,8 @@ Underfull \hbox (badness 10000) in paragraph at lines 1175--1184
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [26]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [27]
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [28]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [28]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [29]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [30]
@@ -111,15 +111,22 @@ Underfull \hbox (badness 10000) in paragraph at lines 1175--1184
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [31]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [32]
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [33]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [34]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [35]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [36]
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [37] [38] [39]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [37]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [38]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [39]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [40] [41]
 (./Rd2.aux) )
 (see the transcript file for additional information){/usr/local/texlive/2008/te
 xmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2008/texmf-dist/fonts/
@@ -128,7 +135,7 @@ w/helvetic/uhvr8a.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/urw/times
 /utmb8a.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/urw/times/utmr8a.pf
 b></usr/local/texlive/2008/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/lo
 cal/texlive/2008/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (39 pages, 135987 bytes).
+Output written on Rd2.pdf (41 pages, 138903 bytes).
 Transcript written on Rd2.log.
 This is pdfTeXk, Version 3.1415926-1.40.9 (Web2C 7.5.7)
  %&-line parsing enabled.
@@ -173,8 +180,8 @@ NOT loading lmodern)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/t1pcr.fd)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/psnfss/t1phv.fd) (./Rd2.toc
-[1{/usr/local/texlive/2008/texmf-var/fonts/map/pdftex/updmap/pdftex.map}])
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [2]
+[1{/usr/local/texlive/2008/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+[2]) (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [3]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
@@ -189,33 +196,33 @@ NOT loading lmodern)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [8]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [9]
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [10]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [10]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [11]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
-Underfull \hbox (badness 10000) in paragraph at lines 631--634
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [12]
+Underfull \hbox (badness 10000) in paragraph at lines 659--662
 
-[12] (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [13]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [14]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [15]
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [16]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [16]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [17]
-Underfull \hbox (badness 10000) in paragraph at lines 971--986
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+Underfull \hbox (badness 10000) in paragraph at lines 999--1014
 
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [18]
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [19]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [20]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
-Underfull \hbox (badness 10000) in paragraph at lines 1175--1184
-
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [21]
+Underfull \hbox (badness 10000) in paragraph at lines 1202--1211
+
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [22]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
@@ -230,15 +237,15 @@ Underfull \hbox (badness 10000) in paragraph at lines 1175--1184
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [27]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [28]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [29]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [30]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [31]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [32]
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [33]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [34]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
@@ -248,8 +255,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 1175--1184
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [37]
 (/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
-(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [38] [39] [40]
-(./Rd2.aux) )
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [38]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [39]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [40]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [41]
+(/usr/local/texlive/2008/texmf-dist/tex/latex/base/utf8.def) [42] (./Rd2.aux) )
 (see the transcript file for additional information){/usr/local/texlive/2008/te
 xmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2008/texmf-dist/fonts/
 type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/ur
@@ -257,8 +270,8 @@ w/helvetic/uhvr8a.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/urw/times
 /utmb8a.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/urw/times/utmr8a.pf
 b></usr/local/texlive/2008/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/lo
 cal/texlive/2008/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (40 pages, 138471 bytes).
+Output written on Rd2.pdf (42 pages, 140717 bytes).
 Transcript written on Rd2.log.
 Saving output to 'RCI-manual.pdf' ...
 Done
-You may want to clean up by 'rm -rf /var/folders/pd/pd+OxX2yGxitoI6Od2-03k+++TI/-Tmp-//RtmpCa5vCs/Rd2pdf99502947b638'
+You may want to clean up by 'rm -rf /var/folders/pd/pd+OxX2yGxitoI6Od2-03k+++TI/-Tmp-//Rtmpu3uUu9/Rd2pdf645065213926'

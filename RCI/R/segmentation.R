@@ -223,10 +223,12 @@ MatrixToSparseMasks <- function(maskmat){
 #' @export
 #-
 LoGMasks <- function(image, scale, ksize=15, sparse=T){
-	log.image <- ConvolveImage(image, LoGKernel(ksize,scale))
+	#log.image <- ConvolveImage(image, LoGKernel(ksize,scale))
+	smimage <- ConvolveImage(image, GKernel(ksize, scale))
+	log.image <- ConvolveImage(smimage, matrix(c(0, 1, 0, 1, -4, 1, 0, 1, 0), 3, 3))
 	region <- matrix(0, nrow(log.image), ncol(log.image))
 	region[which(log.image<0)]=1
-	masks <- AssignToPeaks(region, image, restrict=T) 
+	masks <- AssignToPeaks(region, smimage, restrict=T) 
 	if(!sparse){
 		return(masks)
 	}else{
@@ -252,7 +254,7 @@ EqualThreshMasks <- function(image, thresh, radius=8, fullmax=4096, sparse=T){
 	eq.image <- SlidingHistEqualC(image, radius, fullmax)
 	region <- matrix(0, nrow(eq.image), ncol(eq.image))
 	region[which(eq.image>thresh)] <- 1
-	masks <- AssignToPeaks(region, image, restrict=T)
+	masks <- AssignContiguous(region)
 	if(!sparse){
 		return(masks)
 	}else{
@@ -447,11 +449,11 @@ SetMaskLabel <- function(db, id, label){
 #-
 GetMask <- function(db, id, sparse=T){
 	rawd <- dbGetQuery(db$db, paste("select mask from masks where id=", id, sep=""))
-	smask <- as.integer(unlist(strsplit(rawd[1,1], split=" ")))
+	smask <- as.integer(unlist(strsplit(rawd[1,1], split=", ")))
  	if(sparse){
 		return(smask)
 	}else{
-		dims <- dbGetQuery(db, "select nx, ny from experiment")
+		dims <- dbGetQuery(db$db, "select nx, ny from experiment")
 		ret <- matrix(0, dims[1,1], dims[1,2])
 		ret[smask] <- 1
 		return(ret)		
@@ -734,6 +736,8 @@ ComputeMaskFeatures <- function(db, calexp, feature){
 		colnames(featdf) <- c("featureid", "maskid", "fvalue")
 		
 	}
+
+
 	else{
 		cat("Error: Unrecognized feature name.\n")
 		return()

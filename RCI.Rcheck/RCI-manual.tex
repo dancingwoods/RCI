@@ -17,14 +17,14 @@
 \item[Version]\AsIs{1.0}
 \item[Date]\AsIs{2010-01-09}
 \item[Author]\AsIs{Bronwyn Woods}
-\item[Maintainer]\AsIs{Bronwyn WOods }\email{bwoods@cmu.edu}\AsIs{}
+\item[Maintainer]\AsIs{Bronwyn Woods }\email{bwoods@cmu.edu}\AsIs{}
 \item[Description]\AsIs{Tools for analyzing in-vivo two-photon calcium imaging data.}
 \item[License]\AsIs{GPL}
 \item[Imports]\AsIs{RSQLite, randomForest, gWidgets, gWidgetsRGtk2, cairoDevice,
-R.utils, mgcv, RSEIS}
+R.utils, mgcv, RSEIS, igraph}
 \item[Collate]\AsIs{'datainport.R' 'motion.R' 'plotting.R' 'segmentation.R'
 'gui.R' 'imageprocessing.R' 'timeseries.R' 'clustering.R'
-'classifier.R'}
+'classifier.R' 'customrf.R'}
 \end{description}
 \Rdcontents{\R{} topics documented:}
 \inputencoding{utf8}
@@ -135,7 +135,8 @@ to the database
 \item[\code{calexp}] the calcium experiment data object
 
 \item[\code{method}] what method should be used to generate
-masks to add. 'LoG' Laplacian of Gaussian
+masks to add. 'LoG' Laplacian of Gaussian, EqThresh
+thresholding of equalized image
 
 \item[\code{channel}] which data channel to use for computing
 the masks
@@ -180,6 +181,33 @@ chosen)
 %
 \begin{Value}
 NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{AssignContiguous}{Assigns the non-zero pixels of 'region' to one contiguous (cardinal directions) regions}{AssignContiguous}
+%
+\begin{Description}\relax
+Assigns the non-zero pixels of 'region' to one contiguous
+(cardinal directions) regions
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  AssignContiguous(region, image)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{region}] a matrix with 1 in the regions to be
+assigned and 0 elsewhere
+
+\item[\code{image}] the image matrix
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a matrix with unique integers in the pixels of each
+region
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{AssignToPeaks}{Assigns the non-zero pixels of 'region' to one of the maxima of the image by hillclimbing on image}{AssignToPeaks}
@@ -1035,18 +1063,17 @@ contained in a region
 masklist with non-NA pixels specifying the region in
 which to find masks
 
-\item[\code{masklist}] a list, as returned by GetMasks, of
-sparse masks (vectors where the first element is the
-negative id of the mask and the other elements are the
-mask indices)
+\item[\code{masklist}] a list of sparse masks (vectors where the
+first element is the negative id of the mask and the
+other elements are the mask indices)
 \end{ldescription}
 \end{Arguments}
 %
 \begin{Details}\relax
-Given a list of masks as returned by GetMasks and a
-matrix with a mask specifying a region, returns the masks
-in the masklist that are completely contained in the
-given region.
+Given a list of masks (with negative ids as first
+element) and a matrix with a mask specifying a region,
+returns the masks in the masklist that are completely
+contained in the given region.
 \end{Details}
 \inputencoding{utf8}
 \HeaderA{GetMask}{Return the requested mask from the specified database}{GetMask}
@@ -1135,7 +1162,7 @@ Return average time series for each cell in a mask
 %
 \begin{Usage}
 \begin{verbatim}
-  GetSeries(calexp, mask, channel = 2)
+  GetSeries(mask, calexp, channel = 2)
 \end{verbatim}
 \end{Usage}
 %
@@ -1188,6 +1215,57 @@ pixels in the mask\\{}
 \begin{Value}
 NULL
 \end{Value}
+\inputencoding{utf8}
+\HeaderA{GetSparseMasks}{Returns a list of the masks in a database}{GetSparseMasks}
+%
+\begin{Description}\relax
+Returns a list of the masks in a database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetSparseMasks(db)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] a database connection
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a list of vectors, each vector specifying a mask.  The
+first element of each mask vector is the negative index
+of the mask.  The remaining elements of each vector are
+the indices of the mask pixels.
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{GrpRFCreate}{Creates and trains a custom random forest classifier}{GrpRFCreate}
+%
+\begin{Description}\relax
+Creates and trains a custom random forest classifier
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GrpRFCreate(labels, groups, data)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{labels}] a vector giving the labels of the training
+data.  this should be a factor
+
+\item[\code{groups}] a vector giving the grouping of the
+training data.  Any data points the same group value are
+treated as members of the same group.
+
+\item[\code{data}] a data.frame giving the training data
+features
+\end{ldescription}
+\end{Arguments}
 \inputencoding{utf8}
 \HeaderA{HillClimbC}{INTERNAL Perform hill climbing on a matrix starting from a given point and returning the local maxima that is reached.}{HillClimbC}
 %
@@ -1498,11 +1576,10 @@ a sparse representation of the convex hull of the given
 mask
 \end{Value}
 \inputencoding{utf8}
-\HeaderA{MatrixToSparse}{INTERNAL Converts a matrix mask into a sparse mask.  Assumes that the non-mask pixels of the matrix are NA.}{MatrixToSparse}
+\HeaderA{MatrixToSparse}{INTERNAL Converts a matrix to a sparse mask}{MatrixToSparse}
 %
 \begin{Description}\relax
-INTERNAL Converts a matrix mask into a sparse mask.
-Assumes that the non-mask pixels of the matrix are NA.
+INTERNAL Converts a matrix to a sparse mask
 \end{Description}
 %
 \begin{Usage}
@@ -1513,13 +1590,12 @@ Assumes that the non-mask pixels of the matrix are NA.
 %
 \begin{Arguments}
 \begin{ldescription}
-\item[\code{mat}] The mask as a matrix with NA in non-mask
-pixels
+\item[\code{mat}] the matrix to convert
 \end{ldescription}
 \end{Arguments}
 %
 \begin{Value}
-a vector of indices of the mask pixels
+A list of indices representing the mask
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{MatrixToSparseMasks}{Converts a matrix with unique positive integers on each mask into a sparse mask list}{MatrixToSparseMasks}
@@ -1722,6 +1798,130 @@ Nyquist frequency)
 %
 \begin{Value}
 NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{PlotMask}{Plots a mask over an already plotted image}{PlotMask}
+%
+\begin{Description}\relax
+Plots a mask over an already plotted image
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  PlotMask(mask, rgb = runif(3), alpha = 0.5, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mask}] the specification of the mask
+
+\item[\code{rgb}] a vector of length 3 giving the color of the
+mask in RGB (defaults to random)
+
+\item[\code{alpha}] the alpha transparency value of the mask
+(between 0 and 1)
+
+\item[\code{...}] additional graphing parameters
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Given a mask as either a matrix of logicals or a matrix
+with 1's on the mask, over-plot a semi-transparent
+colored region on an already plotted image.
+\end{Details}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{PlotMaskSet}{Plots sets of masks over an already plotted image}{PlotMaskSet}
+%
+\begin{Description}\relax
+Plots sets of masks over an already plotted image
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  PlotMaskSet(mask, alpha = 0.5, rgb = NULL, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mask}] the specification of the mask, unique values
+for each mask set, and 0 or NA in background
+
+\item[\code{alpha}] the alpha transparency value of the mask
+(between 0 and 1)
+
+\item[\code{...}] additional graphing parameters
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+Given a matrix with unique integers for each mask set,
+overplot each mask set in a different color (randomly
+chosen)
+\end{Details}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{PredictExperiment}{Predicts an experiment using the classifier and MWIS}{PredictExperiment}
+%
+\begin{Description}\relax
+Predicts an experiment using the classifier and MWIS
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  PredictExperiment(classifier, db, enforcelabels = F)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{classifier}] the classifier
+
+\item[\code{dn}] the database to predict
+
+\item[\code{enforcelabels}] boolen, should the final
+segmentation be forced to correspond to the hand labels
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+null, modifies the database
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{PullData}{Pulls data from a mask database into a data.frame that has one row for each mask with the label, id, and feature values of that mask in the columns}{PullData}
+%
+\begin{Description}\relax
+Pulls data from a mask database into a data.frame that
+has one row for each mask with the label, id, and feature
+values of that mask in the columns
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  PullData(db, labeled = TRUE, group = TRUE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the mask database object
+
+\item[\code{labeled}] boolean, should the results be restricted
+to masks that have been labeled
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a data.frame with the extracted data
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{RegisterCalExp}{Removes in-plane motion effects using rigid body alignment of the image frames}{RegisterCalExp}
@@ -2093,7 +2293,7 @@ INTERNAL Converts a sparse mask to a matrix mask
 %
 \begin{Usage}
 \begin{verbatim}
-  SparseToMatrix(sm, ny = 128, nx = 128, background = NA)
+  SparseToMatrix(sm, ny = 126, nx = 126, background = NA)
 \end{verbatim}
 \end{Usage}
 %
@@ -2182,15 +2382,16 @@ sub-pixel, resulting in Fourier interpolation.
 the shifted image (matrix)
 \end{Value}
 \inputencoding{utf8}
-\HeaderA{ViewCI}{\#INTERNAL \#Creates an empty database controller \# \#}{ViewCI}
+\HeaderA{ViewCI}{Opens the GUI viewer to manipulate the segmentation process.}{ViewCI}
 %
 \begin{Description}\relax
-\#INTERNAL \#Creates an empty database controller \# \#
+Opens the GUI viewer to manipulate the segmentation
+process.
 \end{Description}
 %
 \begin{Usage}
 \begin{verbatim}
-  ViewCI(db, calexp)
+  ViewCI(db, cf = NULL)
 \end{verbatim}
 \end{Usage}
 %
@@ -2199,82 +2400,13 @@ the shifted image (matrix)
 \item[\code{db}] if specified, the viewer opens with the given
 dbController (looking in the directories stored in that
 object)
+
+\item[\code{cf}] a classifier object.  Needed to allow redoing
+segmentation after correcting labels
 \end{ldescription}
 \end{Arguments}
 %
-\begin{Details}\relax
-A database controller holds information about the
-directories \#where the databases, data, classifiers, and
-helper files are stored. \\{} \# \#
-\end{Details}
-%
 \begin{Value}
-A list \#\begin{ldescription}
-\item[\code{db.directory}] the directory holding SQLite
-databases\end{ldescription}
-\#\begin{ldescription}
-\item[\code{data.directory}] the directory holding
-data associated with each database. \# each of these
-should have a \bsl{}\$data element
-\end{ldescription}
-\#\begin{ldescription}
-\item[\code{helper.directory}] the directory in which to place
-helper files generated by the GUI
-\end{ldescription}
-\#\begin{ldescription}
-\item[\code{classifier.direcoty}] the directory that contains
-the classifiers used in segmentation\end{ldescription}
-\#\begin{ldescription}
-\item[\code{expdf}] a
-data.frame in which to put information about each
-experiment, currently empty\end{ldescription}
-\#INTERNAL \#Create an object
-to store information about the currently selected
-experiment. \# \#
-
-A list with fields to store information about the
-experiment (initially empty) \#\begin{ldescription}
-\item[\code{name}] the experiment
-name\end{ldescription}
-\#\begin{ldescription}
-\item[\code{data}] if loaded, the data object for this
-object\end{ldescription}
-\#\begin{ldescription}
-\item[\code{db}] the database connection for this
-experiment\end{ldescription}
-\#\begin{ldescription}
-\item[\code{nmasks}] the number of candidate masks
-in the database for this experiment\end{ldescription}
-\#\begin{ldescription}
-\item[\code{features}] the
-tags of the features that exist in this database
-\end{ldescription}
-\#\begin{ldescription}
-\item[\code{sources}] the tage for the mask sources present in
-this database\end{ldescription}
-\#\begin{ldescription}
-\item[\code{selmat}] a matrix where the first
-column is the ID of the mask and the second column gives
-the annotation for the mask\end{ldescription}
-\#\begin{ldescription}
-\item[\code{sms}] the list of
-sparse masks for the experiment retreived from the
-database with GetMasks()\end{ldescription}
-\#\begin{ldescription}
-\item[\code{mimg1}] the matrix giving
-the mean image for channel 1\end{ldescription}
-\#\begin{ldescription}
-\item[\code{mimg2}] the matrix
-giving the mean image for channel 2\end{ldescription}
-\#\begin{ldescription}
-\item[\code{nx}] the
-number of columns in the images for this experiment
-\end{ldescription}
-\#\begin{ldescription}
-\item[\code{ny}] the number of rows in the images\end{ldescription}
-Opens the
-GUI viewer to manipulate the segmentation process.
-
 NULL
 \end{Value}
 \printindex{}

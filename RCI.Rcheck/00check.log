@@ -18,20 +18,25 @@ In addition to the above warning(s), found the following notes:
 Found the following apparent object files/libraries:
   src-i386/RCI.so src-i386/compmaskC.o src-i386/compmasksC.o
   src-i386/countholes.o src-i386/countholesC.o src-i386/hillclimbC.o
-  src-i386/histequalC.o src-i386/labelbumpsC.o src-i386/localmaxC.o
-  src-i386/maskcorC.o src-i386/meanshiftC.o src-i386/mergemasksC.o
-  src-i386/mylib.o src-i386/slidinghistequalC.o src-x86_64/RCI.so
-  src-x86_64/compmaskC.o src-x86_64/compmasksC.o
-  src-x86_64/countholes.o src-x86_64/countholesC.o
-  src-x86_64/hillclimbC.o src-x86_64/histequalC.o
-  src-x86_64/labelbumpsC.o src-x86_64/localmaxC.o src-x86_64/maskcorC.o
-  src-x86_64/meanshiftC.o src-x86_64/mergemasksC.o src-x86_64/mylib.o
+  src-i386/histequalC.o src-i386/labelbumpsC.o
+  src-i386/labelcontiguous.o src-i386/labelcontiguousC.o
+  src-i386/localmaxC.o src-i386/maskcorC.o src-i386/meanshiftC.o
+  src-i386/mergemasksC.o src-i386/mylib.o src-i386/rf_build.o
+  src-i386/slidinghistequalC.o src-x86_64/RCI.so src-x86_64/compmaskC.o
+  src-x86_64/compmasksC.o src-x86_64/countholes.o
+  src-x86_64/countholesC.o src-x86_64/hillclimbC.o
+  src-x86_64/histequalC.o src-x86_64/labelbumpsC.o
+  src-x86_64/labelcontiguous.o src-x86_64/labelcontiguousC.o
+  src-x86_64/localmaxC.o src-x86_64/maskcorC.o src-x86_64/meanshiftC.o
+  src-x86_64/mergemasksC.o src-x86_64/mylib.o src-x86_64/rf_build.o
   src-x86_64/slidinghistequalC.o
 Object files/libraries should not be included in a source package.
 * checking if there is a namespace ... OK
 * checking for executable files ... OK
 * checking for hidden files and directories ... NOTE
 Found the following hidden files and directories:
+  .DS_Store
+  R/.DS_Store
   R/.Rhistory
 These were most likely included in error. See section ‘Package
 structure’ in the ‘Writing R Extensions’ manual.
@@ -53,8 +58,10 @@ Subdirectory ‘inst’ contains no files.
 * checking whether the package can be unloaded cleanly ... OK
 * checking whether the namespace can be loaded with stated dependencies ... OK
 * checking whether the namespace can be unloaded cleanly ... OK
-* checking loading without being on the library search path ... OK
-* checking for unstated dependencies in R code ... OK
+* checking for unstated dependencies in R code ... WARNING
+package ‘methods’ is used but not declared
+See the information on DESCRIPTION files in the chapter ‘Creating R
+packages’ of the ‘Writing R Extensions’ manual.
 * checking S3 generic/method consistency ... WARNING
 summary:
   function(object, ...)
@@ -77,6 +84,7 @@ ShiftFFTVector: warning in complex(real = cos(2 * pi * myind * amt/l),
 ShiftVector: warning in complex(real = cos(2 * pi * myind * amt/l), im
   = sin(2 * pi * myind * amt/l)): partial argument match of 'im' to
   'imaginary'
+AddImages: no visible global function definition for ‘dbGetQuery’
 AddMaskConnections: no visible global function definition for
   ‘dbGetQuery’
 AddMaskConnections: no visible global function definition for
@@ -87,8 +95,6 @@ AddMaskConnections: no visible global function definition for
   ‘dbCommit’
 AddMasks: no visible global function definition for ‘dbGetQuery’
 ClusterCells: no visible global function definition for ‘pam’
-ClusterCorrelation: no visible binding for global variable ‘clust’
-ClusterCorrelation: no visible binding for global variable ‘mask’
 ComputeMaskFeatures: no visible global function definition for
   ‘dbGetQuery’
 ComputeMaskFeatures : LimitMasks: no visible global function definition
@@ -101,9 +107,19 @@ ComputeMaskFeatures: no visible global function definition for
   ‘dbCommit’
 ConMaskDb: no visible global function definition for ‘dbConnect’
 ConMaskDb: no visible global function definition for ‘dbDriver’
+EvaluateSegmentation: no visible global function definition for
+  ‘dbGetQuery’
 FilterVector: no visible global function definition for ‘butfilt’
+GetAllSeries: no visible global function definition for ‘dbGetQuery’
+GetCliques: no visible global function definition for ‘dbGetQuery’
+GetCliques: no visible global function definition for ‘graph.edgelist’
+GetCliques: no visible global function definition for ‘maximal.cliques’
+GetCliques: no visible global function definition for ‘V’
+GetImage: no visible global function definition for ‘dbGetQuery’
 GetMask: no visible global function definition for ‘dbGetQuery’
 GetSparseMasks: no visible global function definition for ‘dbGetQuery’
+InitiateMaskClassifier: no visible global function definition for
+  ‘randomForest’
 MaskDbSetup: no visible global function definition for ‘dbGetQuery’
 MaskHull: no visible global function definition for ‘in.out’
 MultiTaperSpectrum: no visible global function definition for
@@ -125,6 +141,16 @@ OptimTranslate: no visible global function definition for
   ‘neldermead.search’
 OptimTranslate: no visible global function definition for
   ‘neldermead.get’
+PlotMaskSetByID: no visible global function definition for ‘dbGetQuery’
+PlotSegmentation: no visible global function definition for
+  ‘dbGetQuery’
+PredictExperiment: no visible global function definition for
+  ‘dbGetQuery’
+PredictExperiment: no visible global function definition for
+  ‘dbBeginTransaction’
+PredictExperiment: no visible global function definition for
+  ‘dbGetPreparedQuery’
+PredictExperiment: no visible global function definition for ‘dbCommit’
 PullData: no visible global function definition for ‘dbGetQuery’
 RemoveMask: no visible global function definition for ‘dbGetQuery’
 RestrictMaskSize: no visible global function definition for
@@ -134,7 +160,19 @@ ViewCI: no visible global function definition for ‘dbGetQuery’
 ViewCI : AddLabeledMasks: no visible global function definition for
   ‘visible<-’
 ViewCI : ToggleMasks: no visible global function definition for
+  ‘svalue’
+ViewCI : ToggleMasks: no visible global function definition for
   ‘visible<-’
+ViewCI : RedoSeg: no visible global function definition for
+  ‘dbGetQuery’
+ViewCI : InitiateFromClass: no visible global function definition for
+  ‘dbBeginTransaction’
+ViewCI : InitiateFromClass: no visible global function definition for
+  ‘dbGetPreparedQuery’
+ViewCI : InitiateFromClass: no visible global function definition for
+  ‘dbCommit’
+ViewCI : InitiateFromClass: no visible global function definition for
+  ‘dbGetQuery’
 ViewCI : ImgHandler : PlotPage: no visible global function definition
   for ‘visible<-’
 ViewCI : ImgHandler : PlotPage: no visible global function definition
@@ -143,6 +181,10 @@ ViewCI : ImgHandler : PagePrev: no visible global function definition
   for ‘svalue<-’
 ViewCI : ImgHandler : PageNext: no visible global function definition
   for ‘svalue<-’
+ViewCI : ImgHandler : CloseLabelWindow: no visible global function
+  definition for ‘svalue’
+ViewCI : ImgHandler : CloseLabelWindow: no visible global function
+  definition for ‘svalue<-’
 ViewCI : ImgHandler : CloseLabelWindow: no visible global function
   definition for ‘dispose’
 ViewCI : ImgHandler : SetLabel: no visible global function definition
@@ -166,7 +208,9 @@ ViewCI: no visible global function definition for ‘ggroup’
 ViewCI: no visible global function definition for ‘ggraphics’
 ViewCI: no visible global function definition for ‘addHandlerChanged’
 ViewCI: no visible global function definition for ‘visible<-’
+ViewCI: no visible global function definition for ‘gradio’
 ViewCI: no visible global function definition for ‘gbutton’
+ViewCI: no visible global function definition for ‘svalue<-’
 summary.MaskDb: no visible global function definition for ‘dbGetQuery’
 * checking Rd files ... OK
 * checking Rd metadata ... OK
@@ -175,6 +219,15 @@ summary.MaskDb: no visible global function definition for ‘dbGetQuery’
 * checking for code/documentation mismatches ... WARNING
 Functions or methods with usage in documentation object 'AddConMat' but not in code:
   AddConMat
+
+Functions or methods with usage in documentation object 'AddMask' but not in code:
+  AddMask
+
+Functions or methods with usage in documentation object 'AddMaskSet' but not in code:
+  AddMaskSet
+
+Functions or methods with usage in documentation object 'ClusterCorrelation' but not in code:
+  ClusterCorrelation
 
 Functions or methods with usage in documentation object 'CreateCalExpFromCSV' but not in code:
   CreateCalExpFromCSV
@@ -215,15 +268,6 @@ Functions or methods with usage in documentation object 'RotateImg' but not in c
 Functions or methods with usage in documentation object 'SimpleModesC' but not in code:
   SimpleModesC
 
-Codoc mismatches from documentation object 'AddMaskSet':
-AddMaskSet
-  Code: function(mask, alpha = 0.5, rgb = NULL, ...)
-  Docs: function(mask, alpha = 0.5, ...)
-  Argument names in code not in docs:
-    rgb
-  Mismatches in argument names:
-    Position: 3 Code: rgb Docs: ...
-
 * checking Rd \usage sections ... WARNING
 Undocumented arguments in documentation object 'ClusterCells'
   ‘dt’
@@ -250,6 +294,17 @@ Documented arguments not in \usage in documentation object 'MatrixToSparseMasks'
 Undocumented arguments in documentation object 'OptimTranslate'
   ‘bigsize’
 
+Undocumented arguments in documentation object 'PlotMaskSet'
+  ‘rgb’
+
+Undocumented arguments in documentation object 'PredictExperiment'
+  ‘db’
+Documented arguments not in \usage in documentation object 'PredictExperiment':
+  ‘dn’
+
+Undocumented arguments in documentation object 'PullData'
+  ‘group’
+
 Undocumented arguments in documentation object 'RegisterCalExp'
   ‘bigsize’
 Documented arguments not in \usage in documentation object 'RegisterCalExp':
@@ -259,9 +314,6 @@ Undocumented arguments in documentation object 'RestrictMaskSize'
   ‘minsize’ ‘maxsize’
 Documented arguments not in \usage in documentation object 'RestrictMaskSize':
   ‘min’ ‘max’
-
-Undocumented arguments in documentation object 'ViewCI'
-  ‘calexp’
 
 Functions with \usage entries need to have the appropriate \alias
 entries, and all their arguments documented.
@@ -295,7 +347,7 @@ Type X to quit or <RETURN> to proceed,
 or enter new name. (Default extension: sty)
 
 * checking PDF version of manual without hyperrefs or index ... OK
-WARNING: There were 6 warnings.
+WARNING: There were 7 warnings.
 NOTE: There were 2 notes.
 See
   ‘/Users/bwoods/git/rci/RCI.Rcheck/00check.log’

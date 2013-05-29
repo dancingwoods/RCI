@@ -18,4 +18,3 @@ GrpTreeCreate <- function(labels, groups, data){
 	
 }
 
-ChooseSplit <- function(labels, groups, )

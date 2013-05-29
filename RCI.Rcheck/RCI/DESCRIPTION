@@ -3,12 +3,12 @@ Title: R Calcium Imaging Analysis
 Version: 1.0
 Date: 2010-01-09
 Author: Bronwyn Woods
-Maintainer: Bronwyn WOods <bwoods@cmu.edu>
+Maintainer: Bronwyn Woods <bwoods@cmu.edu>
 Description: Tools for analyzing in-vivo two-photon calcium imaging data.
 License: GPL
 Imports: RSQLite, randomForest, gWidgets, gWidgetsRGtk2, cairoDevice,
-        R.utils, mgcv, RSEIS
+        R.utils, mgcv, RSEIS, igraph
 Collate: 'datainport.R' 'motion.R' 'plotting.R' 'segmentation.R'
         'gui.R' 'imageprocessing.R' 'timeseries.R' 'clustering.R'
-        'classifier.R'
-Built: R 3.0.0; x86_64-apple-darwin10.8.0; 2013-04-09 17:53:00 UTC; unix
+        'classifier.R' 'customrf.R'
+Built: R 3.0.0; x86_64-apple-darwin10.8.0; 2013-05-20 23:10:51 UTC; unix

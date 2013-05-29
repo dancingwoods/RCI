@@ -2,7 +2,7 @@
 \alias{GetSeries}
 \title{Return average time series for each cell in a mask}
 \usage{
-  GetSeries(calexp, mask, channel = 2)
+  GetSeries(mask, calexp, channel = 2)
 }
 \arguments{
   \item{calexp}{the calexp with the data}
