@@ -3,7 +3,7 @@
 \title{INTERNAL
 Filters a vector by frequency using a butterworth filter}
 \usage{
-  FilterVector(vec, low, high, order = 8, dt = 1/1000,
+  FilterVector(vec, low, high, order = 8, dt = 0.1247232,
     type = "BP")
 }
 \arguments{

@@ -1,11 +1,8 @@
 * installing *source* package ‘RCI’ ...
 ** libs
-llvm-gcc-4.2 -arch x86_64 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include -DNDEBUG  -I/usr/local/include    -fPIC  -mtune=core2 -g -O2  -c compmaskC.c -o compmaskC.o
-llvm-gcc-4.2 -arch x86_64 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include -DNDEBUG  -I/usr/local/include    -fPIC  -mtune=core2 -g -O2  -c labelcontiguousC.c -o labelcontiguousC.o
-llvm-gcc-4.2 -arch x86_64 -std=gnu99 -I/Library/Frameworks/R.framework/Resources/include -DNDEBUG  -I/usr/local/include    -fPIC  -mtune=core2 -g -O2  -c rf_build.c -o rf_build.o
-llvm-gcc-4.2 -arch x86_64 -std=gnu99 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/usr/local/lib -L/usr/local/lib -o RCI.so compmaskC.o compmasksC.o countholesC.o hillclimbC.o histequalC.o labelbumpsC.o labelcontiguousC.o localmaxC.o maskcorC.o mylib.o rf_build.o slidinghistequalC.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
-/usr/bin/nm: no name list
-installing to /Users/bwoods/git/rci/RCI.Rcheck/RCI/libs
+make: Nothing to be done for `all'.
+make: `symbols.rds' is up to date.
+installing to /Users/bwoods/RCI.Rcheck/RCI/libs
 ** R
 ** preparing package for lazy loading
 ** help

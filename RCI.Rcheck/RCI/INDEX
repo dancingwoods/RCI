@@ -13,7 +13,10 @@ AssignToPeaks           Assigns the non-zero pixels of 'region' to one
                         of the maxima of the image by hillclimbing on
                         image
 ClipImage               Clips a border from around an image matrix
-ClusterCells            Clustering
+ClustDistance           Return the corrected Rand index for the two
+                        given clusterings
+ClusterCells            Cluster segmented ROIs based on correlation or
+                        phase distance using k-means
 ClusterCorrelation      See correlation with clusters
 CompMaskC               INTERNAL Compute the overlap of a single mask
                         with a list of masks
@@ -25,6 +28,8 @@ ComputeMaskFeatures     Computed features of masks that are currently
                         specify feature functions
 ConMaskDb               Connects to an experiment's mask database
 ConvolveImage           Convolves an image with the given kernel matrix
+CorByTime               Return array specifying the correlation matrix
+                        for a sliding window of the data
 CountHolesC             INTERNAL Counts the number of pixels not in a
                         mask that are surrounded by at least 3 mask
                         pixels
@@ -45,12 +50,30 @@ EmbedImage              Embeds an image matrix in a larger matrix with
 EqualThreshMasks        Generates a set of masks using thresholding of
                         the sliding histogram equalized version of an
                         image
+EvaluateConfidence      Computes several confidence measures on the
+                        segmentation in a database these include -
+                        number of masks returned by the classifier -
+                        min, max, and mean probability assigned by the
+                        classifier
+EvaluateSegmentation    Takes the current labels and segmentation in
+                        the given database and evaluates perfomance of
+                        the segmenter against the hand labels. For each
+                        group of labels cells, a false negative if no
+                        mask overlaps, false positive if segmented mask
+                        overlaps with no group, marginal result if
+                        segmented cell overlaps with but is not of of
+                        the labeled masks.
 FFTPhaseCor             INTERNAL Computes sub-pixel shifts values using
                         phase correlation (FFT implementation)
 FFTXCor                 INTERNAL Computes sub-pixel shifts values using
                         FFT
 FilterVector            INTERNAL Filters a vector by frequency using a
                         butterworth filter
+GKernel                 Returns a Gaussian kernel
+GetAllSeries            Get average time series of the given class in
+                        the segmentation stored in a mask database
+GetCliques              Assigns each of the specified masks to a clique
+                        to use when solving the MWIS segmentation
 GetDataFeatures         INTERNAL Computes the features related to the
                         data under a mask, adding them to the database
 GetExtrema              Finds the extrema in an image.
@@ -61,6 +84,8 @@ GetMask                 Return the requested mask from the specified
 GetMasks                Returns a list of the masks in a database
 GetPhase                Gets the phase of a given frequency band of a
                         vector using the FFT
+GetSegmentation         Get a matrix giving the segmentation stored in
+                        a mask database
 GetSeries               Return average time series for each cell in a
                         mask
 GetShapeFeatures        INTERNAL Computes the features related to just
@@ -75,8 +100,12 @@ HistEqualC              INTERNAL Computed the histogram equalization of
                         a matrix.
 Image                   Plots an image of the given matrix with the
                         origin in the upper left
+ImageDb                 Plot an image from a mask database
 ImageToCoordMat         INTERNAL Converts an image matrix to a matrix
                         with coordinates and values in the columns
+InitiateMaskClassifier
+                        Creates a mask classifier based on the given
+                        training data
 IntensityCorrection     Performs intensity correction on the given
                         calcium experiment
 InvertMask              INTERNAL Inverts a mask matrix so that the mask
@@ -106,11 +135,22 @@ OptimTranslate          Uses optimization of an objective function to
                         compute the best alignment translation between
                         two images (uses optimization routines in the
                         neldermead package)
+PhaseDist               Compute circular phase distance between two
+                        phases
+PhaseDistMat            Get phase distance matrix
+PlotClustering          Plots a given clustering
 PlotMask                Plots a mask over an already plotted image
 PlotMaskSet             Plots sets of masks over an already plotted
                         image
+PlotMaskSetByID         Plots masks specified by the given ids
+PlotSegmentation        Plots the segmentation of a particular class,
+                        as stored in a mask database
 PredictExperiment       Predicts an experiment using the classifier and
-                        MWIS
+                        MWIS TODO - this is currently a hack with a
+                        heuristic to find cliques.  should really find
+                        connected components and solve the MWIS
+PullAllData             Checks each database in the given directory and
+                        pulls any labeled data
 PullData                Pulls data from a mask database into a
                         data.frame that has one row for each mask with
                         the label, id, and feature values of that mask

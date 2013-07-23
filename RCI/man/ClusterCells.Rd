@@ -1,6 +1,6 @@
 \name{ClusterCells}
 \alias{ClusterCells}
-\title{Clustering}
+\title{Cluster segmented ROIs based on correlation or phase distance using k-means}
 \usage{
   ClusterCells(calexp, mask, k, criteria = "cor",
     freq = c(0.78, 0.81), dt = 0.1247232)
@@ -22,6 +22,7 @@
   phase for phase-clustering}
 }
 \description{
-  Clustering
+  Cluster segmented ROIs based on correlation or phase
+  distance using k-means
 }
 

@@ -6,7 +6,8 @@ Author: Bronwyn Woods
 Maintainer: Bronwyn Woods <bwoods@cmu.edu>
 Description: Tools for analyzing in-vivo two-photon calcium imaging data.
 License: GPL
-Depends: R (>= 2.14.0)
+Depends:
+    R (>= 2.14.0)
 Imports:
     RSQLite,
     randomForest,
@@ -27,4 +28,3 @@ Collate:
     'timeseries.R'
     'clustering.R'
     'classifier.R'
-    'customrf.R'

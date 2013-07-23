@@ -19,7 +19,7 @@ void LabelNeighbors(int **bumpmat, int row, int col, int val, int nrow, int ncol
 		LabelNeighbors(bumpmat, row+1, col, val, nrow, ncol);
 	}
 	if(col<(ncol-1) && bumpmat[row][col+1]==1){
-		bumpmat[row][col-1]=val;
+		bumpmat[row][col+1]=val;
 		LabelNeighbors(bumpmat, row, col+1, val, nrow, ncol);
 	}
 }

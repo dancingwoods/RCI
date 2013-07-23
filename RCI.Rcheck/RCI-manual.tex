@@ -20,11 +20,12 @@
 \item[Maintainer]\AsIs{Bronwyn Woods }\email{bwoods@cmu.edu}\AsIs{}
 \item[Description]\AsIs{Tools for analyzing in-vivo two-photon calcium imaging data.}
 \item[License]\AsIs{GPL}
+\item[Depends]\AsIs{R (>= 2.14.0)}
 \item[Imports]\AsIs{RSQLite, randomForest, gWidgets, gWidgetsRGtk2, cairoDevice,
 R.utils, mgcv, RSEIS, igraph}
 \item[Collate]\AsIs{'datainport.R' 'motion.R' 'plotting.R' 'segmentation.R'
 'gui.R' 'imageprocessing.R' 'timeseries.R' 'clustering.R'
-'classifier.R' 'customrf.R'}
+'classifier.R'}
 \end{description}
 \Rdcontents{\R{} topics documented:}
 \inputencoding{utf8}
@@ -192,7 +193,7 @@ Assigns the non-zero pixels of 'region' to one contiguous
 %
 \begin{Usage}
 \begin{verbatim}
-  AssignContiguous(region, image)
+  AssignContiguous(region)
 \end{verbatim}
 \end{Usage}
 %
@@ -200,8 +201,6 @@ Assigns the non-zero pixels of 'region' to one contiguous
 \begin{ldescription}
 \item[\code{region}] a matrix with 1 in the regions to be
 assigned and 0 elsewhere
-
-\item[\code{image}] the image matrix
 \end{ldescription}
 \end{Arguments}
 %
@@ -273,10 +272,36 @@ a matrix with the center (nrow-2*border) by
 (ncol-2*border) pixels of the image
 \end{Value}
 \inputencoding{utf8}
-\HeaderA{ClusterCells}{Clustering}{ClusterCells}
+\HeaderA{ClustDistance}{Return the corrected Rand index for the two given clusterings}{ClustDistance}
 %
 \begin{Description}\relax
-Clustering
+Return the corrected Rand index for the two given
+clusterings
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ClustDistance(clust, clust2)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{clust}] a vector giving the first clustering
+
+\item[\code{clust2}] a vector giving the second clustering
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+the corrected Rand index value
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{ClusterCells}{Cluster segmented ROIs based on correlation or phase distance using k-means}{ClusterCells}
+%
+\begin{Description}\relax
+Cluster segmented ROIs based on correlation or phase
+distance using k-means
 \end{Description}
 %
 \begin{Usage}
@@ -485,6 +510,34 @@ given kernel
 \begin{Value}
 a matrix of the same size as image with the convolved
 image
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{CorByTime}{Return array specifying the correlation matrix for a sliding window of the data}{CorByTime}
+%
+\begin{Description}\relax
+Return array specifying the correlation matrix for a
+sliding window of the data
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  CorByTime(seriesmat, window = 500)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{seriesmat}] a matrix with the calcium traces on the
+columns
+
+\item[\code{window}] the size of the sliding window
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+an array with the first two dimensions giving the
+correlation matrices and the third dimension indicating
+the start time of the window
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{CountHolesC}{INTERNAL Counts the number of pixels not in a mask that are surrounded by at least 3 mask pixels}{CountHolesC}
@@ -840,6 +893,67 @@ a matrix with unique integers at mask locations and 0 in
 the background, or a a sparse masks object
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{EvaluateConfidence}{Computes several confidence measures on the segmentation in a database these include - number of masks returned by the classifier - min, max, and mean probability assigned by the classifier}{EvaluateConfidence}
+%
+\begin{Description}\relax
+Computes several confidence measures on the segmentation
+in a database these include - number of masks returned by
+the classifier - min, max, and mean probability assigned
+by the classifier
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  EvaluateConfidence(db, class)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the database for which to evaluate the
+segmentation confidence.
+
+\item[\code{class}] the classifier used to generate the
+segmentation
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a data.frame with a row for each ROI and columns
+specifying confidence measures
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{EvaluateSegmentation}{Takes the current labels and segmentation in the given database and evaluates perfomance of the segmenter against the hand labels. For each group of labels cells, a false negative if no mask overlaps, false positive if segmented mask overlaps with no group, marginal result if segmented cell overlaps with but is not of of the labeled masks.}{EvaluateSegmentation}
+%
+\begin{Description}\relax
+Takes the current labels and segmentation in the given
+database and evaluates perfomance of the segmenter
+against the hand labels. For each group of labels cells,
+a false negative if no mask overlaps, false positive if
+segmented mask overlaps with no group, marginal result if
+segmented cell overlaps with but is not of of the labeled
+masks.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  EvaluateSegmentation(db)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the database for which to evaluate the
+segmentation.  should have both a segmentation and hand
+labels.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a data.frame with a row for each class and columns
+specifying performance
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{FFTPhaseCor}{INTERNAL Computes sub-pixel shifts values using phase correlation (FFT implementation)}{FFTPhaseCor}
 %
 \begin{Description}\relax
@@ -945,7 +1059,7 @@ butterworth filter
 %
 \begin{Usage}
 \begin{verbatim}
-  FilterVector(vec, low, high, order = 8, dt = 1/1000,
+  FilterVector(vec, low, high, order = 8, dt = 0.1247232,
     type = "BP")
 \end{verbatim}
 \end{Usage}
@@ -971,6 +1085,64 @@ butfilt function
 %
 \begin{Value}
 the filtered vector
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{GetAllSeries}{Get average time series of the given class in the segmentation stored in a mask database}{GetAllSeries}
+%
+\begin{Description}\relax
+Get average time series of the given class in the
+segmentation stored in a mask database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetAllSeries(db, calexp, classids, chan = 2)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the database
+
+\item[\code{calexp}] the calcium experiment with the data to use
+to extract the series
+
+\item[\code{classids}] a vector of ids specifying which types of
+ROI to extract traces for
+
+\item[\code{chan}] the channel to use for activity traces
+(defaults to 2)
+\end{ldescription}
+\end{Arguments}
+\inputencoding{utf8}
+\HeaderA{GetCliques}{Assigns each of the specified masks to a clique to use when solving the MWIS segmentation}{GetCliques}
+%
+\begin{Description}\relax
+Assigns each of the specified masks to a clique to use
+when solving the MWIS segmentation
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetCliques(db, ids, minid = 1)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the mask database
+
+\item[\code{ids}] the vector of ids of the masks to assign to
+cliques
+
+\item[\code{minid}] the minimum value of the clique ids to
+return
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a vector giving the clique id for each of the specified
+masks
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{GetDataFeatures}{INTERNAL Computes the features related to the data under a mask, adding them to the database}{GetDataFeatures}
@@ -1138,7 +1310,7 @@ using the FFT
 %
 \begin{Usage}
 \begin{verbatim}
-  GetPhase(vec, low, high, dt = 1/1000)
+  GetPhase(vec, low, high, dt = 0.1247232, mag = F)
 \end{verbatim}
 \end{Usage}
 %
@@ -1153,6 +1325,35 @@ using the FFT
 \item[\code{dt}] deltaT, or 1/sampling rate
 \end{ldescription}
 \end{Arguments}
+\inputencoding{utf8}
+\HeaderA{GetSegmentation}{Get a matrix giving the segmentation stored in a mask database}{GetSegmentation}
+%
+\begin{Description}\relax
+Get a matrix giving the segmentation stored in a mask
+database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GetSegmentation(db, classids = c(2, 3), val = "id")
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the mask database
+
+\item[\code{classids}] a vector giving the ids of the classes to
+include in the returned segmentation
+
+\item[\code{val}] if "id", puts the mask ids in the ROI in the
+returned matrix, otherwise uses the class id
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a data.frame with the extracted data
+\end{Value}
 \inputencoding{utf8}
 \HeaderA{GetSeries}{Return average time series for each cell in a mask}{GetSeries}
 %
@@ -1239,6 +1440,31 @@ a list of vectors, each vector specifying a mask.  The
 first element of each mask vector is the negative index
 of the mask.  The remaining elements of each vector are
 the indices of the mask pixels.
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{GKernel}{Returns a Gaussian kernel}{GKernel}
+%
+\begin{Description}\relax
+Returns a Gaussian kernel
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  GKernel(kdim, sigma)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{kdim}] the dimension of the (square) kernel to
+generate
+
+\item[\code{sigma}] the standard deviation of the gaussian
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a matrix giving the Gaussian kernel
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{GrpRFCreate}{Creates and trains a custom random forest classifier}{GrpRFCreate}
@@ -1357,6 +1583,31 @@ to grey
 NULL
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{ImageDb}{Plot an image from a mask database}{ImageDb}
+%
+\begin{Description}\relax
+Plot an image from a mask database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  ImageDb(db, imagetag = "mimg2")
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the database
+
+\item[\code{imagetag}] the tag of the image as stored in the
+database
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{ImageToCoordMat}{INTERNAL Converts an image matrix to a matrix with coordinates and values in the columns}{ImageToCoordMat}
 %
 \begin{Description}\relax
@@ -1379,6 +1630,30 @@ coordinates and values in the columns
 \begin{Value}
 A matrix of size npixels-by-3. The first coordinate is
 the row, the the column and the third the intensity.
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{InitiateMaskClassifier}{Creates a mask classifier based on the given training data}{InitiateMaskClassifier}
+%
+\begin{Description}\relax
+Creates a mask classifier based on the given training
+data
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  InitiateMaskClassifier(trainingdata)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{trainingdata}] the training data, as returned by
+PullAllData or PullData
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a mask classifier
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{IntensityCorrection}{Performs intensity correction on the given calcium experiment}{IntensityCorrection}
@@ -1766,6 +2041,60 @@ a real valued vector of length 2, giving estimates of x
 and y translation
 \end{Value}
 \inputencoding{utf8}
+\HeaderA{PhaseDist}{Compute circular phase distance between two phases}{PhaseDist}
+%
+\begin{Description}\relax
+Compute circular phase distance between two phases
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  PhaseDist(phase1, phase2)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{phase1}] a phase value in [-pi,pi]
+
+\item[\code{phase2}] a phase value in [-pi,pi]
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+the circular distance between the two phases
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{PhaseDistMat}{Get phase distance matrix}{PhaseDistMat}
+%
+\begin{Description}\relax
+Get phase distance matrix
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  PhaseDistMat(mat, low = 0.789, high = 0.791,
+    dt = 0.1247232)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{mat}] a matrix with the calcium traces on the
+columns
+
+\item[\code{low}] the lower bound of the frequency to consider
+
+\item[\code{high}] the upper bound of the frequency to consider
+
+\item[\code{dt}] the sampling rate of the calcium traces
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a matrix of phase distances between the calcium traces
+\end{Value}
+\inputencoding{utf8}
 \HeaderA{plot.MTSpectrum}{Plots a multitaper spectral estimate created by MultiTaperSpectrum}{plot.MTSpectrum}
 %
 \begin{Description}\relax
@@ -1793,6 +2122,40 @@ scale
 Nyquist frequency)
 
 \item[\code{...}] other graphical parameters
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{PlotClustering}{Plots a given clustering}{PlotClustering}
+%
+\begin{Description}\relax
+Plots a given clustering
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  PlotClustering(db, ids, clust, chan = 2,
+    cols = list(c(0, 0, 1), c(0, 1, 0)))
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the database with the segmentation
+
+\item[\code{ids}] a vector of ids of the masks involved in the
+clustering
+
+\item[\code{clust}] a vector with integers indicating the
+clusters
+
+\item[\code{chan}] the channel to use as the background image
+
+\item[\code{cols}] a list of vectors of length 3 giving the rgb
+values for each cluster
 \end{ldescription}
 \end{Arguments}
 %
@@ -1870,15 +2233,73 @@ chosen)
 NULL
 \end{Value}
 \inputencoding{utf8}
-\HeaderA{PredictExperiment}{Predicts an experiment using the classifier and MWIS}{PredictExperiment}
+\HeaderA{PlotMaskSetByID}{Plots masks specified by the given ids}{PlotMaskSetByID}
 %
 \begin{Description}\relax
-Predicts an experiment using the classifier and MWIS
+Plots masks specified by the given ids
 \end{Description}
 %
 \begin{Usage}
 \begin{verbatim}
-  PredictExperiment(classifier, db, enforcelabels = F)
+  PlotMaskSetByID(db, ids, rgb = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the database
+
+\item[\code{ids}] a vector giving the ids of the masks to plot
+
+\item[\code{rgb}] a vector of length 3 giving the color to plot
+the masks
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{PlotSegmentation}{Plots the segmentation of a particular class, as stored in a mask database}{PlotSegmentation}
+%
+\begin{Description}\relax
+Plots the segmentation of a particular class, as stored
+in a mask database
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  PlotSegmentation(db, classid, rgb = NULL)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{db}] the database
+
+\item[\code{classid}] the class to plot
+
+\item[\code{rgb}] a vector of length 3 giving the color to plot
+the masks
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+NULL
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{PredictExperiment}{Predicts an experiment using the classifier and MWIS TODO - this is currently a hack with a heuristic to find cliques.  should really find connected components and solve the MWIS}{PredictExperiment}
+%
+\begin{Description}\relax
+Predicts an experiment using the classifier and MWIS TODO
+- this is currently a hack with a heuristic to find
+cliques.  should really find connected components and
+solve the MWIS
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  PredictExperiment(classifier, db, thresh = NULL)
 \end{verbatim}
 \end{Usage}
 %
@@ -1895,6 +2316,29 @@ segmentation be forced to correspond to the hand labels
 %
 \begin{Value}
 null, modifies the database
+\end{Value}
+\inputencoding{utf8}
+\HeaderA{PullAllData}{Checks each database in the given directory and pulls any labeled data}{PullAllData}
+%
+\begin{Description}\relax
+Checks each database in the given directory and pulls any
+labeled data
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+  PullAllData(directory)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{directory}] the directory to pull data from
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+a data.frame with the extracted data
 \end{Value}
 \inputencoding{utf8}
 \HeaderA{PullData}{Pulls data from a mask database into a data.frame that has one row for each mask with the label, id, and feature values of that mask in the columns}{PullData}

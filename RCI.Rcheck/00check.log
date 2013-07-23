@@ -1,4 +1,4 @@
-* using log directory ‘/Users/bwoods/git/rci/RCI.Rcheck’
+* using log directory ‘/Users/bwoods/RCI.Rcheck’
 * using R version 3.0.0 (2013-04-03)
 * using platform: x86_64-apple-darwin10.8.0 (64-bit)
 * using session charset: UTF-8
@@ -9,8 +9,8 @@
 * checking if this is a source package ... WARNING
 Subdirectory ‘RCI/src’ contains apparent object files/libraries
   RCI.so compmaskC.o compmasksC.o countholesC.o hillclimbC.o
-  histequalC.o labelbumpsC.o localmaxC.o maskcorC.o mylib.o
-  slidinghistequalC.o
+  histequalC.o labelbumpsC.o labelcontiguousC.o labelcontiguousC.so
+  localmaxC.o maskcorC.o mylib.o rf_build.o slidinghistequalC.o
 Object files/libraries should not be included in a source package.
 
 In addition to the above warning(s), found the following notes:
@@ -20,13 +20,14 @@ Found the following apparent object files/libraries:
   src-i386/countholes.o src-i386/countholesC.o src-i386/hillclimbC.o
   src-i386/histequalC.o src-i386/labelbumpsC.o
   src-i386/labelcontiguous.o src-i386/labelcontiguousC.o
-  src-i386/localmaxC.o src-i386/maskcorC.o src-i386/meanshiftC.o
-  src-i386/mergemasksC.o src-i386/mylib.o src-i386/rf_build.o
-  src-i386/slidinghistequalC.o src-x86_64/RCI.so src-x86_64/compmaskC.o
-  src-x86_64/compmasksC.o src-x86_64/countholes.o
-  src-x86_64/countholesC.o src-x86_64/hillclimbC.o
-  src-x86_64/histequalC.o src-x86_64/labelbumpsC.o
-  src-x86_64/labelcontiguous.o src-x86_64/labelcontiguousC.o
+  src-i386/labelcontiguousC.so src-i386/localmaxC.o src-i386/maskcorC.o
+  src-i386/meanshiftC.o src-i386/mergemasksC.o src-i386/mylib.o
+  src-i386/rf_build.o src-i386/slidinghistequalC.o src-x86_64/RCI.so
+  src-x86_64/compmaskC.o src-x86_64/compmasksC.o
+  src-x86_64/countholes.o src-x86_64/countholesC.o
+  src-x86_64/hillclimbC.o src-x86_64/histequalC.o
+  src-x86_64/labelbumpsC.o src-x86_64/labelcontiguous.o
+  src-x86_64/labelcontiguousC.o src-x86_64/labelcontiguousC.so
   src-x86_64/localmaxC.o src-x86_64/maskcorC.o src-x86_64/meanshiftC.o
   src-x86_64/mergemasksC.o src-x86_64/mylib.o src-x86_64/rf_build.o
   src-x86_64/slidinghistequalC.o
@@ -94,6 +95,8 @@ AddMaskConnections: no visible global function definition for
 AddMaskConnections: no visible global function definition for
   ‘dbCommit’
 AddMasks: no visible global function definition for ‘dbGetQuery’
+ClustDistance: no visible global function definition for
+  ‘cluster.stats’
 ClusterCells: no visible global function definition for ‘pam’
 ComputeMaskFeatures: no visible global function definition for
   ‘dbGetQuery’
@@ -107,6 +110,8 @@ ComputeMaskFeatures: no visible global function definition for
   ‘dbCommit’
 ConMaskDb: no visible global function definition for ‘dbConnect’
 ConMaskDb: no visible global function definition for ‘dbDriver’
+EvaluateConfidence: no visible global function definition for
+  ‘dbGetQuery’
 EvaluateSegmentation: no visible global function definition for
   ‘dbGetQuery’
 FilterVector: no visible global function definition for ‘butfilt’
@@ -117,6 +122,7 @@ GetCliques: no visible global function definition for ‘maximal.cliques’
 GetCliques: no visible global function definition for ‘V’
 GetImage: no visible global function definition for ‘dbGetQuery’
 GetMask: no visible global function definition for ‘dbGetQuery’
+GetSegmentation: no visible global function definition for ‘dbGetQuery’
 GetSparseMasks: no visible global function definition for ‘dbGetQuery’
 InitiateMaskClassifier: no visible global function definition for
   ‘randomForest’
@@ -256,6 +262,9 @@ Functions or methods with usage in documentation object 'GetMasks' but not in co
 Functions or methods with usage in documentation object 'GetShapeFeatures' but not in code:
   GetShapeFeatures
 
+Functions or methods with usage in documentation object 'GrpRFCreate' but not in code:
+  GrpRFCreate
+
 Functions or methods with usage in documentation object 'HillClimbC' but not in code:
   HillClimbC
 
@@ -280,6 +289,9 @@ Undocumented arguments in documentation object 'GetMask'
 Documented arguments not in \usage in documentation object 'GetMask':
   ‘format’
 
+Undocumented arguments in documentation object 'GetPhase'
+  ‘mag’
+
 Undocumented arguments in documentation object 'LoGMasks'
   ‘ksize’
 Documented arguments not in \usage in documentation object 'LoGMasks':
@@ -298,9 +310,9 @@ Undocumented arguments in documentation object 'PlotMaskSet'
   ‘rgb’
 
 Undocumented arguments in documentation object 'PredictExperiment'
-  ‘db’
+  ‘db’ ‘thresh’
 Documented arguments not in \usage in documentation object 'PredictExperiment':
-  ‘dn’
+  ‘dn’ ‘enforcelabels’
 
 Undocumented arguments in documentation object 'PullData'
   ‘group’
@@ -350,5 +362,5 @@ or enter new name. (Default extension: sty)
 WARNING: There were 7 warnings.
 NOTE: There were 2 notes.
 See
-  ‘/Users/bwoods/git/rci/RCI.Rcheck/00check.log’
+  ‘/Users/bwoods/RCI.Rcheck/00check.log’
 for details.

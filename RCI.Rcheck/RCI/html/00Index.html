@@ -35,8 +35,10 @@
 <td>Assigns the non-zero pixels of 'region' to one of the maxima of the image by hillclimbing on image</td></tr>
 <tr><td width="25%"><a href="ClipImage.html">ClipImage</a></td>
 <td>Clips a border from around an image matrix</td></tr>
+<tr><td width="25%"><a href="ClustDistance.html">ClustDistance</a></td>
+<td>Return the corrected Rand index for the two given clusterings</td></tr>
 <tr><td width="25%"><a href="ClusterCells.html">ClusterCells</a></td>
-<td>Clustering</td></tr>
+<td>Cluster segmented ROIs based on correlation or phase distance using k-means</td></tr>
 <tr><td width="25%"><a href="ClusterCorrelation.html">ClusterCorrelation</a></td>
 <td>See correlation with clusters</td></tr>
 <tr><td width="25%"><a href="CompMaskC.html">CompMaskC</a></td>
@@ -49,6 +51,8 @@
 <td>Connects to an experiment's mask database</td></tr>
 <tr><td width="25%"><a href="ConvolveImage.html">ConvolveImage</a></td>
 <td>Convolves an image with the given kernel matrix</td></tr>
+<tr><td width="25%"><a href="CorByTime.html">CorByTime</a></td>
+<td>Return array specifying the correlation matrix for a sliding window of the data</td></tr>
 <tr><td width="25%"><a href="CountHolesC.html">CountHolesC</a></td>
 <td>INTERNAL Counts the number of pixels not in a mask that are surrounded by at least 3 mask pixels</td></tr>
 <tr><td width="25%"><a href="CreateCalExpFromCSV.html">CreateCalExpFromCSV</a></td>
@@ -69,12 +73,20 @@
 <td>Embeds an image matrix in a larger matrix with a border of 0's</td></tr>
 <tr><td width="25%"><a href="EqualThreshMasks.html">EqualThreshMasks</a></td>
 <td>Generates a set of masks using thresholding of the sliding histogram equalized version of an image</td></tr>
+<tr><td width="25%"><a href="EvaluateConfidence.html">EvaluateConfidence</a></td>
+<td>Computes several confidence measures on the segmentation in a database these include - number of masks returned by the classifier - min, max, and mean probability assigned by the classifier</td></tr>
+<tr><td width="25%"><a href="EvaluateSegmentation.html">EvaluateSegmentation</a></td>
+<td>Takes the current labels and segmentation in the given database and evaluates perfomance of the segmenter against the hand labels. For each group of labels cells, a false negative if no mask overlaps, false positive if segmented mask overlaps with no group, marginal result if segmented cell overlaps with but is not of of the labeled masks.</td></tr>
 <tr><td width="25%"><a href="FFTPhaseCor.html">FFTPhaseCor</a></td>
 <td>INTERNAL Computes sub-pixel shifts values using phase correlation (FFT implementation)</td></tr>
 <tr><td width="25%"><a href="FFTXCor.html">FFTXCor</a></td>
 <td>INTERNAL Computes sub-pixel shifts values using FFT</td></tr>
 <tr><td width="25%"><a href="FilterVector.html">FilterVector</a></td>
 <td>INTERNAL Filters a vector by frequency using a butterworth filter</td></tr>
+<tr><td width="25%"><a href="GetAllSeries.html">GetAllSeries</a></td>
+<td>Get average time series of the given class in the segmentation stored in a mask database</td></tr>
+<tr><td width="25%"><a href="GetCliques.html">GetCliques</a></td>
+<td>Assigns each of the specified masks to a clique to use when solving the MWIS segmentation</td></tr>
 <tr><td width="25%"><a href="GetDataFeatures.html">GetDataFeatures</a></td>
 <td>INTERNAL Computes the features related to the data under a mask, adding them to the database</td></tr>
 <tr><td width="25%"><a href="GetExtrema.html">GetExtrema</a></td>
@@ -87,12 +99,16 @@
 <td>Returns a list of the masks in a database</td></tr>
 <tr><td width="25%"><a href="GetPhase.html">GetPhase</a></td>
 <td>Gets the phase of a given frequency band of a vector using the FFT</td></tr>
+<tr><td width="25%"><a href="GetSegmentation.html">GetSegmentation</a></td>
+<td>Get a matrix giving the segmentation stored in a mask database</td></tr>
 <tr><td width="25%"><a href="GetSeries.html">GetSeries</a></td>
 <td>Return average time series for each cell in a mask</td></tr>
 <tr><td width="25%"><a href="GetShapeFeatures.html">GetShapeFeatures</a></td>
 <td>INTERNAL Computes the features related to just the shape of masks, adding them to the database</td></tr>
 <tr><td width="25%"><a href="GetSparseMasks.html">GetSparseMasks</a></td>
 <td>Returns a list of the masks in a database</td></tr>
+<tr><td width="25%"><a href="GKernel.html">GKernel</a></td>
+<td>Returns a Gaussian kernel</td></tr>
 <tr><td width="25%"><a href="GrpRFCreate.html">GrpRFCreate</a></td>
 <td>Creates and trains a custom random forest classifier</td></tr>
 <tr><td width="25%"><a href="HillClimbC.html">HillClimbC</a></td>
@@ -101,8 +117,12 @@
 <td>INTERNAL Computed the histogram equalization of a matrix.</td></tr>
 <tr><td width="25%"><a href="Image.html">Image</a></td>
 <td>Plots an image of the given matrix with the origin in the upper left</td></tr>
+<tr><td width="25%"><a href="ImageDb.html">ImageDb</a></td>
+<td>Plot an image from a mask database</td></tr>
 <tr><td width="25%"><a href="ImageToCoordMat.html">ImageToCoordMat</a></td>
 <td>INTERNAL Converts an image matrix to a matrix with coordinates and values in the columns</td></tr>
+<tr><td width="25%"><a href="InitiateMaskClassifier.html">InitiateMaskClassifier</a></td>
+<td>Creates a mask classifier based on the given training data</td></tr>
 <tr><td width="25%"><a href="IntensityCorrection.html">IntensityCorrection</a></td>
 <td>Performs intensity correction on the given calcium experiment</td></tr>
 <tr><td width="25%"><a href="InvertMask.html">InvertMask</a></td>
@@ -129,14 +149,26 @@
 <td>INTERNAL Computes the rigid body motion alignment parameters by optimizing some error function comparing the two images. (uses optimization routines in the neldermead package)</td></tr>
 <tr><td width="25%"><a href="OptimTranslate.html">OptimTranslate</a></td>
 <td>Uses optimization of an objective function to compute the best alignment translation between two images (uses optimization routines in the neldermead package)</td></tr>
+<tr><td width="25%"><a href="PhaseDist.html">PhaseDist</a></td>
+<td>Compute circular phase distance between two phases</td></tr>
+<tr><td width="25%"><a href="PhaseDistMat.html">PhaseDistMat</a></td>
+<td>Get phase distance matrix</td></tr>
 <tr><td width="25%"><a href="plot.MTSpectrum.html">plot.MTSpectrum</a></td>
 <td>Plots a multitaper spectral estimate created by MultiTaperSpectrum</td></tr>
+<tr><td width="25%"><a href="PlotClustering.html">PlotClustering</a></td>
+<td>Plots a given clustering</td></tr>
 <tr><td width="25%"><a href="PlotMask.html">PlotMask</a></td>
 <td>Plots a mask over an already plotted image</td></tr>
 <tr><td width="25%"><a href="PlotMaskSet.html">PlotMaskSet</a></td>
 <td>Plots sets of masks over an already plotted image</td></tr>
+<tr><td width="25%"><a href="PlotMaskSetByID.html">PlotMaskSetByID</a></td>
+<td>Plots masks specified by the given ids</td></tr>
+<tr><td width="25%"><a href="PlotSegmentation.html">PlotSegmentation</a></td>
+<td>Plots the segmentation of a particular class, as stored in a mask database</td></tr>
 <tr><td width="25%"><a href="PredictExperiment.html">PredictExperiment</a></td>
-<td>Predicts an experiment using the classifier and MWIS</td></tr>
+<td>Predicts an experiment using the classifier and MWIS TODO - this is currently a hack with a heuristic to find cliques.  should really find connected components and solve the MWIS</td></tr>
+<tr><td width="25%"><a href="PullAllData.html">PullAllData</a></td>
+<td>Checks each database in the given directory and pulls any labeled data</td></tr>
 <tr><td width="25%"><a href="PullData.html">PullData</a></td>
 <td>Pulls data from a mask database into a data.frame that has one row for each mask with the label, id, and feature values of that mask in the columns</td></tr>
 <tr><td width="25%"><a href="RegisterCalExp.html">RegisterCalExp</a></td>

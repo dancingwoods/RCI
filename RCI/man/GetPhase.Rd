@@ -2,7 +2,7 @@
 \alias{GetPhase}
 \title{Gets the phase of a given frequency band of a vector using the FFT}
 \usage{
-  GetPhase(vec, low, high, dt = 1/1000)
+  GetPhase(vec, low, high, dt = 0.1247232, mag = F)
 }
 \arguments{
   \item{vec}{vector of data}
