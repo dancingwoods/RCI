@@ -159,6 +159,7 @@ CellID <- suppressWarnings(setRefClass(
 #' @param cf a classifier object.  Needed to allow redoing segmentation after correcting labels
 #' 
 #' @return NULL
+#' @export
 #-
 ViewCI <- function(db, cf=NULL){
 	#options(guiToolkit="tctkl")
@@ -290,6 +291,7 @@ ViewCI <- function(db, cf=NULL){
 		labs <- data[,which(names(data)=="label")]
 		data  <- data[, -(which(names(data)=="label"))]
 		classes <- predict(cf$cf, data)
+		classes[which(classes==1)]=0
 		
 		res <- cbind(data[, which(names(data)=="id")], labs, classes)
 		res <- res[order(res[,1]),]
@@ -591,8 +593,8 @@ ViewCI <- function(db, cf=NULL){
 	imgsubgroupA <- ggroup(cont=vexpgroup)
 	imgsubgroupB <- ggroup(cont=vexpgroup)
 
-	# imgwindowPA <- ggraphics(container=imgsubgroupA)
-	# imgwindowPB <- ggraphics(container=imgsubgroupB)
+	imgwindowPA <- ggraphics(container=imgsubgroupA)
+	imgwindowPB <- ggraphics(container=imgsubgroupB)
 	
 	imgwindow1 <- ggraphics(container=imgsubgroupA)
 	addHandlerChanged(imgwindow1, ImgHandler)
@@ -606,8 +608,8 @@ ViewCI <- function(db, cf=NULL){
 	imgwindow4 <- ggraphics(container=imgsubgroupB)
 	addHandlerChanged(imgwindow4, ImgHandler)
 
-	# imgwindowPA2 <- ggraphics(container=imgsubgroupA)
-	# imgwindowPB2 <- ggraphics(container=imgsubgroupB)
+	imgwindowPA2 <- ggraphics(container=imgsubgroupA)
+	imgwindowPB2 <- ggraphics(container=imgsubgroupB)
 	
 	visible(imgwindow1) <- TRUE
 	par(mar=c(0,0,0,0))
@@ -625,31 +627,31 @@ ViewCI <- function(db, cf=NULL){
 	par(mar=c(0,0,0,0))
 	Image(mimg2eq, useRaster=T)
 
-	# visible(imgwindowPA) <- TRUE
-	# par(mar=c(0,0,0,0))
-	# Image(mimg1, useRaster=T)
-	# 
-	# visible(imgwindowPA2) <- TRUE
-	# par(mar=c(0,0,0,0))
-	# 
-	# Image(mimg2, useRaster=T)
-	# visible(imgwindowPB) <- TRUE
-	# par(mar=c(0,0,0,0))
-	# Image(mimg1eq, useRaster=T)
-	# 
-	# visible(imgwindowPB2) <- TRUE
-	# par(mar=c(0,0,0,0))
-	# Image(mimg2eq, useRaster=T)
-	# 
+	visible(imgwindowPA) <- TRUE
+	par(mar=c(0,0,0,0))
+	Image(mimg1, useRaster=T)
+	
+	visible(imgwindowPA2) <- TRUE
+	par(mar=c(0,0,0,0))
+	
+	Image(mimg2, useRaster=T)
+	visible(imgwindowPB) <- TRUE
+	par(mar=c(0,0,0,0))
+	Image(mimg1eq, useRaster=T)
+	
+	visible(imgwindowPB2) <- TRUE
+	par(mar=c(0,0,0,0))
+	Image(mimg2eq, useRaster=T)
+	
 	
 	togglemasks <- gradio(c("No Labels", "Hand Labels", "Final Segmentation"), handler=ToggleMasks, cont=controlgroup)
 	
-	initatebutton <- gbutton("Initiate hand labels from classifier", handler=InitiateFromClass, cont=controlgroup)
+	initiatebutton <- gbutton("Initiate hand labels from classifier", handler=InitiateFromClass, cont=controlgroup)
 	redosegbutton <- gbutton("Recompute Segmentation", handler=RedoSeg, cont=controlgroup)
 
 	if(is.null(cf)){
 		visible(redosegbutton) <- FALSE
-		visible(inititebutton) <- FALSE
+		visible(initiatebutton) <- FALSE
 	}
 	
 	if(all(is.na(selmat[,3]))){

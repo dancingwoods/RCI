@@ -24,7 +24,6 @@
 
 
 
-#TODO Fix this to use any of the motion estimation methods
 #-
 #' Removes in-plane motion effects using rigid body alignment of the image frames 
 #' 

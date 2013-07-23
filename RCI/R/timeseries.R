@@ -36,7 +36,7 @@
 #' @return the filtered vector
 #' @export
 #-
-FilterVector <- function(vec, low, high, order=8, dt = 1/1000, type="BP"){
+FilterVector <- function(vec, low, high, order=8, dt=0.1247232, type="BP"){
 	# Filters a vector using forward-backward butterworth filter
 	vec <- butfilt(vec, fl=low, fh=high, npoles=order, type=type, deltat=dt)
 	vec <- rev(butfilt(rev(vec), fl=low, fh=high, npoles=order, type=type, deltat=dt))
@@ -53,12 +53,16 @@ FilterVector <- function(vec, low, high, order=8, dt = 1/1000, type="BP"){
 #' 
 #' @export
 #-
-GetPhase <- function(vec, low, high, dt=1/1000){
+GetPhase <- function(vec, low, high, dt=0.1247232, mag=F){
 	vec <- FilterVector(vec, low, high, dt=dt)
 	vecf <- fft(vec)[1:ceiling(length(vec)/2)]
 	freqlabs <-  seq(0, 0.5/dt, length.out=ceiling(length(vec)/2))
 	w <- which(freqlabs>low & freqlabs<high)
-	return(Arg(vecf[w[ceiling(length(w)/2)]]))
+	if(mag){
+		return(Mod(vecf[w[ceiling(length(w)/2)]]))		
+	}else{
+		return(Arg(vecf[w[ceiling(length(w)/2)]]))
+	}
 }
 
 #-

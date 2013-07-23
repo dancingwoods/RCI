@@ -277,6 +277,16 @@ LoGKernel <- function(kdim, sigma){
 	return(kmat)
 }
 
+#-
+#' Returns a Gaussian kernel
+#' 
+#' @param kdim the dimension of the (square) kernel to generate
+#' @param sigma the standard deviation of the gaussian
+#' 
+#' @return a matrix giving the Gaussian kernel
+#' 
+#' @export
+#- 
 GKernel <- function(kdim, sigma){
 	kmat <- matrix(NA, kdim, kdim)
 	for(i in 1:kdim){

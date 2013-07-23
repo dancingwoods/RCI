@@ -20,9 +20,90 @@
 # along with RCI.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+#-
+#' Return the corrected Rand index for the two given clusterings
+#' 
+#' @param clust a vector giving the first clustering
+#' @param clust2 a vector giving the second clustering
+#' 
+#' @return the corrected Rand index value
+#' 
+#' @export
+#-
+ClustDistance <- function(clust, clust2){
+	return(cluster.stats( as.dist(matrix(runif(length(clust)), length(clust), length(clust))), clust, alt.clustering=clust2)$corrected.rand)
+}
 
 #-
-#' Clustering
+#' Return array specifying the correlation matrix for a sliding
+#' window of the data
+#' 
+#' @param seriesmat a matrix with the calcium traces on the columns
+#' @param window the size of the sliding window
+#' 
+#' @return an array with the first two dimensions giving the correlation matrices and the
+#' third dimension indicating the start time of the window
+#' 
+#' @export
+#-
+CorByTime <- function(seriesmat, window=500){
+
+	WindowCor <- function(start, mat, len){
+		return(cor(mat[start:(start+len),]))
+	}
+	
+	nwindow <- dim(seriesmat)[1]-window
+	nseries <- dim(seriesmat)[2]
+	return(array(sapply(1:nwindow, WindowCor, mat=seriesmat, len=window), c(nseries, nseries, nwindow)))
+
+}
+
+
+#-
+#' Compute circular phase distance between two phases
+#' 
+#' @param phase1 a phase value in [-pi,pi]
+#' @param phase2 a phase value in [-pi,pi]
+#' 
+#' @return the circular distance between the two phases
+#' 
+#' @export
+#-
+PhaseDist <- function(phase1, phase2){
+	tmp <- max(phase1, phase2) - min(phase1, phase2)
+	if(tmp>pi){
+		tmp <- 2*pi-tmp
+	}
+	return(tmp)
+}
+
+#-
+#' Get phase distance matrix 
+#' 
+#' @param mat a matrix with the calcium traces on the columns
+#' @param low the lower bound of the frequency to consider
+#' @param high the upper bound of the frequency to consider
+#' @param dt the sampling rate of the calcium traces
+#' 
+#' @return a matrix of phase distances between the calcium traces
+#' 
+#' @export
+#-
+PhaseDistMat <- function(mat, low=0.789, high=0.791, dt=0.1247232){
+	phs <- apply(mat, 2, GetPhase, low=low, high=high, dt=dt)
+	ln <- length(phs)
+	ret <- matrix(NA, ln, ln)
+	for(i in 1:ln){
+		for(j in 1:ln){
+			ret[i,j] <- PhaseDist(phs[i], phs[j])
+		}
+	}
+	return(ret)
+}
+
+
+#-
+#' Cluster segmented ROIs based on correlation or phase distance using k-means
 #' 
 #' @param calexp the calexp object with the data
 #' @param mask a mask identifying the cells to be clustered.  Each unique non-zero/NA value
@@ -62,7 +143,15 @@ ClusterCells <- function(calexp, mask, k, criteria="cor", freq=c(0.78,0.81), dt=
 	return(list("series"=ser, "clusters"=clust, "mask"=clmask))
 }
 
-
+#-
+#' Get average time series of the given class in the segmentation stored in a mask database
+#' 
+#' @param db the database
+#' @param calexp the calcium experiment with the data to use to extract the series
+#' @param classids a vector of ids specifying which types of ROI to extract traces for
+#' @param chan the channel to use for activity traces (defaults to 2)
+#' @export
+#-
 GetAllSeries <- function(db, calexp, classids, chan=2){
 	# Note - no check that the data in calexp actually matches the db (size etc)
 	
@@ -71,10 +160,17 @@ GetAllSeries <- function(db, calexp, classids, chan=2){
 		       dim(calexp$data)[3:4]), 1, function(vec){return(calexp$data[chan,,vec[1], vec[2]])}), 1, mean))
 	}
 	
-	masks <- dbGetQuery(db$db, paste("select id, mask from masks where segmentation in (",paste(classids, collapse=", "),")"))
-	series <- sapply(masks[,3], GetSeries)
+	masks <- dbGetQuery(db$db, paste("select id, mask, segmentation from masks where segmentation in (",paste(classids, collapse=", "),")"))
+	series <- sapply(masks[,2], GetSeries)
 	colnames(series) <- masks[,1]
-	return(series)
+	celltype <- masks[,3]
+	o <- order(masks[,1])
+	series <- series[,o]
+	celltype <- celltype[o]
+	o <- order(celltype)
+	series <- series[,o]
+	celltype <- celltype[o]
+	return(list("data"=series, "type"=celltype, "maskid"=colnames(series)))
 }
 
 #-
@@ -84,6 +180,7 @@ GetAllSeries <- function(db, calexp, classids, chan=2){
 #' @param mask the mask identifying cells.  Each unique non-zero/NA value in the mask
 #' indicates a cell to be clustered.
 #' @param channel the channel to get the cell traces from
+#' @export
 #-
 GetSeries <- function(mask, calexp, channel=2){
 
